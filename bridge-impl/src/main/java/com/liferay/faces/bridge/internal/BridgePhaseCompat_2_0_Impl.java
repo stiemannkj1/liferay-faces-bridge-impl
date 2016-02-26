@@ -18,7 +18,6 @@ package com.liferay.faces.bridge.internal;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.Set;
 
 import javax.faces.application.ResourceHandler;
 import javax.faces.context.ExceptionHandler;
@@ -29,7 +28,6 @@ import javax.faces.event.ExceptionQueuedEventContext;
 import javax.portlet.PortletConfig;
 
 import com.liferay.faces.bridge.config.BridgeConfig;
-import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadManagedBean;
 
 
 /**
@@ -41,18 +39,6 @@ public abstract class BridgePhaseCompat_2_0_Impl extends BridgePhaseCompat_1_2_I
 
 	public BridgePhaseCompat_2_0_Impl(PortletConfig portletConfig, BridgeConfig bridgeConfig) {
 		super(portletConfig, bridgeConfig);
-	}
-
-	protected void clearHeadManagedBeanResources(FacesContext facesContext) {
-		HeadManagedBean headManagedBean = HeadManagedBean.getInstance(facesContext);
-
-		if (headManagedBean != null) {
-			Set<String> headResourceIds = headManagedBean.getHeadResourceIds();
-
-			if (headResourceIds != null) {
-				headResourceIds.clear();
-			}
-		}
 	}
 
 	protected void handleJSF2ResourceRequest(FacesContext facesContext) throws IOException {

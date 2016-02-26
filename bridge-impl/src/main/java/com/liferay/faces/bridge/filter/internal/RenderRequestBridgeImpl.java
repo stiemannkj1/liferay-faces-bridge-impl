@@ -15,11 +15,10 @@
  */
 package com.liferay.faces.bridge.filter.internal;
 
+import com.liferay.faces.bridge.context.internal.PortalContextBridgeImpl;
 import javax.portlet.PortalContext;
 import javax.portlet.RenderRequest;
 import javax.portlet.filter.RenderRequestWrapper;
-
-import com.liferay.faces.bridge.context.BridgePortalContext;
 
 
 /**
@@ -28,11 +27,11 @@ import com.liferay.faces.bridge.context.BridgePortalContext;
 public class RenderRequestBridgeImpl extends RenderRequestWrapper {
 
 	// Private Data Members
-	private BridgePortalContext bridgePortalContext;
+	private PortalContext portalContext;
 
-	public RenderRequestBridgeImpl(RenderRequest renderRequest, BridgePortalContext bridgePortalContext) {
+	public RenderRequestBridgeImpl(RenderRequest renderRequest) {
 		super(renderRequest);
-		this.bridgePortalContext = bridgePortalContext;
+		this.portalContext = new PortalContextBridgeImpl(renderRequest.getPortalContext());
 	}
 
 	@Override
@@ -42,6 +41,6 @@ public class RenderRequestBridgeImpl extends RenderRequestWrapper {
 
 	@Override
 	public PortalContext getPortalContext() {
-		return bridgePortalContext;
+		return portalContext;
 	}
 }

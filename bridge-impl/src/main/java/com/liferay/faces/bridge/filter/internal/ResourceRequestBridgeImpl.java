@@ -19,7 +19,7 @@ import javax.portlet.PortalContext;
 import javax.portlet.ResourceRequest;
 import javax.portlet.filter.ResourceRequestWrapper;
 
-import com.liferay.faces.bridge.context.BridgePortalContext;
+import com.liferay.faces.bridge.context.internal.PortalContextBridgeImpl;
 
 
 /**
@@ -28,11 +28,11 @@ import com.liferay.faces.bridge.context.BridgePortalContext;
 public class ResourceRequestBridgeImpl extends ResourceRequestWrapper {
 
 	// Private Data Members
-	private BridgePortalContext bridgePortalContext;
+	private PortalContext portalContext;
 
-	public ResourceRequestBridgeImpl(ResourceRequest resourceRequest, BridgePortalContext bridgePortalContext) {
+	public ResourceRequestBridgeImpl(ResourceRequest resourceRequest) {
 		super(resourceRequest);
-		this.bridgePortalContext = bridgePortalContext;
+		this.portalContext = new PortalContextBridgeImpl(resourceRequest.getPortalContext());
 	}
 
 	@Override
@@ -42,6 +42,6 @@ public class ResourceRequestBridgeImpl extends ResourceRequestWrapper {
 
 	@Override
 	public PortalContext getPortalContext() {
-		return bridgePortalContext;
+		return portalContext;
 	}
 }

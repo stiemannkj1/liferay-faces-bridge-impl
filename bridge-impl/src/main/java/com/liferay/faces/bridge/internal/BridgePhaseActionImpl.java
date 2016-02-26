@@ -114,12 +114,6 @@ public class BridgePhaseActionImpl extends BridgePhaseCompat_2_2_Impl {
 			// Set a flag on the bridge request scope indicating that the Faces Lifecycle has executed.
 			bridgeRequestScope.setFacesLifecycleExecuted(true);
 
-			// Since this is a full-page postback, the <head>...</head> section of the portal page needs to be
-			// completely re-rendered during the subsequent RENDER_PHASE of the portlet lifecycle. Because of this, the
-			// resources in the HeadManagedBean must be cleared so that the bridge will not recognize any resources as
-			// already being present in the <head>...</head> section.
-			clearHeadManagedBeanResources(facesContext);
-
 			// Save the faces view root and any messages in the faces context so that they can be restored during
 			// the RENDER_PHASE of the portlet lifecycle.
 			bridgeRequestScope.saveState(facesContext);

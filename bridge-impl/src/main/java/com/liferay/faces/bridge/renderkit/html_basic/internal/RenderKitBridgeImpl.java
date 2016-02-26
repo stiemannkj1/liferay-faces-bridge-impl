@@ -44,6 +44,9 @@ import com.liferay.faces.util.product.ProductMap;
  */
 public class RenderKitBridgeImpl extends RenderKitWrapper {
 
+	// Public Constants
+	public static final String JAVAX_FACES_HEAD = "javax.faces.Head";
+
 	// Package-Private Constants
 	/* package-private */ static final String ORIGINAL_TARGET = "originalTarget";
 
@@ -52,7 +55,6 @@ public class RenderKitBridgeImpl extends RenderKitWrapper {
 		.isDetected();
 	private static final String JAVAX_FACES_BODY = "javax.faces.Body";
 	private static final String JAVAX_FACES_FORM = "javax.faces.Form";
-	private static final String JAVAX_FACES_HEAD = "javax.faces.Head";
 	private static final Product PRIMEFACES = ProductMap.getInstance().get(ProductConstants.PRIMEFACES);
 	private static final boolean PRIMEFACES_DETECTED = PRIMEFACES.isDetected();
 	private static final String PRIMEFACES_FAMILY = "org.primefaces.component";
