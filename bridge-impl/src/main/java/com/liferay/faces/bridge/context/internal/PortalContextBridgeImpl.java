@@ -105,7 +105,7 @@ public class PortalContextBridgeImpl implements PortalContext {
 		return Collections.enumeration(propertyNameList);
 	}
 
-	protected String getSetHttpStatusCode() {
+	private String getSetHttpStatusCode() {
 
 		if (ableToSetHttpStatusCode == null) {
 

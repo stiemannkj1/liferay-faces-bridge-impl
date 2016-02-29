@@ -37,31 +37,27 @@ import com.liferay.faces.util.product.ProductMap;
 
 
 /**
- * This class extends {@link RenderKitWrapper} in order to programatically control the {@link RenderKit} delegation
+ * This class extends {@link RenderKitWrapper} in order to programmatically control the {@link RenderKit} delegation
  * chain and wrapping of renderers.
  *
  * @author  Neil Griffin
  */
 public class RenderKitBridgeImpl extends RenderKitWrapper {
 
-	// Public Constants
-	public static final String JAVAX_FACES_HEAD = "javax.faces.Head";
-
-	// Package-Private Constants
-	/* package-private */ static final String ORIGINAL_TARGET = "originalTarget";
+	// Package-private Constants
+	/* package-private */ static final String SCRIPT_RENDERER_TYPE = "javax.faces.resource.Script";
+	/* package-private */ static final String STYLESHEET_RENDERER_TYPE = "javax.faces.resource.Stylesheet";
 
 	// Private Constants
 	private static final boolean ICEFACES_DETECTED = ProductMap.getInstance().get(ProductConstants.ICEFACES)
 		.isDetected();
-	private static final String JAVAX_FACES_BODY = "javax.faces.Body";
-	private static final String JAVAX_FACES_FORM = "javax.faces.Form";
+	private static final String BODY_RENDERER_TYPE = "javax.faces.Body";
+	private static final String FORM_RENDERER_TYPE = "javax.faces.Form";
 	private static final Product PRIMEFACES = ProductMap.getInstance().get(ProductConstants.PRIMEFACES);
 	private static final boolean PRIMEFACES_DETECTED = PRIMEFACES.isDetected();
 	private static final String PRIMEFACES_FAMILY = "org.primefaces.component";
 	private static final String RICHFACES_FILE_UPLOAD_FAMILY = "org.richfaces.FileUpload";
 	private static final String RICHFACES_FILE_UPLOAD_RENDERER_TYPE = "org.richfaces.FileUploadRenderer";
-	private static final String SCRIPT_RENDERER_TYPE = "javax.faces.resource.Script";
-	private static final String STYLESHEET_RENDERER_TYPE = "javax.faces.resource.Stylesheet";
 
 	// Private Data Members
 	private RenderKit wrappedRenderKit;
@@ -88,7 +84,7 @@ public class RenderKitBridgeImpl extends RenderKitWrapper {
 
 		if (UIOutput.COMPONENT_FAMILY.equals(family)) {
 
-			if (JAVAX_FACES_HEAD.equals(rendererType)) {
+			if (HeadRendererBridgeImpl.RENDERER_TYPE.equals(rendererType)) {
 
 				if (ICEFACES_DETECTED) {
 					renderer = new HeadRendererICEfacesImpl();
@@ -100,14 +96,14 @@ public class RenderKitBridgeImpl extends RenderKitWrapper {
 					renderer = new HeadRendererBridgeImpl();
 				}
 			}
-			else if (JAVAX_FACES_BODY.equals(rendererType)) {
+			else if (BODY_RENDERER_TYPE.equals(rendererType)) {
 				renderer = new BodyRendererBridgeImpl(renderer);
 			}
 			else if (SCRIPT_RENDERER_TYPE.equals(rendererType) || STYLESHEET_RENDERER_TYPE.equals(rendererType)) {
 				renderer = new ResourceRendererBridgeImpl(renderer);
 			}
 		}
-		else if (UIForm.COMPONENT_FAMILY.equals(family) && JAVAX_FACES_FORM.equals(rendererType) &&
+		else if (UIForm.COMPONENT_FAMILY.equals(family) && FORM_RENDERER_TYPE.equals(rendererType) &&
 				PRIMEFACES_DETECTED) {
 
 			renderer = new FormRendererPrimeFacesImpl(PRIMEFACES.getMajorVersion(), PRIMEFACES.getMinorVersion(),

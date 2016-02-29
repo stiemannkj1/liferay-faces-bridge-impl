@@ -13,19 +13,20 @@
  */
 package com.liferay.faces.bridge.context.internal;
 
-import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadRendererBridgeImpl;
-import com.liferay.faces.bridge.renderkit.html_basic.internal.RenderKitBridgeImpl;
-import com.liferay.faces.util.context.PartialResponseWriterWrapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIOutput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlHead;
 import javax.faces.context.FacesContext;
 import javax.faces.context.PartialResponseWriter;
-import javax.faces.render.RenderKit;
+
+import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadRendererBridgeImpl;
+import com.liferay.faces.util.context.PartialResponseWriterWrapper;
+import javax.faces.context.ExternalContext;
+import javax.portlet.PortalContext;
+import javax.portlet.PortletRequest;
 
 /**
  * @author  Kyle Stiemann
@@ -47,19 +48,25 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 
 			if (child instanceof HtmlHead) {
 
-				RenderKit renderKit = facesContext.getRenderKit();
-				HeadRendererBridgeImpl headRendererBridgeImpl = (HeadRendererBridgeImpl) renderKit.getRenderer(UIOutput.COMPONENT_FAMILY, RenderKitBridgeImpl.JAVAX_FACES_HEAD);
-				List<UIComponent> allHeadResources = headRendererBridgeImpl.getAllResources(facesContext, child);
+				List<UIComponent> headResources = HeadRendererBridgeImpl.getHeadResources(facesContext, child);
 
-				if (!allHeadResources.isEmpty()) {
+				if (!headResources.isEmpty()) {
 
 					HashMap<String, String> extensionAttributes = new HashMap<String, String>();
-					extensionAttributes.put("id", "headResources");
+					extensionAttributes.put("id", "liferayFacesBridgeHeadResources");
 					super.startExtension(extensionAttributes);
 					super.startCDATA();
 
-					for (UIComponent headResource : allHeadResources) {
-						headResource.encodeAll(facesContext);
+					ExternalContext externalContext = facesContext.getExternalContext();
+					PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
+					PortalContext portalContext = portletRequest.getPortalContext();
+
+					for (UIComponent headResource : headResources) {
+
+						// TODO worry about body resources
+						if (HeadRendererBridgeImpl.canAddResourceToHead(portalContext, headResource)) {
+							headResource.encodeAll(facesContext);
+						}
 					}
 
 					super.endCDATA();

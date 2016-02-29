@@ -16,7 +16,6 @@
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
 import com.liferay.faces.bridge.context.BridgePortalContext;
-import com.liferay.faces.bridge.context.BridgePortalContextFactory;
 import java.io.IOException;
 
 import javax.faces.component.UIComponent;
@@ -92,48 +91,42 @@ public class BodyRendererBridgeImpl extends RendererWrapper {
 		ExternalContext externalContext = facesContext.getExternalContext();
 		PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
 		PortalContext portalContext = portletRequest.getPortalContext();
-		BridgePortalContext bridgePortalContext = BridgePortalContextFactory.getBridgePortalContextInstance(portalContext, portletRequest);
-		boolean canAddStyleSheetResourcesToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_STYLE_SHEET_RESOURCE_TO_HEAD_SUPPORT) != null;
-		boolean canAddStyleSheetTextToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_STYLE_SHEET_TEXT_TO_HEAD_SUPPORT) != null;
+		boolean canAddStyleSheetResourcesToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_STYLE_SHEET_RESOURCE_TO_HEAD_SUPPORT) != null;
+		boolean canAddStyleSheetTextToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_STYLE_SHEET_TEXT_TO_HEAD_SUPPORT) != null;
+		boolean canAddScriptResourcesToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_SCRIPT_RESOURCE_TO_HEAD_SUPPORT) != null;
+		boolean canAddScriptTextToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_SCRIPT_TEXT_TO_HEAD_SUPPORT) != null;
 
-		if (!canAddStyleSheetResourcesToHead || ! canAddStyleSheetTextToHead) {
+		if (!canAddStyleSheetResourcesToHead || ! canAddStyleSheetTextToHead || !canAddScriptResourcesToHead || !canAddScriptTextToHead) {
 
 			UIViewRoot uiViewRoot = facesContext.getViewRoot();
 			List<UIComponent> componentResources = uiViewRoot.getComponentResources(facesContext, "head");
 
-			for (UIComponent componentResource : componentResources) {
+			if (!componentResources.isEmpty()) {
 
-				if ((!canAddStyleSheetResourcesToHead && HeadRendererBridgeImpl.isStyleSheetResource(componentResource)) ||
-					(!canAddStyleSheetTextToHead && HeadRendererBridgeImpl.isInlineStyleSheet(componentResource))) {
-					componentResource.encodeAll(facesContext);
+				responseWriter.startElement("div", uiComponent);
+				responseWriter.writeAttribute("id", clientId + "_headResources", "id");
+
+				// Add a class so that every div can be selected via document.querySelector('.liferay-faces-bridge-relocated-resources').
+				responseWriter.writeAttribute("class", "liferay-faces-bridge-relocated-resources", "class");
+
+				for (UIComponent componentResource : componentResources) {
+
+					if (!HeadRendererBridgeImpl.canAddResourceToHead(portalContext, componentResource)) {
+						componentResource.encodeAll(facesContext);
+					}
 				}
+
+				responseWriter.endElement("div");
 			}
 		}
 	}
 
 	@Override
 	public void encodeEnd(FacesContext facesContext, UIComponent uiComponent) throws IOException {
-
-		ExternalContext externalContext = facesContext.getExternalContext();
-		PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
-		PortalContext portalContext = portletRequest.getPortalContext();
-		BridgePortalContext bridgePortalContext = BridgePortalContextFactory.getBridgePortalContextInstance(portalContext, portletRequest);
-		boolean canAddScriptResourcesToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_SCRIPT_RESOURCE_TO_HEAD_SUPPORT) != null;
-		boolean canAddScriptTextToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_SCRIPT_TEXT_TO_HEAD_SUPPORT) != null;
-
-		if (!canAddScriptResourcesToHead || ! canAddScriptTextToHead) {
-
-			UIViewRoot uiViewRoot = facesContext.getViewRoot();
-			List<UIComponent> componentResources = uiViewRoot.getComponentResources(facesContext, "head");
-
-			for (UIComponent componentResource : componentResources) {
-
-				if ((!canAddScriptResourcesToHead && HeadRendererBridgeImpl.isScriptResource(componentResource)) ||
-					(!canAddScriptTextToHead && HeadRendererBridgeImpl.isInlineScript(componentResource))) {
-					componentResource.encodeAll(facesContext);
-				}
-			}
-		}
 
 		ResponseWriter originalResponseWriter = facesContext.getResponseWriter();
 		ResponseWriter responseWriter = new ResponseWriterBridgeBodyImpl(originalResponseWriter);

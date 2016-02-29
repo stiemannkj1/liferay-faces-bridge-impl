@@ -32,11 +32,13 @@ import javax.portlet.faces.component.PortletNamingContainerUIViewRoot;
 import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.component.internal.ComponentUtil;
 import com.liferay.faces.bridge.context.BridgePortalContext;
-import com.liferay.faces.bridge.context.BridgePortalContextFactory;
 import com.liferay.faces.bridge.context.HeadResponseWriter;
 import com.liferay.faces.bridge.context.HeadResponseWriterFactory;
+import static com.liferay.faces.bridge.renderkit.html_basic.internal.RenderKitBridgeImpl.SCRIPT_RENDERER_TYPE;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import javax.faces.component.UIOutput;
+import javax.faces.render.RenderKit;
 import javax.portlet.PortalContext;
 
 
@@ -48,6 +50,9 @@ import javax.portlet.PortalContext;
  * @author  Neil Griffin
  */
 public class HeadRendererBridgeImpl extends Renderer {
+
+	// Package-Private Constants
+	/* package-private */ static final String RENDERER_TYPE = "javax.faces.Head";
 
 	// Private Constants
 	private static final String FIRST_FACET = "first";
@@ -62,71 +67,6 @@ public class HeadRendererBridgeImpl extends Renderer {
 		// no-op because Portlets are forbidden from rendering the <head>...</head> section.
 	}
 
-	public List<UIComponent> getAllResources(FacesContext facesContext, UIComponent uiComponent) throws IOException {
-
-		// Build up a list of components that are intended for the <head> section of the portal page.
-		PortletNamingContainerUIViewRoot uiViewRoot = (PortletNamingContainerUIViewRoot) facesContext.getViewRoot();
-		List<UIComponent> uiComponentResources = new ArrayList<UIComponent>();
-
-		// Add the list of components that are to appear first.
-		List<UIComponent> firstResources = getFirstResources(facesContext, uiComponent);
-
-		if (firstResources != null) {
-			uiComponentResources.addAll(firstResources);
-		}
-
-		// Sort the components that are in the view root into stylesheets and scripts.
-		List<UIComponent> uiViewRootComponentResources = uiViewRoot.getComponentResources(facesContext, "head");
-		List<UIComponent> uiViewRootStyleSheetResources = null;
-		List<UIComponent> uiViewRootScriptResources = null;
-
-		for (UIComponent curComponent : uiViewRootComponentResources) {
-
-			if (isStyleSheetResource(curComponent)) {
-
-				if (uiViewRootStyleSheetResources == null) {
-					uiViewRootStyleSheetResources = new ArrayList<UIComponent>();
-				}
-
-				uiViewRootStyleSheetResources.add(curComponent);
-			}
-			else {
-
-				if (uiViewRootScriptResources == null) {
-					uiViewRootScriptResources = new ArrayList<UIComponent>();
-				}
-
-				uiViewRootScriptResources.add(curComponent);
-			}
-		}
-
-		// Add the list of stylesheet components that are in the view root.
-		if (uiViewRootStyleSheetResources != null) {
-			uiComponentResources.addAll(uiViewRootStyleSheetResources);
-		}
-
-		// Add the list of components that are to appear in the middle.
-		List<UIComponent> middleResources = getMiddleResources(facesContext, uiComponent);
-
-		if (middleResources != null) {
-			uiComponentResources.addAll(middleResources);
-		}
-
-		// Add the list of script components that are in the view root.
-		if (uiViewRootScriptResources != null) {
-			uiComponentResources.addAll(uiViewRootScriptResources);
-		}
-
-		// Add the list of components that are to appear last.
-		List<UIComponent> lastResources = getLastResources(facesContext, uiComponent);
-
-		if (lastResources != null) {
-			uiComponentResources.addAll(lastResources);
-		}
-
-		return uiComponentResources;
-	}
-
 	@Override
 	public void encodeChildren(FacesContext facesContext, UIComponent uiComponent) throws IOException {
 
@@ -138,11 +78,6 @@ public class HeadRendererBridgeImpl extends Renderer {
 			ExternalContext externalContext = facesContext.getExternalContext();
 			PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
 			PortalContext portalContext = portletRequest.getPortalContext();
-			BridgePortalContext bridgePortalContext = BridgePortalContextFactory.getBridgePortalContextInstance(portalContext, portletRequest);
-			boolean canAddStyleSheetResourcesToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_STYLE_SHEET_RESOURCE_TO_HEAD_SUPPORT) != null;
-			boolean canAddStyleSheetTextToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_STYLE_SHEET_TEXT_TO_HEAD_SUPPORT) != null;
-			boolean canAddScriptResourcesToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_SCRIPT_RESOURCE_TO_HEAD_SUPPORT) != null;
-			boolean canAddScriptTextToHead = bridgePortalContext.getProperty(BridgePortalContext.ADD_SCRIPT_TEXT_TO_HEAD_SUPPORT) != null;
 
 			// For each resource in the ViewRoot: Determine if it should added to the <head> section of the portal page,
 			// or if it should be relocated to the body (which is actually not a <body> element, but a <div> element
@@ -151,10 +86,7 @@ public class HeadRendererBridgeImpl extends Renderer {
 
 				// If the portlet container has the ability to add the resource to the <head> section of the
 				// portal page, then add it to the list of resources that are to be added to the <head> section.
-				if ((canAddStyleSheetResourcesToHead && isStyleSheetResource(uiComponentResource)) ||
-					(canAddStyleSheetTextToHead && isInlineStyleSheet(uiComponentResource)) ||
-					(canAddScriptResourcesToHead && isScriptResource(uiComponentResource)) ||
-					(canAddScriptTextToHead && isInlineScript(uiComponentResource))) {
+				if (canAddResourceToHead(portalContext, uiComponentResource)) {
 					resourcesForAddingToHead.add(uiComponentResource);
 				}
 
@@ -210,6 +142,80 @@ public class HeadRendererBridgeImpl extends Renderer {
 		// no-op because Portlets are forbidden from rendering the <head>...</head> section.
 	}
 
+	protected List<UIComponent> getAllResources(FacesContext facesContext, UIComponent uiComponent) throws IOException {
+
+		// Build up a list of components that are intended for the <head> section of the portal page.
+		PortletNamingContainerUIViewRoot uiViewRoot = (PortletNamingContainerUIViewRoot) facesContext.getViewRoot();
+		List<UIComponent> uiComponentResources = new ArrayList<UIComponent>();
+
+		// Add the list of components that are to appear first.
+		List<UIComponent> firstResources = getFirstResources(facesContext, uiComponent);
+
+		if (firstResources != null) {
+			uiComponentResources.addAll(firstResources);
+		}
+
+		// Sort the components that are in the view root into stylesheets and scripts.
+		List<UIComponent> uiViewRootComponentResources = uiViewRoot.getComponentResources(facesContext, "head");
+		List<UIComponent> uiViewRootStyleSheetResources = null;
+		List<UIComponent> uiViewRootScriptResources = null;
+
+		for (UIComponent curComponent : uiViewRootComponentResources) {
+
+			if (isStyleSheetResource(curComponent) ||
+				isInlineStyleSheet(curComponent)) {
+
+				if (uiViewRootStyleSheetResources == null) {
+					uiViewRootStyleSheetResources = new ArrayList<UIComponent>();
+				}
+
+				uiViewRootStyleSheetResources.add(curComponent);
+			}
+			else {
+
+				if (uiViewRootScriptResources == null) {
+					uiViewRootScriptResources = new ArrayList<UIComponent>();
+				}
+
+				uiViewRootScriptResources.add(curComponent);
+			}
+		}
+
+		// Add the list of stylesheet components that are in the view root.
+		if (uiViewRootStyleSheetResources != null) {
+			uiComponentResources.addAll(uiViewRootStyleSheetResources);
+		}
+
+		// Add the list of components that are to appear in the middle.
+		List<UIComponent> middleResources = getMiddleResources(facesContext, uiComponent);
+
+		if (middleResources != null) {
+			uiComponentResources.addAll(middleResources);
+		}
+
+		// Add the list of script components that are in the view root.
+		if (uiViewRootScriptResources != null) {
+			uiComponentResources.addAll(uiViewRootScriptResources);
+		}
+
+		UIOutput bridgeJS = new UIOutput();
+		Map<String, Object> attributes = bridgeJS.getAttributes();
+		attributes.put("library", "liferay-faces-bridge");
+		attributes.put("name", "bridge.js");
+		attributes.put("rendererType", RenderKitBridgeImpl.SCRIPT_RENDERER_TYPE);
+
+		uiComponentResources.add(bridgeJS);
+
+		// Add the list of components that are to appear last.
+		List<UIComponent> lastResources = getLastResources(facesContext, uiComponent);
+
+		if (lastResources != null) {
+			uiComponentResources.addAll(lastResources);
+		}
+
+		return uiComponentResources;
+	}
+
 	protected List<UIComponent> getFirstResources(FacesContext facesContext, UIComponent uiComponent) {
 
 		List<UIComponent> resources = null;
@@ -257,37 +263,68 @@ public class HeadRendererBridgeImpl extends Renderer {
 		return true;
 	}
 
-	/* package-private */ static boolean isStyleSheetResource(UIComponent componentResource) {
-		
+	public static List<UIComponent> getHeadResources(FacesContext facesContext, UIComponent htmlHead) throws IOException {
+
+		RenderKit renderKit = facesContext.getRenderKit();
+		HeadRendererBridgeImpl headRendererBridgeImpl = (HeadRendererBridgeImpl) renderKit.getRenderer(UIOutput.COMPONENT_FAMILY, RENDERER_TYPE);
+		return headRendererBridgeImpl.getAllResources(facesContext, htmlHead);
+	}
+
+	public static boolean canAddResourceToHead(PortalContext portalContext, UIComponent componentResource) {
+
+		boolean canAddResourceToHead = false;
+
+		if (isStyleSheetResource(componentResource)) {
+			canAddResourceToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_STYLE_SHEET_RESOURCE_TO_HEAD_SUPPORT) != null;
+		}
+		else if (isScriptResource(componentResource)) {
+			canAddResourceToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_SCRIPT_RESOURCE_TO_HEAD_SUPPORT) != null;
+		}
+		else if (isInlineStyleSheet(componentResource)) {
+			canAddResourceToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_STYLE_SHEET_TEXT_TO_HEAD_SUPPORT) != null;			
+		}
+		else if (isInlineScript(componentResource)) {
+			canAddResourceToHead = portalContext.getProperty(
+				BridgePortalContext.ADD_SCRIPT_TEXT_TO_HEAD_SUPPORT) != null;			
+		}
+
+		return canAddResourceToHead;
+	}
+
+	private static boolean isScriptResource(UIComponent componentResource) {
+
 		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
 		String resourceName = (String) componentResourceAttributes.get("name");
 
-		return resourceName != null && resourceName.endsWith("css");
+		return (resourceName != null) && resourceName.endsWith("js");
 	}
 
-	/* package-private */ static boolean isScriptResource(UIComponent componentResource) {
-		
+	private static boolean isStyleSheetResource(UIComponent componentResource) {
+
 		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
 		String resourceName = (String) componentResourceAttributes.get("name");
 
-		return resourceName != null && resourceName.endsWith("js");
+		return (resourceName != null) && resourceName.endsWith("css");
 	}
 
-	/* package-private */ static boolean isInlineScript(UIComponent componentResource) {
-		
+	private static boolean isInlineScript(UIComponent componentResource) {
+
 		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
 		String resourceName = (String) componentResourceAttributes.get("name");
 		String rendererType = componentResource.getRendererType();
 
-		return resourceName == null && "javax.faces.resource.Script".equals(rendererType);
+		return (resourceName == null) && RenderKitBridgeImpl.SCRIPT_RENDERER_TYPE.equals(rendererType);
 	}
 
-	/* package-private */ static boolean isInlineStyleSheet(UIComponent componentResource) {
-		
+	private static boolean isInlineStyleSheet(UIComponent componentResource) {
+
 		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
 		String resourceName = (String) componentResourceAttributes.get("name");
 		String rendererType = componentResource.getRendererType();
 
-		return resourceName == null && "javax.faces.resource.Stylesheet".equals(rendererType);
+		return (resourceName == null) && RenderKitBridgeImpl.STYLESHEET_RENDERER_TYPE.equals(rendererType);
 	}
 }
