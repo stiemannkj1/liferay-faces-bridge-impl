@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<f:view xmlns="http://www.w3.org/1999/xhtml" xmlns:alloy="http://liferay.com/faces/alloy"
+<f:view xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-	<alloy:head />
-	<alloy:body styleClass="jsf2-portlet ltr">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:portlet="http://java.sun.com/portlet_2_0">
+	<h:head />
+	<h:body styleClass="jsf2-portlet ltr">
 		<ui:include src="styling.xhtml" />
 		<ui:include src="applicant.xhtml" />
 		<br />
-		<alloy:row>
-			<alloy:column>
-				<h:outputText value="JSF Portlet DS - Hello, World! from /WEB-INF/views" />
-				<h:outputText value="JSF Portlet DS - Hello again." />
-				<alloy:outputText value="JSF Portlet DS - Hello, alloy:outputText!" />
-				<h:outputText value="JSF Portlet DS - Good bye, World!" />
-				<ul>
-					<li><em><alloy:outputText value="#{bridgeContext.bridgeConfig.attributes['JSF']}" /></em></li>
-					<li><em><alloy:outputText value="#{bridgeContext.bridgeConfig.attributes['Liferay Faces Alloy']}" /></em></li>
-					<li><em><alloy:outputText
-						value="#{bridgeContext.bridgeConfig.attributes['Liferay Faces Bridge']}" /></em></li>
-				</ul>
-			</alloy:column>
-		</alloy:row>
-	</alloy:body>
+		<h:outputText value="JSF Portlet DS - Hello, World! from /WEB-INF/views" />
+		<h:outputText value="JSF Portlet DS - Hello again." />
+		<h:outputText value="JSF Portlet DS - Hello, h:outputText!" />
+		<h:outputText value="JSF Portlet DS - Good bye, World!" />
+		<ul>
+			<li><em><h:outputText value="#{bridgeContext.bridgeConfig.attributes['JSF']}" /></em></li>
+			<li><em><h:outputText value="#{bridgeContext.bridgeConfig.attributes['Liferay Faces Alloy']}" /></em></li>
+			<li><em><h:outputText
+				value="#{bridgeContext.bridgeConfig.attributes['Liferay Faces Bridge']}" /></em></li>
+		</ul>
+		<portlet:renderURL />
+		<h:messages globalOnly="true" showDetail="true" />
+	</h:body>
 </f:view>

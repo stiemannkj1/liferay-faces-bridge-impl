@@ -16,7 +16,7 @@
 
 	<properties>
       <liferay.version>7.0.0-SNAPSHOT</liferay.version>
-      <mojarra.version>2.2.13</mojarra.version>
+      <mojarra.version>2.2.13-SNAPSHOT</mojarra.version>
    </properties>
 	<dependencyManagement>
       <dependencies>
@@ -62,13 +62,13 @@
             <artifactId>util-taglib</artifactId>
             <version>${liferay.version}</version>
          </dependency>
-         <dependency>
+			<dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
             <version>${mojarra.version}</version>
             <scope>compile</scope>
          </dependency>
-			<dependency>
+         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
             <version>${mojarra.version}</version>
@@ -82,8 +82,10 @@
          </dependency>
          <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+<!--			<artifactId>servlet-api</artifactId>
+            <version>2.5</version>-->
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
          </dependency>
          <dependency>
@@ -116,6 +118,12 @@
             <artifactId>biz.aQute.bnd.annotation</artifactId>
             <version>2.4.0</version>
          </dependency>
+		<dependency>
+		   <groupId>com.liferay.faces.hack</groupId>
+		   <artifactId>liferay-7-hack-jar</artifactId>
+		   <version>1.0.0</version>
+		   <scope>compile</scope>
+		</dependency>
       </dependencies>
    </dependencyManagement>
 
@@ -148,10 +156,10 @@
          <groupId>com.liferay.faces.bridge</groupId>
          <artifactId>liferay-faces-bridge-ext</artifactId>
       </dependency>
-      <dependency>
+		<dependency>
          <groupId>com.sun.faces</groupId>
          <artifactId>jsf-api</artifactId>
-      </dependency>
+         </dependency>
       <dependency>
          <groupId>com.sun.faces</groupId>
          <artifactId>jsf-impl</artifactId>
@@ -163,7 +171,7 @@
       </dependency>
       <dependency>
          <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
+         <artifactId>javax.servlet-api</artifactId>
          <scope>provided</scope>
       </dependency>
       <dependency>
@@ -171,6 +179,10 @@
          <artifactId>org.osgi.compendium</artifactId>
          <scope>provided</scope>
       </dependency>
+		 <dependency>
+			<groupId>com.liferay.faces.hack</groupId>
+			<artifactId>liferay-7-hack-jar</artifactId>
+		 </dependency>
    </dependencies>
 
 	<build>
