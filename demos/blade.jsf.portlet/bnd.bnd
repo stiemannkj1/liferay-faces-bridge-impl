@@ -1,7 +1,8 @@
 Import-Package:\
 	com.liferay.portal.kernel.exception.*,\
-	com.liferay.portal.kernel.model.*,\
-	com.liferay.portal.kernel.service.*,\
+	com.liferay.portal.kernel.model;version='[1.0.0,2)',\
+	com.liferay.portal.kernel.model.*;version='[1.0.0,2)',\
+	com.liferay.portal.kernel.service.*;version='[1.0.0,2)',\
 	com.liferay.portal.kernel.servlet.taglib.aui.*,\
 	com.liferay.portal.kernel.theme.*,\
 	com.liferay.portal.kernel.util.*,\
@@ -30,18 +31,18 @@ Import-Package:\
 	liferay-faces-bridge-impl-4.0.0-SNAPSHOT.jar=liferay-faces-bridge-impl-4.0.0-SNAPSHOT.jar,\
 	liferay-faces-bridge-ext-5.0.0-SNAPSHOT.jar=liferay-faces-bridge-ext-5.0.0-SNAPSHOT.jar,\
 	liferay-faces-util-3.0.0-SNAPSHOT.jar=liferay-faces-util-3.0.0-SNAPSHOT.jar,\
-	jsf-api-2.2.13-SNAPSHOT.jar=jsf-api-2.2.13-SNAPSHOT.jar,\
-	jsf-impl-2.2.13-SNAPSHOT.jar=jsf-impl-2.2.13-SNAPSHOT.jar,\
-	liferay-7-hack-jar-1.0.0.jar=liferay-7-hack-jar-1.0.0.jar
+	jsf-api-2.2.13.jar=jsf-api-2.2.13.jar,\
+	jsf-impl-2.2.13.jar=jsf-impl-2.2.13.jar,\
+	liferay-7-hack-jar-2.0.0.jar=liferay-7-hack-jar-2.0.0.jar
 Bundle-ClassPath: \
 	.,\
 	liferay-faces-bridge-api-4.0.0-SNAPSHOT.jar,\
 	liferay-faces-bridge-impl-4.0.0-SNAPSHOT.jar,\
 	liferay-faces-bridge-ext-5.0.0-SNAPSHOT.jar,\
 	liferay-faces-util-3.0.0-SNAPSHOT.jar,\
-	jsf-api-2.2.13-SNAPSHOT.jar,\
-	jsf-impl-2.2.13-SNAPSHOT.jar,\
-	liferay-7-hack-jar-1.0.0.jar
+	jsf-api-2.2.13.jar,\
+	jsf-impl-2.2.13.jar,\
+	liferay-7-hack-jar-2.0.0.jar
 Bundle-Version: 1.0.0
 Servlet-Context-Name: blade-jsf-portlet
 Web-ContextPath: /blade-jsf-portlet

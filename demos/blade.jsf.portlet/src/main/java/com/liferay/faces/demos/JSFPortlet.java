@@ -15,6 +15,9 @@
  */
 package com.liferay.faces.demos;
 
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.UserLocalService;
+import java.io.IOException;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -23,7 +26,11 @@ import org.osgi.service.component.annotations.Component;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.portlet.faces.GenericFacesPortlet;
+
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
 	immediate = true,
@@ -37,6 +44,18 @@ import javax.portlet.faces.GenericFacesPortlet;
 	service = Portlet.class
 )
 public class JSFPortlet extends GenericFacesPortlet {
+
+	@Override
+	protected void doView(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException, IOException {
+		try {
+			int usersCount = getUserLocalService().getUsersCount();
+			System.out.println(usersCount);
+		}
+		catch (Exception e) {
+			
+		}
+		super.doView(renderRequest, renderResponse);
+	}
 
 	@Activate
 	public void activate(BundleContext bundleContext) {
@@ -54,6 +73,16 @@ public class JSFPortlet extends GenericFacesPortlet {
 		super.init(portletConfig);
 		System.err.println("init: portletConfig.getPortletName() = " + portletConfig.getPortletName());
 	}
-	
+
+	public UserLocalService getUserLocalService() {
+		return _userLocalService;
+	}
+
+	@Reference
+	public void setUserLocalService(UserLocalService userLocalService) {
+		_userLocalService = userLocalService;
+	}
+
+	private UserLocalService _userLocalService;
 }
 
