@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:view xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:portlet="http://java.sun.com/portlet_2_0">
+	xmlns:portlet="http://java.sun.com/portlet_2_0">
 	<h:head />
-	<h:body styleClass="jsf2-portlet ltr">
-		<ui:include src="styling.xhtml" />
-		<ui:include src="applicant.xhtml" />
-		<br />
-		<h:outputText value="JSF Portlet DS - Hello, World! from /WEB-INF/views" />
-		<h:outputText value="JSF Portlet DS - Hello again." />
-		<h:outputText value="JSF Portlet DS - Hello, h:outputText!" />
-		<h:outputText value="JSF Portlet DS - Good bye, World!" />
-		<ul>
-			<li><em><h:outputText value="#{bridgeContext.bridgeConfig.attributes['JSF']}" /></em></li>
-			<li><em><h:outputText value="#{bridgeContext.bridgeConfig.attributes['Liferay Faces Alloy']}" /></em></li>
-			<li><em><h:outputText
-				value="#{bridgeContext.bridgeConfig.attributes['Liferay Faces Bridge']}" /></em></li>
-		</ul>
-		<portlet:renderURL />
-		<h:messages globalOnly="true" showDetail="true" />
+	<h:body>
+		<h:form>
+			<h:outputLabel value="Name:" />
+			<br />
+			<h:inputText value="#{bean.name}" />
+			<br />
+			<h:outputText value="#{bean.name}" />
+			<br />
+			<h:commandButton value="Submit" />
+			<br />
+			<h:commandButton value="Ajax-Submit">
+				<f:ajax execute="@form" render="@form" />
+			</h:commandButton>
+			<br />
+			<portlet:renderURL var="editModeURL" portletMode="edit" />
+			<h:outputLink value="#{editModeURL}">
+				Edit Mode URL
+			</h:outputLink>
+			<br />
+			<h:messages globalOnly="true" showDetail="true" />
+		</h:form>
 	</h:body>
 </f:view>

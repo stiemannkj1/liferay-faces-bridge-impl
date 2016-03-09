@@ -19,9 +19,6 @@ import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.event.ActionEvent;
-
-import com.liferay.faces.util.model.UploadedFile;
 
 
 /**
@@ -29,36 +26,20 @@ import com.liferay.faces.util.model.UploadedFile;
  *
  * @author  Kyle Stiemann
  */
-@ManagedBean(name = "applicantViewBean")
+@ManagedBean(name = "bean")
 @ViewScoped
-public class ApplicantViewBean implements Serializable {
+public class Bean implements Serializable {
 
 	// serialVersionUID
 	private static final long serialVersionUID = 6163667782815767889L;
 
-	// JavaBean Properties for UI
-	private boolean commentsRendered;
-	private UploadedFile fileToDelete;
-	private String uploadedFileId;
+	private String name = "ASDF";
 
-	public void toggleComments(ActionEvent actionEvent) {
-		commentsRendered = !commentsRendered;
+	public String getName() {
+		return name;
 	}
 
-	public void setCommentsRendered(boolean commentsRendered) {
-		this.commentsRendered = commentsRendered;
+	public void setName(String name) {
+		this.name = name;
 	}
-
-	public boolean isCommentsRendered() {
-		return commentsRendered;
-	}
-
-	public String getUploadedFileId() {
-		return uploadedFileId;
-	}
-
-	public void setUploadedFileId(String uploadedFileId) {
-		this.uploadedFileId = uploadedFileId;
-	}
-
 }

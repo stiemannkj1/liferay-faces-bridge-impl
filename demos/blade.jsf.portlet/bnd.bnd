@@ -1,9 +1,10 @@
 Import-Package:\
 	com.liferay.portal.kernel.exception.*,\
-	com.liferay.portal.kernel.model;version='[1.0.0,2)',\
-	com.liferay.portal.kernel.model.*;version='[1.0.0,2)',\
-	com.liferay.portal.kernel.service.*;version='[1.0.0,2)',\
+	com.liferay.portal.kernel.model,\
+	com.liferay.portal.kernel.model.*,\
+	com.liferay.portal.kernel.service.*,\
 	com.liferay.portal.kernel.servlet.taglib.aui.*,\
+	com.liferay.portal.kernel.servlet.taglib.util.*,\
 	com.liferay.portal.kernel.theme.*,\
 	com.liferay.portal.kernel.util.*,\
 	com.liferay.taglib.util.*,\
@@ -13,10 +14,10 @@ Import-Package:\
 	javax.management,\
 	javax.naming,\
 	javax.naming.*,\
-	javax.portlet;version='[2.0,3)',\
-	javax.portlet.filter;version='[2.0,3)',\
-	javax.servlet;version='[3.0,4)',\
-	javax.servlet.http;version='[2.5,4)',\
+	javax.portlet,\
+	javax.portlet.filter,\
+	javax.servlet,\
+	javax.servlet.http,\
 	javax.servlet.jsp,\
 	javax.servlet.jsp.*,\
 	javax.xml,\

@@ -15,9 +15,6 @@
  */
 package com.liferay.faces.demos;
 
-import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.service.UserLocalService;
-import java.io.IOException;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -26,63 +23,44 @@ import org.osgi.service.component.annotations.Component;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 import javax.portlet.faces.GenericFacesPortlet;
 
-import org.osgi.service.component.annotations.Reference;
 
 @Component(
 	immediate = true,
 	property = {
+		"com.liferay.portlet.ajaxable=false",
 		"com.liferay.portlet.display-category=category.sample",
 		"com.liferay.portlet.instanceable=true",
-		"javax.portlet.display-name=JSF Portlet Display Name",
+		"com.liferay.portlet.requires-namespaced-parameters=false",
+		"javax.portlet.display-name=Blade-JSF-Portlet",
 		"javax.portlet.init-param.javax.portlet.faces.defaultViewId.view=/WEB-INF/views/portletViewMode.xhtml",
-		"javax.portlet.security-role-ref=power-user,user"
+		"javax.portlet.init-param.javax.portlet.faces.defaultViewId.edit=/WEB-INF/views/portletEditMode.xhtml",
+		"javax.portlet.security-role-ref=administrator,guest,power-user,user",
+		"javax.portlet.supports.mime-type=text/html",
+		"javax.portlet.supports.portlet-mode=view",
+		"javax.portlet.supports.portlet-mode=edit"
 	},
 	service = Portlet.class
 )
 public class JSFPortlet extends GenericFacesPortlet {
 
-	@Override
-	protected void doView(RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException, IOException {
-		try {
-			int usersCount = getUserLocalService().getUsersCount();
-			System.out.println(usersCount);
-		}
-		catch (Exception e) {
-			
-		}
-		super.doView(renderRequest, renderResponse);
-	}
-
 	@Activate
 	public void activate(BundleContext bundleContext) {
-		System.err.println("activate: this = " + this);
+		System.err.println("!@#$ Activating " + this);
 	}
 
+	@Override
 	public void destroy() {
-		System.err.println("destroy ... ");
+		System.err.println("!@#$ Destroying " + this);
 		super.destroy();
 	}
 
 	@Override
 	public void init(PortletConfig portletConfig) throws PortletException {
-		
+
+		System.err.println("!@#$ init(): portletConfig.getPortletName() = " + portletConfig.getPortletName());
 		super.init(portletConfig);
-		System.err.println("init: portletConfig.getPortletName() = " + portletConfig.getPortletName());
 	}
-
-	public UserLocalService getUserLocalService() {
-		return _userLocalService;
-	}
-
-	@Reference
-	public void setUserLocalService(UserLocalService userLocalService) {
-		_userLocalService = userLocalService;
-	}
-
-	private UserLocalService _userLocalService;
 }
 
