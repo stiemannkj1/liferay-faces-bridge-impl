@@ -26,6 +26,9 @@ import javax.faces.context.ResponseWriter;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.BodyRendererBridgeImpl;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -72,6 +75,19 @@ public class ResponseWriterBridgeImpl extends ResponseWriterBridgeCompat_2_2_Imp
 	private static final String ELEMENT_FORM = "form";
 	private static final String ELEMENT_PARTIAL_RESPONSE = "partial-response";
 	private static final String ELEMENT_UPDATE = "update";
+	private static final List<String> ILLEGAL_PORTLET_ELEMENTS;
+
+	static {
+
+		List<String> illegalPortletElements = new ArrayList<String>();
+		illegalPortletElements.add("base");
+		illegalPortletElements.add("body");
+		illegalPortletElements.add("frame");
+		illegalPortletElements.add("head");
+		illegalPortletElements.add("html");
+		illegalPortletElements.add("title");
+		ILLEGAL_PORTLET_ELEMENTS = Collections.unmodifiableList(illegalPortletElements);
+	}
 
 	// Private Data Members
 	private boolean clientWindowWritten;
@@ -115,41 +131,50 @@ public class ResponseWriterBridgeImpl extends ResponseWriterBridgeCompat_2_2_Imp
 		// Clear the "current" element name that we were working with.
 		currentElementName = null;
 
-		// If the specified element name is "partial", "changes", or "update" then set flags accordingly.
-		if (ELEMENT_PARTIAL_RESPONSE.equals(elementName)) {
-			insidePartialResponse = false;
-		}
-		else if (ELEMENT_CHANGES.equals(elementName)) {
-			insideChanges = false;
-		}
-		else if (ELEMENT_UPDATE.equals(elementName)) {
-			insideUpdate = false;
-		}
-		else if ("input".equals(elementName)) {
-			insideInput = false;
-		}
+		if (ILLEGAL_PORTLET_ELEMENTS.contains(elementName)) {
 
-		// Otherwise, if the specified element name is "form" then inject the javax.faces.ViewState hidden field if
-		// it's not already written to the response.
-		else if (ELEMENT_FORM.equals(elementName)) {
+			logger.warn(
+				"Closing <{0}/> tag was suppressed because the portlet spec forbids portlets from rendering <{0}> elements.",
+				elementName);
+		}
+		else {
 
-			if (insidePartialResponse && insideChanges && insideUpdate && insideCData) {
+			// If the specified element name is "partial", "changes", or "update" then set flags accordingly.
+			if (ELEMENT_PARTIAL_RESPONSE.equals(elementName)) {
+				insidePartialResponse = false;
+			}
+			else if (ELEMENT_CHANGES.equals(elementName)) {
+				insideChanges = false;
+			}
+			else if (ELEMENT_UPDATE.equals(elementName)) {
+				insideUpdate = false;
+			}
+			else if ("input".equals(elementName)) {
+				insideInput = false;
+			}
 
-				if (!clientWindowWritten) {
-					writeClientWindowHiddenField();
-					clientWindowWritten = true;
-				}
+			// Otherwise, if the specified element name is "form" then inject the javax.faces.ViewState hidden field if
+			// it's not already written to the response.
+			else if (ELEMENT_FORM.equals(elementName)) {
 
-				if (!viewStateWritten) {
-					writeViewStateHiddenField();
-					viewStateWritten = true;
+				if (insidePartialResponse && insideChanges && insideUpdate && insideCData) {
+
+					if (!clientWindowWritten) {
+						writeClientWindowHiddenField();
+						clientWindowWritten = true;
+					}
+
+					if (!viewStateWritten) {
+						writeViewStateHiddenField();
+						viewStateWritten = true;
+					}
 				}
 			}
-		}
 
-		// Ask the superclass method to perform the endElement writing, which basically delegates to the Faces
-		// implementation writer (or the ICEfaces DOMResponseWriter) in the chain-of-responsibility.
-		super.endElement(elementName);
+			// Ask the superclass method to perform the endElement writing, which basically delegates to the Faces
+			// implementation writer (or the ICEfaces DOMResponseWriter) in the chain-of-responsibility.
+			super.endElement(elementName);
+		}
 	}
 
 	@Override
@@ -173,32 +198,41 @@ public class ResponseWriterBridgeImpl extends ResponseWriterBridgeCompat_2_2_Imp
 		// Remember the specified element as the "current" element name we're working with.
 		currentElementName = elementName;
 
-		// If the specified element name is "partial", "changes", or "update" then set flags accordingly.
-		if (ELEMENT_PARTIAL_RESPONSE.equals(elementName)) {
-			insidePartialResponse = true;
-		}
-		else if (ELEMENT_CHANGES.equals(elementName)) {
-			insideChanges = true;
-		}
-		else if (ELEMENT_UPDATE.equals(elementName)) {
-			insideUpdate = true;
-		}
-		else if ("input".equals(elementName)) {
-			insideInput = true;
-		}
+		if (ILLEGAL_PORTLET_ELEMENTS.contains(elementName)) {
 
-		// FACES-1424: Otherwise, if the specified element name is "form" then reset the viewStateWritten flag. This
-		// ensures that in the case of multiple forms,  that the "javax.faces.ViewState" hidden field will be present in
-		// each one.
-		else if (ELEMENT_FORM.equals(elementName)) {
-
-			clientWindowWritten = false;
-			viewStateWritten = false;
+			logger.warn(
+				"Opening <{0}> tag was suppressed because the Portlet Spec forbids portlets from rendering <{0}> elements.",
+				elementName);
 		}
+		else {
 
-		// Ask the superclass method to perform the startElement writing, which basically delegates to the Faces
-		// implementation writer (or the ICEfaces DOMResponseWriter) in the chain-of-responsibility.
-		super.startElement(elementName, uiComponent);
+			// If the specified element name is "partial", "changes", or "update" then set flags accordingly.
+			if (ELEMENT_PARTIAL_RESPONSE.equals(elementName)) {
+				insidePartialResponse = true;
+			}
+			else if (ELEMENT_CHANGES.equals(elementName)) {
+				insideChanges = true;
+			}
+			else if (ELEMENT_UPDATE.equals(elementName)) {
+				insideUpdate = true;
+			}
+			else if ("input".equals(elementName)) {
+				insideInput = true;
+			}
+
+			// FACES-1424: Otherwise, if the specified element name is "form" then reset the viewStateWritten flag. This
+			// ensures that in the case of multiple forms,  that the "javax.faces.ViewState" hidden field will be present in
+			// each one.
+			else if (ELEMENT_FORM.equals(elementName)) {
+
+				clientWindowWritten = false;
+				viewStateWritten = false;
+			}
+
+			// Ask the superclass method to perform the startElement writing, which basically delegates to the Faces
+			// implementation writer (or the ICEfaces DOMResponseWriter) in the chain-of-responsibility.
+			super.startElement(elementName, uiComponent);
+		}
 	}
 
 	@Override
@@ -206,39 +240,48 @@ public class ResponseWriterBridgeImpl extends ResponseWriterBridgeCompat_2_2_Imp
 
 		logger.trace("attributeName=[{0}] attributeValue=[{1}]", attributeName, attributeValue);
 
-		if (attributeName != null) {
+		if (ILLEGAL_PORTLET_ELEMENTS.contains(currentElementName)) {
 
-			// If the specified attribute name is "id", then
-			if (attributeName.equals("id")) {
+			logger.warn(
+				"Attribute {0}=\"{1}\" for <{2}> tag was suppressed because the Portlet Spec forbids portlets from rendering <{2}> elements.",
+				attributeName, attributeValue, currentElementName);
+		}
+		else {
 
-				// If a PartialResponseWriter is trying to update the javax.faces.ViewRoot, then substitute the value of
-				// the outermost <div>...</div> (rendered by the bridge's BodyRenderer) for the specified value. This is
-				// a workaround for jsf.js limitation #2 as described in the class header comments.
-				if (insidePartialResponse && insideChanges && insideUpdate &&
-						ELEMENT_UPDATE.equals(currentElementName) &&
-						PartialResponseWriter.RENDER_ALL_MARKER.equals(attributeValue)) {
+			if (attributeName != null) {
 
-					FacesContext facesContext = FacesContext.getCurrentInstance();
-					attributeValue = facesContext.getViewRoot().getContainerClientId(facesContext);
-				}
+				// If the specified attribute name is "id", then
+				if (attributeName.equals("id")) {
 
-				// Otherwise, if the current element is "input" and the specified attribute value is the
-				// "javax.faces.ViewState", then set a flag accordingly.
-				else if (insideInput) {
+					// If a PartialResponseWriter is trying to update the javax.faces.ViewRoot, then substitute the value of
+					// the outermost <div>...</div> (rendered by the bridge's BodyRenderer) for the specified value. This is
+					// a workaround for jsf.js limitation #2 as described in the class header comments.
+					if (insidePartialResponse && insideChanges && insideUpdate &&
+							ELEMENT_UPDATE.equals(currentElementName) &&
+							PartialResponseWriter.RENDER_ALL_MARKER.equals(attributeValue)) {
 
-					if (CLIENT_WINDOW_PARAM.equals(attributeValue)) {
-						clientWindowWritten = true;
+						FacesContext facesContext = FacesContext.getCurrentInstance();
+						attributeValue = facesContext.getViewRoot().getContainerClientId(facesContext);
 					}
-					else if (VIEW_STATE_MARKER.equals(attributeValue)) {
-						viewStateWritten = true;
+
+					// Otherwise, if the current element is "input" and the specified attribute value is the
+					// "javax.faces.ViewState", then set a flag accordingly.
+					else if (insideInput) {
+
+						if (CLIENT_WINDOW_PARAM.equals(attributeValue)) {
+							clientWindowWritten = true;
+						}
+						else if (VIEW_STATE_MARKER.equals(attributeValue)) {
+							viewStateWritten = true;
+						}
 					}
 				}
 			}
-		}
 
-		// Ask the superclass method to write the attribute, which basically delegates to the Faces implementation
-		// writer (or the ICEfaces DOMResponseWriter) in the chain-of-responsibility.
-		super.writeAttribute(attributeName, attributeValue, property);
+			// Ask the superclass method to write the attribute, which basically delegates to the Faces implementation
+			// writer (or the ICEfaces DOMResponseWriter) in the chain-of-responsibility.
+			super.writeAttribute(attributeName, attributeValue, property);
+		}
 	}
 
 	@Override
