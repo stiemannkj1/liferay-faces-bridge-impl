@@ -57,16 +57,8 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 					super.startExtension(extensionAttributes);
 					super.startCDATA();
 
-					ExternalContext externalContext = facesContext.getExternalContext();
-					PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
-					PortalContext portalContext = portletRequest.getPortalContext();
-
 					for (UIComponent headResource : headResources) {
-
-						// TODO worry about body resources
-						if (HeadRendererBridgeImpl.canAddResourceToHead(portalContext, headResource)) {
-							headResource.encodeAll(facesContext);
-						}
+						headResource.encodeAll(facesContext);
 					}
 
 					super.endCDATA();

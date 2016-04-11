@@ -39,7 +39,7 @@ if (!window.liferayFacesBridge) {
 			},
 
 			/**
-			 * @returns {boolean} true if the elements type attribute contains the string type that was passed to this function.
+			 * @returns {Boolean} true if the elements type attribute contains the string type that was passed to this function.
 			 */
 			elementTypeIs: function(element, type) {
 				return element.hasAttribute('type') && element.getAttribute('type').indexOf(type) !== -1;
@@ -52,6 +52,179 @@ if (!window.liferayFacesBridge) {
 			},
 			stringSetContains: function(set, string) {
 				return Object.prototype.hasOwnProperty.call(set, string);
+			},
+
+			/**
+			 * 
+			 * @param {type} script
+			 * @param {type} headElement
+			 * @param {type} originalElement
+			 */
+			runScript: function(script, headElement, originalElement) {
+
+				var newScriptElement = document.createElement('script');
+				newScriptElement.type = "text/javascript";
+				newScriptElement.text = script;
+				headElement.appendChild(newScriptElement);
+				headElement.removeChild(newScriptElement);
+
+				// Append the original script element to the head for tracking purposes. It will not be run.
+				headElement.appendChild(originalElement.cloneNode(true));
+			},
+
+			/**
+			 * Loads a script programmatically and syncronously.
+			 * 
+			 * @param {type} scriptElement
+			 * @param {type} headElement
+			 */
+			loadScriptResource: function(scriptElement, headElement) {
+
+				var xmlHttpRequest = new XMLHttpRequest(),
+					src = scriptElement.getAttribute('src'),
+					src = src.replace(/[&]amp;/g, '&');
+
+				// The partial response could contain scripts that depend on this script, so Load the script
+				// syncronously so that it will be loaded an run before the partial response is updated.
+				xmlHttpRequest.open('GET', src, false);
+				xmlHttpRequest.send(null);
+
+				if (xmlHttpRequest.readyState === 4 && xmlHttpRequest.status === 200) {
+					liferayFacesBridge.internal.runScript(xmlHttpRequest.responseText, headElement, scriptElement);
+				}
+			},
+
+			/**
+			 * 
+			 * @param {type} url
+			 * @returns {String}
+			 */
+			getResourceId: function(url) {
+
+				var libraryName = url.substring(url.indexOf('ln='), url.length),
+					resourceName = url.substring(url.indexOf('javax.faces.resource='), url.length);
+				libraryName = libraryName.substring('ln='.length, libraryName.indexOf('&'));
+				resourceName = resourceName.substring('javax.faces.resource='.length, resourceName.indexOf('&'));
+				return libraryName + ':' + resourceName;
+			},
+
+			/**
+			 * Loads head resources programmatically.
+			 * 
+			 * @param {String} headResourcesAsString
+			 * @param {Boolean} renderAllMarkup
+			 */
+			loadHeadResources: function(headResourcesAsString, renderAllMarkup) {
+
+				// According to http://stackoverflow.com/questions/10585029/parse-a-html-string-with-js
+				// the best way to parse a string as html (in a cross-browser compatible way) is to
+				// create a temporary new <html> element and insert the string within that <html>
+				// element.
+				var tempElement = document.createElement('html'),
+					headResources = liferayFacesBridge.internal.headResources,
+					headElement = document.getElementsByTagName("head")[0],
+					scriptSrcSet = headResources.scriptSrcSet,
+					styleSheetHrefSet = headResources.styleSheetHrefSet,
+					stringSetAdd = liferayFacesBridge.internal.stringSetAdd,
+					stringSetContains = liferayFacesBridge.internal.stringSetContains,
+					isScriptResource = liferayFacesBridge.internal.isScriptResource,
+					isInlineScript = liferayFacesBridge.internal.isInlineScript,
+					isStyleSheetResource = liferayFacesBridge.internal.isStyleSheetResource,
+					isInlineStyleSheet = liferayFacesBridge.internal.isInlineStyleSheet,
+					loadScriptResource = liferayFacesBridge.internal.loadScriptResource,
+					getResourceId = liferayFacesBridge.internal.getResourceId,
+					runScript = liferayFacesBridge.internal.runScript;
+
+				// Lazily initialize the sets of resources that already exist on the page.
+				if (scriptSrcSet === null || styleSheetHrefSet === null) {
+
+					var createStringSet = liferayFacesBridge.internal.createStringSet;
+
+					if (scriptSrcSet === null) {
+
+						if (scriptSrcSet === null) {
+							scriptSrcSet = createStringSet();
+						}
+
+						var scripts = headElement.getElementsByTagName('script');
+
+						for (var i = 0; i < scripts.length; i++) {
+
+							if (isScriptResource(scripts[i])) {
+								stringSetAdd(scriptSrcSet, scripts[i].getAttribute('src'));
+							}
+						}
+					}
+
+					if (styleSheetHrefSet === null) {
+
+						styleSheetHrefSet = createStringSet();
+						var links = headElement.getElementsByTagName('link');
+
+						for (var i = 0; i < links.length; i++) {
+
+							if (isStyleSheetResource(links[i])) {
+								stringSetAdd(styleSheetHrefSet, links[i].getAttribute('href'));
+							}
+						}
+					}
+				}
+
+				// TODO check body resources
+				// TODO, make sure this doesn't cause scripts to load
+				// TODO, add data-senna-track to js and css resources when loaded via ajax
+				// According to http://stackoverflow.com/questions/10585029/parse-a-html-string-with-js
+				// the best way to parse a string as html (in a cross-browser compatible way) is to
+				// create a temporary new <html> element and insert the string within that <html>
+				// element.
+				tempElement.innerHTML = "<html><head>" + headResourcesAsString +
+						"</head><body></body></html>";
+
+				var tempHeadElement = tempElement.getElementsByTagName('head')[0],
+					scripts = tempHeadElement.getElementsByTagName('script'),
+					links = tempHeadElement.getElementsByTagName('link'),
+					styles = tempHeadElement.getElementsByTagName('style');
+
+				for (var j = 0; j < links.length; j++) {
+
+					var href = links[j].getAttribute('href'),
+						resourceId = getResourceId(href);
+
+					if (isStyleSheetResource(links[j]) &&
+							!stringSetContains(styleSheetHrefSet, resourceId)) {
+
+						stringSetAdd(styleSheetHrefSet, resourceId);
+						headElement.appendChild(links[j].cloneNode(true));
+					}
+				}
+
+				if (renderAllMarkup) {
+
+					for (var j = 0; j < styles.length; j++) {
+
+						if (isInlineStyleSheet(styles[j])) {
+							headElement.appendChild(styles[j].cloneNode(true));
+						}
+					}
+				}
+
+				for (var j = 0; j < scripts.length; j++) {
+
+					if (isScriptResource(scripts[j])) {
+
+						var src = scripts[j].getAttribute('src'),
+							resourceId = getResourceId(src);
+
+						if (!stringSetContains(scriptSrcSet, resourceId)) {
+
+							stringSetAdd(scriptSrcSet, resourceId);
+							loadScriptResource(scripts[j], headElement);
+						}
+					}
+					else if (renderAllMarkup && isInlineScript(scripts[j], 'type', 'javascript')) {
+						runScript(scripts[j].innerHTML, headElement, scripts[j]);
+					}
+				}
 			}
 		}
 	};
@@ -59,57 +232,6 @@ if (!window.liferayFacesBridge) {
 	jsf.ajax.addOnEvent(function(event) {
 
 		if (event.status === 'complete') {
-
-			// TODO only do this after you are sure that we are rerendering an entire portlet (maybe check id for ':' if it has none then we are rerendering the whole thing, plus we can find out the id of our portlet that way)
-			// TODO also get scripts in the case where they are rendered in a <div class="liferay-faces-bridge-relocated-resources">
-			// TODO if stuff is in the body, then check if we are attaching it to the right portlet
-			var headResources = liferayFacesBridge.internal.headResources,
-				headElement = document.getElementsByTagName("head")[0],
-				scriptSrcSet = headResources.scriptSrcSet,
-				styleSheetHrefSet = headResources.styleSheetHrefSet,
-				stringSetAdd = liferayFacesBridge.internal.stringSetAdd,
-				stringSetContains = liferayFacesBridge.internal.stringSetContains,
-				isScriptResource = liferayFacesBridge.internal.isScriptResource,
-				isInlineScript = liferayFacesBridge.internal.isInlineScript,
-				isStyleSheetResource = liferayFacesBridge.internal.isStyleSheetResource,
-				isInlineStyleSheet = liferayFacesBridge.internal.isInlineStyleSheet;
-
-			// Lazily initialize the sets of resources that already exist on the page.
-			if (scriptSrcSet === null || styleSheetHrefSet === null) {
-
-				var createStringSet = liferayFacesBridge.internal.createStringSet;
-
-				if (scriptSrcSet === null) {
-
-					if (scriptSrcSet === null) {
-						scriptSrcSet = createStringSet();
-					}
-
-					var scripts = headElement.getElementsByTagName('script');
-
-					for (var i = 0; i < scripts.length; i++) {
-
-						if (isScriptResource(scripts[i])) {
-							stringSetAdd(scriptSrcSet, scripts[i].getAttribute('src'));
-						}
-					}
-				}
-
-
-				// TODO If stuff needs to get relocated to the body, then CSS should be checked every time because it can be removed from the body section.
-				if (styleSheetHrefSet === null) {
-
-					styleSheetHrefSet = createStringSet();
-					var links = headElement.getElementsByTagName('link');
-
-					for (var i = 0; i < links.length; i++) {
-
-						if (isStyleSheetResource(links[i])) {
-							stringSetAdd(styleSheetHrefSet, links[i].getAttribute('href'));
-						}
-					}
-				}
-			}
 
 			if (event.responseXML !== null) {
 
@@ -119,105 +241,32 @@ if (!window.liferayFacesBridge) {
 				if (responseType.nodeName === 'changes') {
 
 					var changes = responseType.childNodes,
-						portletNamespace = null,
-						update = null;
+						updateId = null,
+						renderAllMarkup = false;
 
 					for (var i = 0; i < changes.length; i++) {
 
 						var child = changes[i];
 
-						if (child.nodeName === 'update' && (child.hasAttribute('id') &&
-								child.getAttribute('id').indexOf(':') === -1)) {
+						if (child.nodeName === 'update' && child.hasAttribute('id')) {
 
-							portletNamespace = child.getAttribute('id');
-							var updateCDATA = child.firstChild;
+							var updateId = child.getAttribute('id');
 
-							if (updateCDATA.nodeName === '#cdata-section') {
-								update = child;
-							}
-							else {
-								console.log('// TODO throw error because there is no CDATA section');
+							if (updateId.indexOf('javax.faces.ViewState') === -1) {
+
+								renderAllMarkup = (updateId === "javax.faces.ViewRoot" ||
+									updateId === "javax.faces.ViewBody" ||
+									(updateId.indexOf(':') === -1));
 							}
 						}
-						else if (portletNamespace !== null && child.nodeName === 'extension') {
+						else if (child.nodeName === 'extension') {
 
 							var id = child.getAttribute('id');
 
-							if (id === 'liferayFacesBridgeHeadResources' || id === 'liferayFacesBridgeRelocatedResources') {
-								
-								// TODO initialize set here
+							if (id === 'liferayFacesBridgeHeadResources' && updateId !== null) {
 
-								if (update !== null) {
-
-									// According to http://stackoverflow.com/questions/10585029/parse-a-html-string-with-js
-									// the best way to parse a string as html (in a cross-browser compatible way) is to
-									// create a temporary new <html> element and insert the string within that <html>
-									// element.
-									var headResourceText = child.firstChild.nodeValue,
-										tempElement = document.createElement('html');
-
-									tempElement.innerHTML = "<html><head>" + headResourceText +
-											"</head><body></body></html>";
-
-									var tempHeadElement = tempElement.getElementsByTagName('head')[0],
-										scriptsText = '',
-										scripts = tempHeadElement.getElementsByTagName('script'),
-										links = tempHeadElement.getElementsByTagName('link'),
-										styles = tempHeadElement.getElementsByTagName('style');
-
-									for (var j = 0; j < scripts.length; j++) {
-
-										if (isScriptResource(scripts[j])) {
-												
-											if (!stringSetContains(scriptSrcSet, scripts[j].getAttribute('src'))) {
-
-												stringSetAdd(scriptSrcSet, scripts[j].getAttribute('src'));
-												scriptsText = scriptsText + scripts[j].outerHTML.replace(/[&]amp;/g, '&');
-											}
-										}
-										else if (isInlineScript(scripts[j], 'type', 'javascript')) {
-											scriptsText = scriptsText + scripts[j].outerHTML;
-										}
-									}
-
-									// If there are scripts, insert them inside the first element of the partial
-									// response update so that jsf.js will load them correctly.
-									if (scriptsText !== '') {
-
-										var updateText = update.firstChild.nodeValue,
-											scriptsInsertionPoint = updateText.indexOf('>') + 1;
-
-										// If scriptsInsertionPoint === 0 then updateText.indexOf('>') === -1 and
-										// no '>' character was found.
-										if (scriptsInsertionPoint === 0) {
-											console.log('TODO throw new error since we should be updating the whole DOM, so there must be at least one <div> for the portlet');
-										}
-
-										update.firstChild.nodeValue = updateText.substring(0, scriptsInsertionPoint) +
-												scriptsText +
-												updateText.substring(scriptsInsertionPoint, updateText.length);
-									}
-
-									for (var j = 0; j < links.length; j++) {
-
-										if (isStyleSheetResource(links[j]) &&
-												!stringSetContains(styleSheetHrefSet, links[j].getAttribute('href'))) {
-
-											stringSetAdd(styleSheetHrefSet, links[j].getAttribute('href'));
-											headElement.appendChild(links[j].cloneNode(true));
-										}
-									}
-
-									for (var j = 0; j < styles.length; j++) {
-
-										if (isInlineStyleSheet(styles[j])) {
-											headElement.appendChild(styles[j].cloneNode(true));
-										}
-									}	
-								}
-								else {
-									console.log('// TODO throw error since we are attempting to render the head resources by none of the page is being updated.');
-								}
+								var headResourcesAsString = child.firstChild.nodeValue;
+								liferayFacesBridge.internal.loadHeadResources(headResourcesAsString, renderAllMarkup);
 							}
 						}
 					}

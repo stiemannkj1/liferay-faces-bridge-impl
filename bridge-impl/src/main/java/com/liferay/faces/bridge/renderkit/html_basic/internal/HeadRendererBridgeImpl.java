@@ -34,7 +34,6 @@ import com.liferay.faces.bridge.component.internal.ComponentUtil;
 import com.liferay.faces.bridge.context.BridgePortalContext;
 import com.liferay.faces.bridge.context.HeadResponseWriter;
 import com.liferay.faces.bridge.context.HeadResponseWriterFactory;
-import static com.liferay.faces.bridge.renderkit.html_basic.internal.RenderKitBridgeImpl.SCRIPT_RENDERER_TYPE;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 import javax.faces.component.UIOutput;
@@ -129,8 +128,6 @@ public class HeadRendererBridgeImpl extends Renderer {
 					uiComponentResource.encodeAll(facesContext);
 				}
 
-				super.encodeChildren(facesContext, uiComponent);
-
 				// Restore the temporary ResponseWriter reference.
 				facesContext.setResponseWriter(responseWriterBackup);
 			}
@@ -157,33 +154,55 @@ public class HeadRendererBridgeImpl extends Renderer {
 
 		// Sort the components that are in the view root into stylesheets and scripts.
 		List<UIComponent> uiViewRootComponentResources = uiViewRoot.getComponentResources(facesContext, "head");
-		List<UIComponent> uiViewRootStyleSheetResources = null;
-		List<UIComponent> uiViewRootScriptResources = null;
+		List<UIComponent> styleSheetResources = null;
+		List<UIComponent> scriptResources = null;
 
 		for (UIComponent curComponent : uiViewRootComponentResources) {
 
 			if (isStyleSheetResource(curComponent) ||
 				isInlineStyleSheet(curComponent)) {
 
-				if (uiViewRootStyleSheetResources == null) {
-					uiViewRootStyleSheetResources = new ArrayList<UIComponent>();
+				if (styleSheetResources == null) {
+					styleSheetResources = new ArrayList<UIComponent>();
 				}
 
-				uiViewRootStyleSheetResources.add(curComponent);
+				styleSheetResources.add(curComponent);
 			}
 			else {
 
-				if (uiViewRootScriptResources == null) {
-					uiViewRootScriptResources = new ArrayList<UIComponent>();
+				if (scriptResources == null) {
+					scriptResources = new ArrayList<UIComponent>();
 				}
 
-				uiViewRootScriptResources.add(curComponent);
+				scriptResources.add(curComponent);
+			}
+		}
+
+		List<UIComponent> children = uiComponent.getChildren();
+
+		for (UIComponent child : children) {
+
+			if (isStyleSheetResource(child) || isInlineStyleSheet(child)) {
+
+				if (styleSheetResources == null) {
+					styleSheetResources = new ArrayList<UIComponent>();
+				}
+
+				styleSheetResources.add(child);
+			}
+			else if (isScriptResource(child) || isInlineScript(child)) {
+
+				if (scriptResources == null) {
+					scriptResources = new ArrayList<UIComponent>();
+				}
+
+				scriptResources.add(child);
 			}
 		}
 
 		// Add the list of stylesheet components that are in the view root.
-		if (uiViewRootStyleSheetResources != null) {
-			uiComponentResources.addAll(uiViewRootStyleSheetResources);
+		if (styleSheetResources != null) {
+			uiComponentResources.addAll(styleSheetResources);
 		}
 
 		// Add the list of components that are to appear in the middle.
@@ -194,8 +213,8 @@ public class HeadRendererBridgeImpl extends Renderer {
 		}
 
 		// Add the list of script components that are in the view root.
-		if (uiViewRootScriptResources != null) {
-			uiComponentResources.addAll(uiViewRootScriptResources);
+		if (scriptResources != null) {
+			uiComponentResources.addAll(scriptResources);
 		}
 
 		UIOutput bridgeJS = new UIOutput();

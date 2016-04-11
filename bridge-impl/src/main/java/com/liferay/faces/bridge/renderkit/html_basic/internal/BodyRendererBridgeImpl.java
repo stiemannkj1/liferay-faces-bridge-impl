@@ -16,6 +16,7 @@
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
 import com.liferay.faces.bridge.context.BridgePortalContext;
+import com.liferay.faces.util.application.ResourceUtil;
 import java.io.IOException;
 
 import javax.faces.component.UIComponent;
@@ -27,7 +28,11 @@ import javax.portlet.faces.component.PortletNamingContainerUIViewRoot;
 
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.Application;
+import javax.faces.application.Resource;
+import javax.faces.application.ResourceHandler;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.portlet.PortalContext;
@@ -100,27 +105,74 @@ public class BodyRendererBridgeImpl extends RendererWrapper {
 		boolean canAddScriptTextToHead = portalContext.getProperty(
 				BridgePortalContext.ADD_SCRIPT_TEXT_TO_HEAD_SUPPORT) != null;
 
-		if (!canAddStyleSheetResourcesToHead || ! canAddStyleSheetTextToHead || !canAddScriptResourcesToHead || !canAddScriptTextToHead) {
+		if (!canAddStyleSheetResourcesToHead || !canAddStyleSheetTextToHead || !canAddScriptResourcesToHead ||
+			!canAddScriptTextToHead) {
 
 			UIViewRoot uiViewRoot = facesContext.getViewRoot();
 			List<UIComponent> componentResources = uiViewRoot.getComponentResources(facesContext, "head");
 
 			if (!componentResources.isEmpty()) {
 
-				responseWriter.startElement("div", uiComponent);
-				responseWriter.writeAttribute("id", clientId + "_headResources", "id");
-
-				// Add a class so that every div can be selected via document.querySelector('.liferay-faces-bridge-relocated-resources').
-				responseWriter.writeAttribute("class", "liferay-faces-bridge-relocated-resources", "class");
+				List<UIComponent> headResources = new ArrayList<UIComponent>();
 
 				for (UIComponent componentResource : componentResources) {
 
 					if (!HeadRendererBridgeImpl.canAddResourceToHead(portalContext, componentResource)) {
-						componentResource.encodeAll(facesContext);
+						headResources.add(componentResource);
 					}
 				}
 
-				responseWriter.endElement("div");
+				if (!headResources.isEmpty()) {
+
+					responseWriter.startElement("script", uiComponent);
+					responseWriter.writeAttribute("type", "text/javascript", null);
+					responseWriter.write("// <![CDATA[\n");
+					responseWriter.write("if (!window.jsf) {");
+					responseWriter.write("var xmlHttpRequest = new XMLHttpRequest();");
+					responseWriter.write("xmlHttpRequest.open('GET', '");
+					Application application = facesContext.getApplication();
+					ResourceHandler resourceHandler = application.getResourceHandler();
+					Resource jsfJSResource = resourceHandler.createResource("jsf.js", "javax.faces");
+					responseWriter.write(jsfJSResource.getRequestPath());
+					responseWriter.write("', false);");
+					responseWriter.write("xmlHttpRequest.send(null);");
+					responseWriter.write("if (xmlHttpRequest.readyState === 4 && xmlHttpRequest.status === 200) {");
+					responseWriter.write("var jsfJSScriptElement = document.createElement('script'),");
+					responseWriter.write("headElement = document.getElementsByTagName('head')[0];");
+					responseWriter.write("jsfJSScriptElement.type = 'text/javascript';");
+					responseWriter.write("jsfJSScriptElement.text = xmlHttpRequest.responseText;");
+					responseWriter.write("headElement.appendChild(jsfJSScriptElement);");
+					responseWriter.write("headElement.removeChild(jsfJSScriptElement);");
+					responseWriter.write("xmlHttpRequest = new XMLHttpRequest();");
+					responseWriter.write("xmlHttpRequest.open('GET', '");
+					Resource bridgeJSResource = resourceHandler.createResource("bridge.js", "liferay-faces-bridge");
+					responseWriter.write(bridgeJSResource.getRequestPath());
+					responseWriter.write("', false);");
+					responseWriter.write("xmlHttpRequest.send(null);");
+					responseWriter.write("if (xmlHttpRequest.readyState === 4 && xmlHttpRequest.status === 200) {");
+					responseWriter.write("var bridgeJSScriptElement = document.createElement('script');");
+					responseWriter.write("bridgeJSScriptElement.type = 'text/javascript';");
+					responseWriter.write("bridgeJSScriptElement.text = xmlHttpRequest.responseText;");
+					responseWriter.write("headElement.appendChild(bridgeJSScriptElement);");
+					responseWriter.write("headElement.removeChild(bridgeJSScriptElement);");
+					responseWriter.write("}");
+					responseWriter.write("}");
+					responseWriter.write("}");
+					responseWriter.write("if (window.liferayFacesBridge) {");
+					responseWriter.write("liferayFacesBridge.internal.loadHeadResources('");
+					facesContext.setResponseWriter(new ResponseWriterJavascriptStringImpl(responseWriter));
+
+					// TODO something is wrong with this area. Probably responseWriters are too smart. See if there is an easy fix.
+					for (UIComponent headResource : headResources) {
+						headResource.encodeAll(facesContext);
+					}
+
+					facesContext.setResponseWriter(responseWriter);
+					responseWriter.write("', true);");
+					responseWriter.write("}");
+					responseWriter.write("\n// ]]>");
+					responseWriter.endElement("script");
+				}
 			}
 		}
 	}
