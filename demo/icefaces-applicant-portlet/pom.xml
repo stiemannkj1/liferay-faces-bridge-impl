@@ -27,10 +27,6 @@
 			<id>pluto</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.liferay.faces</groupId>
-					<artifactId>com.liferay.faces.alloy.reslib</artifactId>
-				</dependency>
-				<dependency>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
 				</dependency>
@@ -54,10 +50,6 @@
 		<dependency>
 			<groupId>org.icefaces</groupId>
 			<artifactId>icefaces-ace</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.liferay.faces</groupId>
-			<artifactId>com.liferay.faces.alloy</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.faces</groupId>

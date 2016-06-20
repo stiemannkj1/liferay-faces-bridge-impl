@@ -24,15 +24,6 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>pluto</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.liferay.faces</groupId>
-					<artifactId>com.liferay.faces.alloy.reslib</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
 			<id>weblogic</id>
 			<dependencies>
 				<dependency>
@@ -69,10 +60,6 @@
 			<groupId>com.liferay.faces</groupId>
 			<artifactId>com.liferay.faces.bridge.impl</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.liferay.faces</groupId>
-			<artifactId>com.liferay.faces.alloy</artifactId>
 		</dependency>
 	</dependencies>
 
