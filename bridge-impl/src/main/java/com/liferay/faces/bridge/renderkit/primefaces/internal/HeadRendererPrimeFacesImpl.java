@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.faces.application.Application;
 import javax.faces.application.ResourceHandler;
-import javax.faces.application.ViewHandler;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIViewRoot;
@@ -64,25 +63,18 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 
 		UIViewRoot originalUIViewRoot = facesContext.getViewRoot();
 
-		if (isMobile(facesContext)) {
+		if (PrimeFacesMobileUtil.isMobile(facesContext)) {
 
 			List<UIComponent> componentResources = originalUIViewRoot.getComponentResources(facesContext, "head");
 			List<UIComponent> resourcesToRemove = new ArrayList<UIComponent>();
 
 			for (UIComponent componentResource : componentResources) {
 
-				// Certain resources should not be rendered when PrimeFaces' PRIMEFACES_MOBILE RenderKit is used. For
-				// more information, see
-				// https://github.com/primefaces/primefaces/blob/6_0/src/main/java/org/primefaces/mobile/renderkit/HeadRenderer.java#L96-L104.
-				if (isComponentResourceSuppressedWhenMobile(componentResource)) {
-					componentResource.setRendered(false);
-				}
-
 				// Mobile resources must be rendered/loaded before other scripts, so mobile resources must be
 				// removed from the UIViewRoot head facet and rendered before other scripts. For more information, see
 				// http://demos.jquerymobile.com/1.0/docs/api/globalconfig.html and
 				// https://github.com/primefaces/primefaces/blob/6_0/src/main/java/org/primefaces/mobile/renderkit/HeadRenderer.java#L68-L87.
-				else if (isMobileComponentResource(componentResource)) {
+				if (PrimeFacesMobileUtil.isMobileComponentResource(componentResource)) {
 					resourcesToRemove.add(componentResource);
 				}
 			}
@@ -177,19 +169,9 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 						resource.getAttributes().put("library", libraryName);
 						resource.getAttributes().put("target", "head");
 
-						if (isMobile(facesContext)) {
-
-							if (isMobileComponentResource(resourceName, libraryName)) {
-								capturedMobileResources.add(resource);
-							}
-							else {
-
-								if (isComponentResourceSuppressedWhenMobile(resourceName, libraryName)) {
-									resource.setRendered(false);
-								}
-
-								capturedResources.add(resource);
-							}
+						if (PrimeFacesMobileUtil.isMobile(facesContext) &&
+								PrimeFacesMobileUtil.isMobileComponentResource(resourceName, libraryName)) {
+							capturedMobileResources.add(resource);
 						}
 						else {
 							capturedResources.add(resource);
@@ -216,7 +198,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 			// be rendered after jQuery.js is rendered/loaded and before other mobile resources. For more information,
 			// see http://demos.jquerymobile.com/1.0/docs/api/globalconfig.html and
 			// https://github.com/primefaces/primefaces/blob/6_0/src/main/java/org/primefaces/mobile/renderkit/HeadRenderer.java#L68-L87.
-			if (isMobile(facesContext)) {
+			if (PrimeFacesMobileUtil.isMobile(facesContext)) {
 
 				InlineScript mobileInlineScript = inlineScripts.remove(0);
 				ListIterator<UIComponent> listIterator = capturedMobileResources.listIterator();
@@ -241,7 +223,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 			}
 		}
 
-		if (isMobile(facesContext)) {
+		if (PrimeFacesMobileUtil.isMobile(facesContext)) {
 
 			// Save captured mobile resources so that they can be rendered in as middle resources before other scripts.
 			// For more information, see HeadRendererBridgeImpl.encodeChildren(),
@@ -281,7 +263,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 
 		List<UIComponent> middleResources = super.getMiddleResources(facesContext, uiComponent);
 
-		if (isMobile(facesContext)) {
+		if (PrimeFacesMobileUtil.isMobile(facesContext)) {
 
 			if (middleResources == null) {
 				middleResources = new ArrayList<UIComponent>();
@@ -304,79 +286,12 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 
 	private Renderer getPrimeFacesHeadRenderer(FacesContext facesContext) {
 
-		if (isMobile(facesContext)) {
+		if (PrimeFacesMobileUtil.isMobile(facesContext)) {
 			return OnDemandPrimeFacesMobileHeadRenderer.instance;
 		}
 		else {
 			return OnDemandPrimeFacesHeadRenderer.instance;
 		}
-	}
-
-	/**
-	 * Returns true if a resource should be suppressed when PrimeFaces' PRIMEFACES_MOBILE RenderKit is used. For more
-	 * information, see {@link #isComponentResourceSuppressedWhenMobile(java.lang.String, java.lang.String)}.
-	 */
-	private boolean isComponentResourceSuppressedWhenMobile(UIComponent componentResource) {
-
-		Map<String, Object> attributes = componentResource.getAttributes();
-		String libraryName = (String) attributes.get("library");
-		String resourceName = (String) attributes.get("name");
-
-		return isComponentResourceSuppressedWhenMobile(resourceName, libraryName);
-	}
-
-	/**
-	 * Returns true if a resource should be suppressed when PrimeFaces' PRIMEFACES_MOBILE RenderKit is used. The
-	 * criteria for which resources should be suppressed was obtained from here:
-	 * https://github.com/primefaces/primefaces/blob/6_0/src/main/java/org/primefaces/mobile/renderkit/HeadRenderer.java#L96-L104.
-	 */
-	private boolean isComponentResourceSuppressedWhenMobile(String resourceName, String libraryName) {
-		return !isMobileComponentResource(resourceName, libraryName) && "primefaces".equals(libraryName) &&
-			(resourceName.startsWith("jquery") || resourceName.startsWith("primefaces") ||
-				resourceName.startsWith("components") || resourceName.startsWith("core"));
-	}
-
-	private boolean isMobile(FacesContext facesContext) {
-
-		String renderKitId;
-		UIViewRoot uiViewRoot = facesContext.getViewRoot();
-
-		if (uiViewRoot != null) {
-			renderKitId = uiViewRoot.getRenderKitId();
-		}
-		else {
-
-			Application application = facesContext.getApplication();
-			ViewHandler viewHandler = application.getViewHandler();
-			renderKitId = viewHandler.calculateRenderKitId(facesContext);
-		}
-
-		return "PRIMEFACES_MOBILE".equals(renderKitId);
-	}
-
-	/**
-	 * Returns true if a resource must be rendered in a certain place when PrimeFaces' PRIMEFACES_MOBILE RenderKit is
-	 * used. For more information, see {@link #isMobileComponentResource(javax.faces.component.UIComponent)}.
-	 */
-	private boolean isMobileComponentResource(UIComponent componentResource) {
-
-		Map<String, Object> attributes = componentResource.getAttributes();
-		String libraryName = (String) attributes.get("library");
-		String resourceName = (String) attributes.get("name");
-
-		return isMobileComponentResource(resourceName, libraryName);
-	}
-
-	/**
-	 * Returns true if a resource must be rendered in a certain place when PrimeFaces' PRIMEFACES_MOBILE RenderKit is
-	 * used. The list of resources was obtained from here:
-	 * https://github.com/primefaces/primefaces/blob/6_0/src/main/java/org/primefaces/mobile/renderkit/HeadRenderer.java#L68-L87.
-	 */
-	private boolean isMobileComponentResource(String resourceName, String libraryName) {
-
-		return "primefaces".equals(libraryName) &&
-			("jquery/jquery.js".equals(resourceName) || "mobile/jquery-mobile.js".equals(resourceName) ||
-				"core.js".equals(resourceName) || "components-mobile.js".equals(resourceName));
 	}
 
 	private static class OnDemandPrimeFacesHeadRenderer {
