@@ -56,11 +56,17 @@ public class PrimeFacesApplicantPortletTester extends ApplicantTesterBase {
 	}
 
 	@Override
+	protected String getExtraLibraryName() {
+		return "PrimeFaces";
+	}
+
+	@Override
 	protected String getFieldErrorXpath(String fieldXpath) {
-		return "(" + fieldXpath +
-			"/../div[contains(@class, 'ui-message-error')]/span[contains(@class, 'ui-message-error-detail')]|" +
-			fieldXpath +
-			"/../../div[contains(@class, 'ui-message-error')]/span[contains(@class, 'ui-message-error-detail')])";
+
+		String errorMessage =
+			"/../div[contains(@class, 'ui-message-error')]/span[contains(@class, 'ui-message-error-detail')]";
+
+		return "(" + fieldXpath + errorMessage + "|" + fieldXpath + "/.." + errorMessage + ")";
 	}
 
 	@Override
