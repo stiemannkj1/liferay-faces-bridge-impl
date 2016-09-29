@@ -14,17 +14,17 @@
 	<name>Liferay Faces Bridge Demos</name>
 
 	<modules>
-		<!--<module>alloy-showcase-portlet</module>-->
+		<module>alloy-showcase-portlet</module>
 		<module>jsf-cdi-applicant-portlet</module>
-		<!--<module>jsf-export-pdf-portlet</module>-->
-		<!--<module>jsf-flows-portlet</module>-->
+		<module>jsf-export-pdf-portlet</module>
+		<module>jsf-flows-portlet</module>
 		<module>jsf-html5-applicant-portlet</module>
-		<!--<module>jsf-ipc-events-bookings-portlet</module>-->
-		<!--<module>jsf-ipc-events-customers-portlet</module>-->
-		<!--<module>jsf-ipc-pub-render-params-portlet</module>-->
+		<module>jsf-ipc-events-bookings-portlet</module>
+		<module>jsf-ipc-events-customers-portlet</module>
+		<module>jsf-ipc-pub-render-params-portlet</module>
 		<module>jsf-applicant-portlet</module>
-		<!--<module>jsf-jsp-applicant-portlet</module>-->
-		<!--<module>jsf-showcase-portlet</module>-->
+		<module>jsf-jsp-applicant-portlet</module>
+		<module>jsf-showcase-portlet</module>
 		<module>jsf-spring-applicant-portlet</module>
 		<module>icefaces-applicant-portlet</module>
 		<module>alloy-applicant-portlet</module>
@@ -33,66 +33,6 @@
 	</modules>
 
 	<profiles>
-		<profile>
-			<id>windows</id>
-			<activation>
-				<os>
-					<family>Windows</family>
-				</os>
-			</activation>
-			<properties>
-				<os.temp.folder>C:\Windows\Temp</os.temp.folder>
-			</properties>
-		</profile>
-		<profile>
-			<id>unix</id>
-			<activation>
-				<os>
-					<family>unix</family>
-				</os>
-			</activation>
-			<properties>
-				<os.temp.folder>/tmp</os.temp.folder>
-			</properties>
-		</profile>
-		<profile>
-			<id>integration</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<systemPropertyVariables>
-								<RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>true</RUNNING_WITH_MAVEN_SUREFIRE_PLUGIN>
-								<!-- Specify a property like so: -Dintegration.browser=phantomjs -->
-								<integration.browser>${integration.browser}</integration.browser>
-								<integration.log.level>${integration.log.level}</integration.log.level>
-								<integration.container>liferay70</integration.container>
-								<integration.host>${integration.host}</integration.host>
-								<integration.port>${integration.port}</integration.port>
-								<integration.context>${integration.context}</integration.context>
-								<integration.sign.in.context>${integration.sign.in.context}</integration.sign.in.context>
-								<integration.login.xpath>${integration.login.xpath}</integration.login.xpath>
-								<integration.password.xpath>${integration.password.xpath}</integration.password.xpath>
-								<integration.sign.in.button.xpath>${integration.sign.in.button.xpath}</integration.sign.in.button.xpath>
-								<integration.login>${integration.login}</integration.login>
-								<integration.password>${integration.password}</integration.password>
-							</systemPropertyVariables>
-							<properties>
-								<property>
-									<name>listener</name>
-									<value>com.liferay.faces.test.selenium.IntegrationTestSuiteListener</value>
-								</property>
-							</properties>
-							<includes>
-								<include>**/*Test.java,**/Test*.java,**/*TestCase.java,**/*Tester.java</include>
-							</includes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 		<profile>
 			<id>licenses</id>
 			<properties>
@@ -278,77 +218,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<dependencies>
-		<!-- Integration test dependencies. -->
-		<dependency>
-			<groupId>com.liferay.faces.test</groupId>
-			<artifactId>com.liferay.faces.test.selenium</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!--
-			These demo tests use a different version of selenium, drivers, and junit than the integration tests.
-			Once the other demos are migrated to the new test framework, we can add these dependencies to the
-			parent pom.xml and remove them from here.
-		-->
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-java</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-remote-driver</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-support</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-firefox-driver</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-chrome-driver</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.codeborne</groupId>
-			<artifactId>phantomjsdriver</artifactId>
-			<scope>test</scope>
-			<!-- Don't download the version of selenium that phantomjsdriver depends on since it is older than the
-			version we specify. -->
-			<exclusions>
-				<exclusion>
-					<artifactId>org.seleniumhq.selenium</artifactId>
-					<groupId>selenium-java</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.seleniumhq.selenium</artifactId>
-					<groupId>selenium-server</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.seleniumhq.selenium</artifactId>
-					<groupId>selenium-remote-driver</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- End integration test dependencies. -->
-	</dependencies>
 
 </project>

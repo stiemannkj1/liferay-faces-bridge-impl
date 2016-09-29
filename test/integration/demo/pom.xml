@@ -2,30 +2,41 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>com.liferay.faces.test</groupId>
-		<artifactId>com.liferay.faces.test.bridge.integration.parent</artifactId>
+		<artifactId>com.liferay.faces.test.integration.parent</artifactId>
 		<version>4.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
+	<artifactId>com.liferay.faces.test.integration.demo</artifactId>
+	<packaging>jar</packaging>
+	<name>Liferay Faces Bridge Demo Tests</name>
 
-	<artifactId>com.liferay.faces.test.bridge.issue.integration.parent</artifactId>
-	<packaging>pom</packaging>
-	<name>Liferay Faces Test Issues</name>
-
-	<modules>
-		<module>bridge</module>
-	</modules>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.liferay.faces.test</groupId>
-			<artifactId>com.liferay.faces.test.bridge.integration.util</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
-
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<properties>
+				<os.temp.folder>C:\Windows\Temp</os.temp.folder>
+			</properties>
+		</profile>
+		<profile>
+			<id>unix</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<properties>
+				<os.temp.folder>/tmp</os.temp.folder>
+			</properties>
+		</profile>
+		<profile>
+			<id>integration</id>
 			<build>
 				<plugins>
 					<!-- ensure that the png resource is in the temporary directory for testing -->
