@@ -60,18 +60,6 @@ public class AlloyApplicantPortletTester extends ApplicantTesterBase {
 		return "//button[contains(@class,'btn')][contains(text(),'Submit')]";
 	}
 
-	// TODO
-	// alloy-applicant
-	// test tests on FF, Phantom,][chrome
-	// report icefaces bug with fileupload
-	// https://issues.liferay.com/browse/FACES-2867 No longer reproducable?
-	// Note version requirements:
-// ~ (master) $ chromedriver --version
-// ChromeDriver 2.24.417412 (ac882d3ce7c0d99292439bf3405780058fcca0a6)
-// ~ (master) $ phantomjs --version
-// 2.1.1
-// Firefox (see if we can upgrade to recent version)
-
 	@Override
 	protected String getSubmitFileButtonXpath() {
 		return
