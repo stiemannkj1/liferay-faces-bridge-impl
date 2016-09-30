@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.bridge.test.integration.demo;
+package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import org.openqa.selenium.WebElement;
 
@@ -51,11 +51,6 @@ public class PrimeFacesApplicantPortletTester extends ApplicantTesterBase {
 	}
 
 	@Override
-	protected String getContext() {
-		return TestUtil.getSystemPropertyOrDefault("integration.context", "/group/bridge-demos/primefaces-applicant");
-	}
-
-	@Override
 	protected String getExtraLibraryName() {
 		return "PrimeFaces";
 	}
@@ -67,6 +62,11 @@ public class PrimeFacesApplicantPortletTester extends ApplicantTesterBase {
 			"/../div[contains(@class, 'ui-message-error')]/span[contains(@class, 'ui-message-error-detail')]";
 
 		return "(" + fieldXpath + errorMessage + "|" + fieldXpath + "/.." + errorMessage + ")";
+	}
+
+	@Override
+	protected String getPortletPageName() {
+		return "primefaces-applicant";
 	}
 
 	@Override

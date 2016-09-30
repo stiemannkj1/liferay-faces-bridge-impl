@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.bridge.test.integration.demo;
+package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import com.liferay.faces.test.selenium.Browser;
-import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 
 
@@ -26,11 +25,6 @@ import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 public class AlloyApplicantPortletTester extends ApplicantTesterBase {
 
 	@Override
-	protected String getContext() {
-		return TestUtil.getSystemPropertyOrDefault("integration.context", "/group/bridge-demos/alloy-applicant");
-	}
-
-	@Override
 	protected String getFieldErrorXpath(String fieldXpath) {
 
 		String errorMessageXpath =
@@ -38,6 +32,11 @@ public class AlloyApplicantPortletTester extends ApplicantTesterBase {
 
 		return "(" + fieldXpath + errorMessageXpath + "|" + fieldXpath + "/.." + errorMessageXpath + "|" + fieldXpath +
 			"/../.." + errorMessageXpath + ")";
+	}
+
+	@Override
+	protected String getPortletPageName() {
+		return "alloy-applicant";
 	}
 
 	@Override
@@ -75,7 +74,8 @@ public class AlloyApplicantPortletTester extends ApplicantTesterBase {
 	@Override
 	protected void selectDate(Browser browser) {
 
-		String calendarButtonXpath = "//button[contains(@id,'dateOfBirth')]/span[contains(@class,'calendar')][not(text())]";
+		String calendarButtonXpath =
+			"//button[contains(@id,'dateOfBirth')]/span[contains(@class,'calendar')][not(text())]";
 		browser.centerElementInView(calendarButtonXpath);
 		browser.click(calendarButtonXpath);
 

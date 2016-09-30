@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.bridge.test.integration.demo;
+package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import com.liferay.faces.test.selenium.Browser;
-import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 
 
@@ -24,11 +23,6 @@ import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
  * @author  Kyle Stiemann
  */
 public class IceFacesApplicantPortletTester extends ApplicantTesterBase {
-
-	@Override
-	protected String getContext() {
-		return TestUtil.getSystemPropertyOrDefault("integration.context", "/group/bridge-demos/icefaces-applicant");
-	}
 
 	@Override
 	protected String getExtraLibraryName() {
@@ -42,6 +36,11 @@ public class IceFacesApplicantPortletTester extends ApplicantTesterBase {
 
 		return "(" + fieldXpath + errorMessageXpath + "|" + fieldXpath + "/.." + errorMessageXpath + "|" + fieldXpath +
 			"/../.." + errorMessageXpath + ")";
+	}
+
+	@Override
+	protected String getPortletPageName() {
+		return "icefaces-applicant";
 	}
 
 	@Override

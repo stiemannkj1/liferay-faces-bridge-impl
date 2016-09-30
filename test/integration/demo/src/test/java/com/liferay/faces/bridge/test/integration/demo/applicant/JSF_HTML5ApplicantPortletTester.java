@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.bridge.test.integration.demo;
+package com.liferay.faces.bridge.test.integration.demo.applicant;
 
-import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 
 
@@ -25,7 +24,7 @@ import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 public class JSF_HTML5ApplicantPortletTester extends ApplicantTesterBase {
 
 	@Override
-	protected String getContext() {
-		return TestUtil.getSystemPropertyOrDefault("integration.context", "/group/bridge-demos/jsf-html5-applicant");
+	protected String getPortletPageName() {
+		return "jsf-html5-applicant";
 	}
 }

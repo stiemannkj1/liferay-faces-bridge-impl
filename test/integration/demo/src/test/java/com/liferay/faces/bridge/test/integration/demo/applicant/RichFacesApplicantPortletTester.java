@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.bridge.test.integration.demo;
+package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import com.liferay.faces.test.selenium.Browser;
-import com.liferay.faces.test.selenium.TestUtil;
 import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 
@@ -32,11 +31,6 @@ public class RichFacesApplicantPortletTester extends ApplicantTesterBase {
 	}
 
 	@Override
-	protected String getContext() {
-		return TestUtil.getSystemPropertyOrDefault("integration.context", "/group/bridge-demos/richfaces-applicant");
-	}
-
-	@Override
 	protected String getExtraLibraryName() {
 		return "RichFaces 4.5.17.Final";
 	}
@@ -47,6 +41,11 @@ public class RichFacesApplicantPortletTester extends ApplicantTesterBase {
 		String errorMessageXpath = "/../span/span[@class='rf-msg-err']/span[@class='rf-msg-det']";
 
 		return "(" + fieldXpath + errorMessageXpath + "|" + fieldXpath + "/../.." + errorMessageXpath + ")";
+	}
+
+	@Override
+	protected String getPortletPageName() {
+		return "richfaces-applicant";
 	}
 
 	@Override
