@@ -16,13 +16,12 @@
 package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import com.liferay.faces.test.selenium.Browser;
-import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 
 
 /**
  * @author  Kyle Stiemann
  */
-public class AlloyApplicantPortletTester extends ApplicantTesterBase {
+public class AlloyApplicantPortletTester extends BridgeApplicantPortletTester {
 
 	@Override
 	protected String getFieldErrorXpath(String fieldXpath) {

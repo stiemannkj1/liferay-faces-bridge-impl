@@ -26,7 +26,7 @@ import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 /**
  * @author  Kyle Stiemann
  */
-public class PrimeFacesApplicantPortletTester extends ApplicantTesterBase {
+public class PrimeFacesApplicantPortletTester extends BridgeApplicantPortletTester {
 
 	// Private Constants
 	private static final String SELECT_PROVINCE_ID_XPATH = "//select[contains(@id,':provinceId')]";

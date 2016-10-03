@@ -16,14 +16,13 @@
 package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import com.liferay.faces.test.selenium.Browser;
-import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 
 
 /**
  * @author  Kyle Stiemann
  */
-public class RichFacesApplicantPortletTester extends ApplicantTesterBase {
+public class RichFacesApplicantPortletTester extends BridgeApplicantPortletTester {
 
 	@Override
 	protected void assertFileUploadChooserVisible(Browser browser) {

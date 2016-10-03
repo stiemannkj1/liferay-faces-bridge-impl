@@ -46,7 +46,7 @@ public class JSFFlowsPortletTester extends IntegrationTesterBase {
 	public void runJSFFlowsPortletTest() {
 
 		Browser browser = Browser.getInstance();
-		browser.get(DEFAULT_BASE_URL + "/group/bridge-demos/jsf-flows");
+		browser.get(BridgeTestUtil.getDemoPageURL("jsf-flows"));
 
 		// Test that libraries are visible.
 		assertLibraryVisible(browser, "Mojarra");

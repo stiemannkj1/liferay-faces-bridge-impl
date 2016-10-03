@@ -21,7 +21,7 @@ import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 /**
  * @author  Kyle Stiemann
  */
-public class JSF_HTML5ApplicantPortletTester extends ApplicantTesterBase {
+public class JSF_HTML5ApplicantPortletTester extends BridgeApplicantPortletTester {
 
 	@Override
 	protected String getPortletPageName() {

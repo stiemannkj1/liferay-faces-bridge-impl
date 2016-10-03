@@ -22,7 +22,7 @@ import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 /**
  * @author  Kyle Stiemann
  */
-public class IceFacesApplicantPortletTester extends ApplicantTesterBase {
+public class IceFacesApplicantPortletTester extends BridgeApplicantPortletTester {
 
 	@Override
 	protected String getExtraLibraryName() {
