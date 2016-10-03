@@ -159,7 +159,7 @@ public class JsfFlowsPortletTest extends TesterBase {
 				assertTrue("bookingTypeSelect should be visible, but "+ bookingTypeSelectXpath +" is not there.", e == null);
 			}
 
-			exitBookingFlowButton.click();
+			exitBookingFlowButtonXpath.click();
 
 			try {
 				waitForElement(browser, enterBookingFlowButtonXpath);
@@ -267,7 +267,7 @@ public class JsfFlowsPortletTest extends TesterBase {
 								firstName.sendKeys(Keys.TAB);
 							}
 
-							purchaseButton.click();
+							purchaseButtonXpath.click();
 
 							try {
 								waitForElement(browser, thankYouFormPurchaseXpath);
@@ -288,8 +288,8 @@ public class JsfFlowsPortletTest extends TesterBase {
 									logger.log(Level.INFO, "Exception e.getMessage() = " + e.getMessage());
 									assertTrue("finishButton should be visible, but "+ finishButtonXpath +" is not there.", e == null);
 								}
-								question1.sendKeys("Liferay");
-								question2.sendKeys("cockpit");
+								question1Xpath.sendKeys("Liferay");
+								question2Xpath.sendKeys("cockpit");
 								finishButton.click();
 
 								try {
@@ -299,7 +299,7 @@ public class JsfFlowsPortletTest extends TesterBase {
 									logger.log(Level.INFO, "Exception e.getMessage() = " + e.getMessage());
 									assertTrue("returnFromSurveyFlowButton should be visible, but "+ returnFromSurveyFlowButtonXpath +" is not there.", e == null);
 								}
-								returnFromSurveyFlowButton.click();
+								returnFromSurveyFlowButtonXpath.click();
 
 								try {
 									waitForElement(browser, enterBookingFlowButtonXpath);
