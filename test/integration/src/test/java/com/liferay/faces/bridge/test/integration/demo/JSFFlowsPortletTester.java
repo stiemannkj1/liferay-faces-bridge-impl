@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.test.integration.demo;
 
+import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

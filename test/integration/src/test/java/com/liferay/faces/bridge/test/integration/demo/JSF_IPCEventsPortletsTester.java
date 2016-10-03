@@ -13,6 +13,7 @@
  */
 package com.liferay.faces.bridge.test.integration.demo;
 
+import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import com.liferay.faces.test.selenium.Browser;
 import org.junit.Test;
 

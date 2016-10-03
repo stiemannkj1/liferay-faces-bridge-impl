@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.test.integration.demo;
 
+import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -13,7 +13,7 @@
  */
 package com.liferay.faces.bridge.test.integration.demo.applicant;
 
-import com.liferay.faces.bridge.test.integration.demo.BridgeTestUtil;
+import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 
 /**
