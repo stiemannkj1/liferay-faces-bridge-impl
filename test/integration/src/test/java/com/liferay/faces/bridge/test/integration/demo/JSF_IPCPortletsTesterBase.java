@@ -1,26 +1,31 @@
 /**
  * Copyright (c) 2000-2016 Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.liferay.faces.bridge.test.integration.demo;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.test.selenium.Browser;
 import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+
 
 /**
  * @author  Kyle Stiemann
@@ -39,15 +44,18 @@ public class JSF_IPCPortletsTesterBase extends IntegrationTesterBase {
 		// Test that start date is today.
 		String startDate1Xpath = "//input[contains(@id, ':0:startDate')]";
 		browser.waitForElementVisible(startDate1Xpath);
+
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		TimeZone gmtTimeZone = TimeZone.getTimeZone("Greenwich");
 		simpleDateFormat.setTimeZone(gmtTimeZone);
+
 		Date today = new Date();
 		String todayString = simpleDateFormat.format(today);
 		SeleniumAssert.assertElementValue(browser, startDate1Xpath, todayString);
 
 		// Test that the start date can be set.
 		browser.clear(startDate1Xpath);
+
 		String startDate = "12/25/2999";
 		browser.sendKeys(startDate1Xpath, startDate);
 		browser.click(submitButtonXpath);
@@ -68,6 +76,10 @@ public class JSF_IPCPortletsTesterBase extends IntegrationTesterBase {
 		browser.click(submitButtonXpath);
 	}
 
+	private void testEditButton(Browser browser, String customerId) {
+		testEditName(browser, customerId, true);
+	}
+
 	private void testEditName(Browser browser, String customerId, boolean editFirstName) {
 
 		// Test that the first and last names are the same in both portlets.
@@ -76,12 +88,14 @@ public class JSF_IPCPortletsTesterBase extends IntegrationTesterBase {
 		browser.waitForElementVisible(customerEditButtonXpath);
 		browser.click(customerEditButtonXpath);
 		browser.waitForElementVisible(firstNameInputXpath);
+
 		String customerFirstNameXpath = customerIdXpath + "/following-sibling::td[1]";
 		WebElement firstNameElement = browser.findElementByXpath(customerFirstNameXpath);
 		String customerLastNameXpath = customerIdXpath + "/following-sibling::td[2]";
 		WebElement lastNameElement = browser.findElementByXpath(customerLastNameXpath);
 		String firstName = firstNameElement.getText();
 		SeleniumAssert.assertElementValue(browser, firstNameInputXpath, firstName);
+
 		String lastName = lastNameElement.getText();
 		SeleniumAssert.assertElementValue(browser, lastNameInputXpath, lastName);
 
@@ -98,6 +112,7 @@ public class JSF_IPCPortletsTesterBase extends IntegrationTesterBase {
 		}
 
 		browser.clear(inputXpath);
+
 		String editedName = name + "y";
 		browser.sendKeys(inputXpath, editedName);
 		browser.click(submitButtonXpath);
@@ -107,9 +122,5 @@ public class JSF_IPCPortletsTesterBase extends IntegrationTesterBase {
 		// Reset the name.
 		browser.sendKeys(inputXpath, Keys.BACK_SPACE);
 		browser.click(submitButtonXpath);
-	}
-
-	private void testEditButton(Browser browser, String customerId) {
-		testEditName(browser, customerId, true);
 	}
 }

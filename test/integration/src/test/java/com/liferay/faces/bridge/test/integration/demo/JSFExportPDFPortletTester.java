@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.bridge.test.integration.demo;
 
-import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,6 +37,7 @@ import org.junit.Test;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
 
+import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import com.liferay.faces.test.selenium.Browser;
 import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import com.liferay.faces.test.selenium.TestUtil;
@@ -99,9 +99,9 @@ public class JSFExportPDFPortletTester extends IntegrationTesterBase {
 			FileChannel fileOutputStreamChannel = fileOutputStream.getChannel();
 			fileOutputStreamChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
 
-			// Compare the text of the PDFs rather than the files (via a hash such as md5) becuase the portlet
-			// generates slightly different PDFs each time the link is clicked (CreationDate, ModDate, and Info 7 0 R/ID
-			// are different each time).
+			// Compare the text of the PDFs rather than the files (via a hash such as md5) becuase the portlet generates
+			// slightly different PDFs each time the link is clicked (CreationDate, ModDate, and Info 7 0 R/ID are
+			// different each time).
 			File shearerRichPDFFile = new File(shearerRichPDFFilePath);
 			String shearerRichPDFText = getPDFText(shearerRichPDFFile);
 			URL expectedShearerRichPDFURL = JSFExportPDFPortletTester.class.getResource("/Shearer-Rich.pdf");
