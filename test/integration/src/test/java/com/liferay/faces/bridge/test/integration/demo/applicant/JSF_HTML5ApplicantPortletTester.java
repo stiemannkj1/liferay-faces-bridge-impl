@@ -15,9 +15,6 @@
  */
 package com.liferay.faces.bridge.test.integration.demo.applicant;
 
-import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
-
-
 /**
  * @author  Kyle Stiemann
  */

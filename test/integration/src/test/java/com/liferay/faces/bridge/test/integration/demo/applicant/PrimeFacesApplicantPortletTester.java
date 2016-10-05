@@ -18,8 +18,6 @@ package com.liferay.faces.bridge.test.integration.demo.applicant;
 import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.test.selenium.Browser;
-import com.liferay.faces.test.selenium.TestUtil;
-import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 
 

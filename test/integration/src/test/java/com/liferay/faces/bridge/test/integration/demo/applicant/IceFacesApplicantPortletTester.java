@@ -16,7 +16,6 @@
 package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import com.liferay.faces.test.selenium.Browser;
-import com.liferay.faces.test.selenium.applicant.ApplicantTesterBase;
 
 
 /**

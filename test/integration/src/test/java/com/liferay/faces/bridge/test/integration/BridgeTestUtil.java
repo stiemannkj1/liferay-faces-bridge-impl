@@ -30,7 +30,7 @@ public final class BridgeTestUtil {
 	static {
 
 		String defaultDemoContext = "/group/bridge-demos";
-		String defaultIssueContext = "/group/bridge-issues";
+		String defaultIssueContext = "/web/bridge-issues";
 
 		if (TestUtil.getContainer().contains("pluto")) {
 			defaultDemoContext = TestUtil.DEFAULT_PLUTO_CONTEXT;
@@ -59,6 +59,6 @@ public final class BridgeTestUtil {
 	}
 
 	public static String getIssuePageURL(String portletPageName) {
-		return TestUtil.DEFAULT_BASE_URL + getDemoContext(portletPageName);
+		return TestUtil.DEFAULT_BASE_URL + getIssueContext(portletPageName);
 	}
 }

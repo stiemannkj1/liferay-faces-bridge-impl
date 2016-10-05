@@ -15,13 +15,17 @@
  */
 package com.liferay.faces.bridge.test.integration.demo.applicant;
 
+import org.junit.Assume;
+import org.junit.Test;
+
+
 /**
  * @author  Kyle Stiemann
  */
-public class JSFApplicantPortletTester extends BridgeApplicantPortletTester {
+public class JSF_JSPApplicantPortletTester {
 
-	@Override
-	protected String getPortletPageName() {
-		return "jsf-applicant";
+	@Test
+	public void runJSF_JSPApplicantPortletTest() {
+		Assume.assumeTrue("The jsf-jsp-portlet test must be run manually.", false);
 	}
 }
