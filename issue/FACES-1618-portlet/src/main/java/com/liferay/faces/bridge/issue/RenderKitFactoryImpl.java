@@ -23,6 +23,10 @@ import javax.faces.render.RenderKitFactory;
 
 import com.liferay.faces.util.application.ApplicationUtil;
 
+
+/**
+ * @author  Kyle Stiemann
+ */
 public class RenderKitFactoryImpl extends RenderKitFactory {
 
 	// Private Data Members

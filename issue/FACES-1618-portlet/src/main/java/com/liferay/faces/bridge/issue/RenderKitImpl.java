@@ -23,7 +23,9 @@ import javax.faces.render.RenderKitWrapper;
 import javax.faces.render.Renderer;
 
 
-
+/**
+ * @author  Kyle Stiemann
+ */
 public class RenderKitImpl extends RenderKitWrapper {
 
 	// Private Constants
@@ -39,8 +41,7 @@ public class RenderKitImpl extends RenderKitWrapper {
 
 	@Override
 	public ResponseWriter createResponseWriter(Writer writer, String contentTypeList, String characterEncoding) {
-		return wrappedRenderKit.createResponseWriter(writer, contentTypeList,
-				characterEncoding);
+		return wrappedRenderKit.createResponseWriter(writer, contentTypeList, characterEncoding);
 	}
 
 	@Override

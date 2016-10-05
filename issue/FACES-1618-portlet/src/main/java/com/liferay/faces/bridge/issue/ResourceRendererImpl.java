@@ -15,9 +15,6 @@
  */
 package com.liferay.faces.bridge.issue;
 
-import com.liferay.faces.util.application.ResourceUtil;
-import com.liferay.faces.util.application.ResourceVerifierFactory;
-import com.liferay.faces.util.context.FacesRequestContext;
 import java.io.IOException;
 
 import javax.faces.component.StateHolder;
@@ -31,6 +28,9 @@ import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.Renderer;
 import javax.faces.render.RendererWrapper;
 
+import com.liferay.faces.util.application.ResourceUtil;
+import com.liferay.faces.util.application.ResourceVerifierFactory;
+import com.liferay.faces.util.context.FacesRequestContext;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 
@@ -42,10 +42,13 @@ import com.liferay.faces.util.logging.LoggerFactory;
 public class ResourceRendererImpl extends RendererWrapper implements ComponentSystemEventListener, StateHolder {
 
 	// Private Constants
+
+	//J-
 	private static final String SCRIPT =
 		"var listItem = document.createElement('li');" +
 		"listItem.innerHTML = '{0}';" +
-		"document.getElementById('FACES_1618_resources').appendChild(listItem);";	
+		"document.getElementById('FACES_1618_resources').appendChild(listItem);";
+	//J+
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(ResourceRendererImpl.class);
@@ -67,7 +70,8 @@ public class ResourceRendererImpl extends RendererWrapper implements ComponentSy
 
 		String resourceInfo = "<span>" + ResourceUtil.getResourceId(uiComponentResource) + "</span>";
 
-		if (ResourceVerifierFactory.getResourceVerifierInstance().isDependencySatisfied(facesContext, uiComponentResource)) {
+		if (ResourceVerifierFactory.getResourceVerifierInstance().isDependencySatisfied(facesContext,
+					uiComponentResource)) {
 			resourceInfo += " was suppressed.";
 		}
 		else {

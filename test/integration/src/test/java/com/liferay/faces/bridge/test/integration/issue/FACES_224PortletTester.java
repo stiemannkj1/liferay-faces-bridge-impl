@@ -15,11 +15,11 @@
  */
 package com.liferay.faces.bridge.test.integration.issue;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import com.liferay.faces.test.selenium.Browser;
-import org.junit.Assert;
 
 
 /**
@@ -35,9 +35,11 @@ public class FACES_224PortletTester {
 		browser.waitForElementTextVisible("//div[contains(@class, 'liferay-faces-bridge')]", "This is view1.xhtml");
 		browser.click("//input[contains(@value,'view2.xhtml')]");
 		browser.waitForElementTextVisible("//div[contains(@class, 'liferay-faces-bridge')]", "This is view2.xhtml");
+
 		String viewParamValue1 = browser.findElementByXpath("//span[contains(@id,':viewParamValue1')]").getText();
 		String viewParam1 = browser.findElementByXpath("//span[contains(@id,':viewParam1')]").getText();
 		Assert.assertTrue("View ", viewParam1.endsWith(viewParamValue1));
+
 		String viewParamValue2 = browser.findElementByXpath("//span[contains(@id,':viewParamValue2')]").getText();
 		String viewParam2 = browser.findElementByXpath("//span[contains(@id,':viewParam2')]").getText();
 		Assert.assertTrue("", viewParam2.endsWith(viewParamValue2));
