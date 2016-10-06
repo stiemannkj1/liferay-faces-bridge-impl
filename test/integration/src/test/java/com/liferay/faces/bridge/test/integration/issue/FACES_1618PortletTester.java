@@ -81,6 +81,7 @@ public class FACES_1618PortletTester extends IntegrationTesterBase {
 		// Test that the resources loaded in the previous view are suppressed and not rendered/loaded a second time in
 		// the current view. Also test that the resources new to this view are rendered and not suppressed.
 		resources = browser.findElements(By.xpath(resourcesXpath));
+
 		String container = TestUtil.getContainer();
 
 		for (WebElement resource : resources) {
@@ -159,14 +160,14 @@ public class FACES_1618PortletTester extends IntegrationTesterBase {
 			resourceText.contains(resourceId) && resourceText.contains("was suppressed"));
 	}
 
+	private boolean resourceShouldBeSuppressed(List<String> loadedResourceIds, String resourceId, String container) {
+		return loadedResourceIds.contains(resourceId) && !(container.contains("pluto") && resourceId.endsWith(".css"));
+	}
+
 	private void waitForAllResources(Browser browser, String componentResourcesSizeXpath, String resourcesXpath) {
 
 		WebElement componentResourcesSizeElement = browser.findElementByXpath(componentResourcesSizeXpath);
 		String componentResourcesSize = componentResourcesSizeElement.getText();
 		browser.waitForElementVisible(resourcesXpath + "[" + componentResourcesSize + "]");
-	}
-
-	private boolean resourceShouldBeSuppressed(List<String> loadedResourceIds, String resourceId, String container) {
-		return loadedResourceIds.contains(resourceId) && !(container.contains("pluto") && resourceId.endsWith(".css"));
 	}
 }

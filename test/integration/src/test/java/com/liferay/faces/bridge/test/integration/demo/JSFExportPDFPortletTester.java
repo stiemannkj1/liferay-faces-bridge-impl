@@ -62,7 +62,8 @@ public class JSFExportPDFPortletTester extends IntegrationTesterBase {
 		// Test that the view contains links to all three pdfs.
 		Browser browser = Browser.getInstance();
 		browser.get(BridgeTestUtil.getDemoPageURL("jsf-pdf"));
-		browser.waitForElementVisible("//div[contains(@id,'export')][contains(@id,'pdf')][contains(@class,'liferay-faces-bridge-body')]");
+		browser.waitForElementVisible(
+			"//div[contains(@id,'export')][contains(@id,'pdf')][contains(@class,'liferay-faces-bridge-body')]");
 		SeleniumAssert.assertElementVisible(browser,
 			"//td[contains(text(),'Green')]/preceding-sibling::td/a[contains(text(),'Export')]");
 		SeleniumAssert.assertElementVisible(browser,

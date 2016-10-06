@@ -15,9 +15,10 @@
  */
 package com.liferay.faces.bridge.test.integration.issue;
 
-import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import org.junit.Assume;
 import org.junit.Test;
+
+import com.liferay.faces.test.selenium.IntegrationTesterBase;
 
 
 /**
