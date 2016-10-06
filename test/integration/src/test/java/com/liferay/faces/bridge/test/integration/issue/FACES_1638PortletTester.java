@@ -59,6 +59,7 @@ public class FACES_1638PortletTester extends IntegrationTesterBase {
 		Assert.assertEquals("There are not " + expectedNumberOfListItems + " links on the page.",
 			expectedNumberOfListItems, listItems.size());
 
+		// Test that each link contains only one *-Item param which has the correct value.
 		for (WebElement listItem : listItems) {
 
 			WebElement paramNameSpan = listItem.findElement(By.xpath(".//span[@class='param-name']"));
