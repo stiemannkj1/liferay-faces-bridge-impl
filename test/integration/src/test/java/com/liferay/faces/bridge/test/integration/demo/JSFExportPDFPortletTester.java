@@ -62,13 +62,14 @@ public class JSFExportPDFPortletTester extends IntegrationTesterBase {
 		// Test that the view contains links to all three pdfs.
 		Browser browser = Browser.getInstance();
 		browser.get(BridgeTestUtil.getDemoPageURL("jsf-pdf"));
+		browser.waitForElementVisible("//div[contains(@id,'export')][contains(@id,'pdf')][contains(@class,'liferay-faces-bridge-body')]");
 		SeleniumAssert.assertElementVisible(browser,
-			"//a[contains(text(),'Export')]/../following-sibling::td[1][contains(text(),'Green')]/preceding-sibling::td[1]/a");
+			"//td[contains(text(),'Green')]/preceding-sibling::td/a[contains(text(),'Export')]");
 		SeleniumAssert.assertElementVisible(browser,
-			"//a[contains(text(),'Export')]/../following-sibling::td[1][contains(text(),'Kessler')]/preceding-sibling::td[1]/a");
+			"//td[contains(text(),'Kessler')]/preceding-sibling::td/a[contains(text(),'Export')]");
 
 		String shearerPDFLinkXpath =
-			"//a[contains(text(),'Export')]/../following-sibling::td[1][contains(text(),'Shearer')]/preceding-sibling::td[1]/a";
+			"//td[contains(text(),'Shearer')]/preceding-sibling::td/a[contains(text(),'Export')]";
 
 		SeleniumAssert.assertElementVisible(browser, shearerPDFLinkXpath);
 
@@ -123,7 +124,9 @@ public class JSFExportPDFPortletTester extends IntegrationTesterBase {
 
 		PDDocument pdDocument = PDDocument.load(file);
 		PDFTextStripper pdfTextStripper = new PDFTextStripper();
+		String text = pdfTextStripper.getText(pdDocument);
+		pdDocument.close();
 
-		return pdfTextStripper.getText(pdDocument);
+		return text;
 	}
 }
