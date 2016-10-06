@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.test.integration.issue;
 
+import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import org.junit.Assume;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ import org.junit.Test;
 /**
  * @author  Kyle Stiemann
  */
-public class FACES_1470PortletTester {
+public class FACES_1470PortletTester extends IntegrationTesterBase {
 
 	@Test
 	public void runFACES_1470PortletTest() {

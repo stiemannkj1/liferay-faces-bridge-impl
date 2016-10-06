@@ -25,13 +25,15 @@ import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import com.liferay.faces.test.selenium.Browser;
+import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import com.liferay.faces.test.selenium.TestUtil;
+import org.junit.Assume;
 
 
 /**
  * @author  Kyle Stiemann
  */
-public class FACES_1478PortletTester {
+public class FACES_1478PortletTester extends IntegrationTesterBase {
 
 	// Logger
 	private static final Logger logger = Logger.getLogger(FACES_1478PortletTester.class.getName());
@@ -43,6 +45,8 @@ public class FACES_1478PortletTester {
 	@Test
 	public void runFACES_1478PortletTest() {
 
+		String container = TestUtil.getContainer();
+		Assume.assumeTrue("The FACES-1635 test is only valid on Liferay Portal.", container.contains("liferay"));
 		Browser browser = Browser.getInstance();
 		browser.get(BridgeTestUtil.getIssuePageURL("faces-1478"));
 		browser.waitForElementVisible("//a[contains(text(),'FACES-1478')]");

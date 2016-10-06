@@ -27,16 +27,21 @@ import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import com.liferay.faces.test.selenium.Browser;
+import com.liferay.faces.test.selenium.IntegrationTesterBase;
+import com.liferay.faces.test.selenium.TestUtil;
+import org.junit.Assume;
 
 
 /**
  * @author  Kyle Stiemann
  */
-public class FACES_1635ResourcesTester {
+public class FACES_1635ResourcesTester extends IntegrationTesterBase {
 
 	@Test
 	public void runFACES_1635ResourcesTest() {
 
+		String container = TestUtil.getContainer();
+		Assume.assumeTrue("The FACES-1635 test is only valid on Liferay Portal.", container.contains("liferay"));
 		Browser browser = Browser.getInstance();
 		browser.get(BridgeTestUtil.getIssuePageURL("faces-1635") + "?p_p_parallel=0");
 		browser.waitForElementVisible(

@@ -28,13 +28,14 @@ import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
 import com.liferay.faces.test.selenium.Browser;
+import com.liferay.faces.test.selenium.IntegrationTesterBase;
 import com.liferay.faces.test.selenium.TestUtil;
 
 
 /**
  * @author  Kyle Stiemann
  */
-public class FACES_1618PortletTester {
+public class FACES_1618PortletTester extends IntegrationTesterBase {
 
 	// Logger
 	private static final Logger logger = Logger.getLogger(FACES_1618PortletTester.class.getName());
@@ -80,6 +81,7 @@ public class FACES_1618PortletTester {
 		// Test that the resources loaded in the previous view are suppressed and not rendered/loaded a second time in
 		// the current view. Also test that the resources new to this view are rendered and not suppressed.
 		resources = browser.findElements(By.xpath(resourcesXpath));
+		String container = TestUtil.getContainer();
 
 		for (WebElement resource : resources) {
 
@@ -88,7 +90,7 @@ public class FACES_1618PortletTester {
 			String resourceText = resource.getText();
 			logger.log(Level.INFO, resourceText);
 
-			if (loadedResourceIds.contains(resourceId)) {
+			if (resourceShouldBeSuppressed(loadedResourceIds, resourceId, container)) {
 				assertSuppressed(resourceId, resourceText);
 			}
 			else {
@@ -112,7 +114,7 @@ public class FACES_1618PortletTester {
 			String resourceText = resource.getText();
 			logger.log(Level.INFO, resourceText);
 
-			if (loadedResourceIds.contains(resourceId)) {
+			if (resourceShouldBeSuppressed(loadedResourceIds, resourceId, container)) {
 				assertSuppressed(resourceId, resourceText);
 			}
 			else {
@@ -136,7 +138,7 @@ public class FACES_1618PortletTester {
 			String resourceText = resource.getText();
 			logger.log(Level.INFO, resourceText);
 
-			if (loadedResourceIds.contains(resourceId)) {
+			if (resourceShouldBeSuppressed(loadedResourceIds, resourceId, container)) {
 				assertSuppressed(resourceId, resourceText);
 			}
 			else {
@@ -162,5 +164,9 @@ public class FACES_1618PortletTester {
 		WebElement componentResourcesSizeElement = browser.findElementByXpath(componentResourcesSizeXpath);
 		String componentResourcesSize = componentResourcesSizeElement.getText();
 		browser.waitForElementVisible(resourcesXpath + "[" + componentResourcesSize + "]");
+	}
+
+	private boolean resourceShouldBeSuppressed(List<String> loadedResourceIds, String resourceId, String container) {
+		return loadedResourceIds.contains(resourceId) && !(container.contains("pluto") && resourceId.endsWith(".css"));
 	}
 }
