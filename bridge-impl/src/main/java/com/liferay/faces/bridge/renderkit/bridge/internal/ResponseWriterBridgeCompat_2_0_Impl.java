@@ -17,20 +17,12 @@ package com.liferay.faces.bridge.renderkit.bridge.internal;
 
 import java.io.IOException;
 
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.PartialResponseWriter;
-import javax.faces.context.ResponseWriter;
 import javax.faces.context.ResponseWriterWrapper;
-import javax.faces.render.ResponseStateManager;
-import javax.portlet.PortalContext;
-import javax.portlet.PortletRequest;
 
-import com.liferay.faces.bridge.context.BridgePortalContext;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
 
 
 /**
@@ -47,59 +39,6 @@ public abstract class ResponseWriterBridgeCompat_2_0_Impl extends ResponseWriter
 	protected static final String VALUE_OFF = "off";
 	protected static final String VIEW_STATE_MARKER = PartialResponseWriter.VIEW_STATE_MARKER;
 	protected static final String XML_MARKER = "<?xml";
-
-	// Private Constants
-	private static final boolean JSF_RUNTIME_SUPPORTS_NAMESPACING_VIEWSTATE;
-
-	static {
-
-		boolean namespacedViewStateSupported = false;
-		Product mojarra = ProductFactory.getProduct(Product.Name.MOJARRA);
-
-		if (mojarra.isDetected()) {
-
-			int mojarraMajorVersion = mojarra.getMajorVersion();
-
-			if (mojarraMajorVersion == 2) {
-
-				int mojarraMinorVersion = mojarra.getMinorVersion();
-
-				if (mojarraMinorVersion == 1) {
-					namespacedViewStateSupported = (mojarra.getPatchVersion() >= 27);
-				}
-				else if (mojarraMinorVersion == 2) {
-					namespacedViewStateSupported = (mojarra.getPatchVersion() >= 4);
-				}
-				else if (mojarraMinorVersion > 2) {
-					namespacedViewStateSupported = true;
-				}
-			}
-			else if (mojarraMajorVersion > 2) {
-				namespacedViewStateSupported = true;
-			}
-		}
-
-		Product jsf = ProductFactory.getProduct(Product.Name.JSF);
-		logger.debug("JSF runtime [{0}] version [{1}].[{2}].[{3}] supports namespacing [{4}]: [{5}]", jsf.getTitle(),
-			jsf.getMajorVersion(), jsf.getMinorVersion(), jsf.getPatchVersion(), ResponseStateManager.VIEW_STATE_PARAM,
-			namespacedViewStateSupported);
-
-		JSF_RUNTIME_SUPPORTS_NAMESPACING_VIEWSTATE = namespacedViewStateSupported;
-	}
-
-	// Protected Data Members
-	protected boolean namespacedParameters;
-
-	public ResponseWriterBridgeCompat_2_0_Impl() {
-
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		ExternalContext externalContext = facesContext.getExternalContext();
-		PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
-		PortalContext portalContext = portletRequest.getPortalContext();
-		String namespacedParametersSupport = portalContext.getProperty(
-				BridgePortalContext.STRICT_NAMESPACED_PARAMETERS_SUPPORT);
-		this.namespacedParameters = (namespacedParametersSupport != null) && JSF_RUNTIME_SUPPORTS_NAMESPACING_VIEWSTATE;
-	}
 
 	/**
 	 * <p>The main purpose of this method is to solve the jsf.js limitation #1 as described in the class header
@@ -149,20 +88,14 @@ public abstract class ResponseWriterBridgeCompat_2_0_Impl extends ResponseWriter
 		}
 	}
 
+	protected abstract String getStateParameter(String parameter);
+
 	protected void writeViewStateHiddenField() throws IOException {
 
 		startElement("input", null);
 		writeAttribute("type", "hidden", null);
 
-		String viewStateName = PartialResponseWriter.VIEW_STATE_MARKER;
-
-		if (namespacedParameters) {
-
-			FacesContext facesContext = FacesContext.getCurrentInstance();
-			String namingContainerId = facesContext.getViewRoot().getContainerClientId(facesContext);
-			viewStateName = namingContainerId + viewStateName;
-		}
-
+		String viewStateName = getStateParameter(VIEW_STATE_MARKER);
 		writeAttribute("name", viewStateName, null);
 
 		// TODO: The following line is a workaround and needs to be fixed in FACES-1797.

@@ -62,7 +62,7 @@ import com.liferay.faces.util.logging.LoggerFactory;
  *
  * @author  Neil Griffin
  */
-public class ResponseWriterBridgeImpl extends ResponseWriterBridgeCompat_2_2_Impl {
+public class ResponseWriterBridgeImpl extends ResponseWriterBridgeCompat_2_3_Impl {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(ResponseWriterBridgeImpl.class);
