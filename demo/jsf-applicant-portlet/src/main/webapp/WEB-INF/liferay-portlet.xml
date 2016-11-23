@@ -7,7 +7,7 @@
 		<instanceable>true</instanceable>
 		<remoteable>true</remoteable>
 		<!-- JAVASERVERFACES-3031 -->
-		<requires-namespaced-parameters>false</requires-namespaced-parameters>
+		<!--<requires-namespaced-parameters>false</requires-namespaced-parameters>-->
 		<ajaxable>false</ajaxable>
 	</portlet>
 	<role-mapper>

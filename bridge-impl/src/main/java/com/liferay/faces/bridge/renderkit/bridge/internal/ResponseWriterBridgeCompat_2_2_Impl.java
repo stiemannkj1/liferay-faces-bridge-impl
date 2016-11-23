@@ -53,15 +53,7 @@ public abstract class ResponseWriterBridgeCompat_2_2_Impl extends ResponseWriter
 		startElement("input", null);
 		writeAttribute("type", "hidden", null);
 
-		String clientWindowName = CLIENT_WINDOW_PARAM;
-
-		if (namespacedParameters) {
-
-			FacesContext facesContext = FacesContext.getCurrentInstance();
-			String namingContainerId = facesContext.getViewRoot().getContainerClientId(facesContext);
-			clientWindowName = namingContainerId + clientWindowName;
-		}
-
+		String clientWindowName = getStateParameter(CLIENT_WINDOW_PARAM);
 		writeAttribute("name", clientWindowName, null);
 
 		// TODO: The following line is a workaround and needs to be fixed in FACES-1798.
