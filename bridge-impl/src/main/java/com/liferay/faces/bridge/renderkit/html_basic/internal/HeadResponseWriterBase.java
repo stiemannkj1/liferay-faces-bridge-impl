@@ -29,6 +29,8 @@ import org.w3c.dom.Element;
 import com.liferay.faces.bridge.util.internal.URLUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import java.util.Map;
+import java.util.Set;
 
 
 /**

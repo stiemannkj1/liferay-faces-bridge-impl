@@ -20,10 +20,10 @@ import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ResponseWriter;
 import javax.faces.context.ResponseWriterWrapper;
-import javax.portlet.faces.BridgeFactoryFinder;
 
 import com.liferay.faces.util.render.FacesURLEncoder;
 import com.liferay.faces.util.render.FacesURLEncoderFactory;
+import java.util.Map;
 
 
 /**
@@ -61,6 +61,27 @@ public class ResponseWriterResourceImpl extends ResponseWriterWrapper {
 	public void startElement(String name, UIComponent component) throws IOException {
 		write("<");
 		write(name);
+
+		// TODO Duplicates code in HeadResponseWriterCompatImpl
+		if (component != null) {
+
+			Map<String, Object> passThroughAttributes = component.getPassThroughAttributes(false);
+
+			if (passThroughAttributes != null) {
+
+				for (Map.Entry<String, Object> passThroughAttribute : passThroughAttributes.entrySet()) {
+
+					String attributeName = passThroughAttribute.getKey();
+					String value = (String) passThroughAttribute.getValue();
+
+					if (value == null) {
+						value = "";
+					}
+
+					writeAttribute(attributeName, value, null);
+				}
+			}
+		}
 	}
 
 	@Override

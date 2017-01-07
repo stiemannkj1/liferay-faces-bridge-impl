@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
+import com.liferay.faces.util.application.ResourceUtil;
 import java.io.IOException;
 
 import javax.faces.component.StateHolder;
@@ -31,6 +32,7 @@ import javax.faces.render.RendererWrapper;
 
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import java.util.Map;
 
 
 /**
@@ -81,8 +83,19 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 			facesContext.setResponseWriter(new ResponseWriterResourceImpl(responseWriter));
 		}
 
+		String resourceId = ResourceUtil.getResourceId(uiComponentResource);
+		boolean resourceIdNotEmpty = resourceId != null && !"".equals(resourceId);
+
+		if (resourceIdNotEmpty) {
+			uiComponentResource.getPassThroughAttributes().put("data-liferay-faces-bridge-resource-id", resourceId);
+		}
+
 		// Ask the wrapped renderer to encode the script.
 		super.encodeEnd(facesContext, uiComponentResource);
+
+		if (resourceIdNotEmpty) {
+			uiComponentResource.getPassThroughAttributes().remove("data-liferay-faces-bridge-resource-id");
+		}
 
 		if (ajaxRequest) {
 
