@@ -59,6 +59,8 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 
 				for (UIComponent child : children) {
 
+					// TODO ensure that the head renderer doesn't get run multiple times
+					// TODO clean up code
 					if (RenderKitBridgeImpl.JAVAX_FACES_HEAD.equals(child.getRendererType())) {
 						RenderKit renderKit = facesContext.getRenderKit();
 						Renderer headRenderer = renderKit.getRenderer(UIOutput.COMPONENT_FAMILY, RenderKitBridgeImpl.JAVAX_FACES_HEAD);
