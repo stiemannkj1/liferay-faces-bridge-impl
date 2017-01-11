@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
+import com.liferay.faces.bridge.component.internal.UIViewRootBridgeImpl;
 import com.liferay.faces.util.application.ResourceUtil;
 import java.io.IOException;
 
@@ -32,7 +33,8 @@ import javax.faces.render.RendererWrapper;
 
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import java.util.Map;
+import javax.faces.application.Application;
+import javax.faces.application.ProjectStage;
 
 
 /**
@@ -90,12 +92,16 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 			uiComponentResource.getPassThroughAttributes().put("data-liferay-faces-bridge-resource-id", resourceId);
 		}
 
+		if (UIViewRootBridgeImpl.JSF_JS_RESOURCE_ID.equals(ResourceUtil.getResourceId(uiComponentResource))) {
+			
+			Application application = facesContext.getApplication();
+			ProjectStage projectStage = application.getProjectStage();
+			String projectStageString = projectStage.toString();
+			uiComponentResource.getPassThroughAttributes().put("data-jsf-project-stage", projectStageString);
+		}
+
 		// Ask the wrapped renderer to encode the script.
 		super.encodeEnd(facesContext, uiComponentResource);
-
-		if (resourceIdNotEmpty) {
-			uiComponentResource.getPassThroughAttributes().remove("data-liferay-faces-bridge-resource-id");
-		}
 
 		if (ajaxRequest) {
 

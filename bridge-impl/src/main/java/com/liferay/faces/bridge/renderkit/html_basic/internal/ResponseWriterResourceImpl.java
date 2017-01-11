@@ -47,9 +47,16 @@ public class ResponseWriterResourceImpl extends ResponseWriterWrapper {
 
 	@Override
 	public void endElement(String name) throws IOException {
-		write("></");
-		write(name);
-		write(">");
+
+		if ("link".equals(name)) {
+			write(" />");
+		}
+		else {
+
+			write("></");
+			write(name);
+			write(">");
+		}
 	}
 
 	@Override

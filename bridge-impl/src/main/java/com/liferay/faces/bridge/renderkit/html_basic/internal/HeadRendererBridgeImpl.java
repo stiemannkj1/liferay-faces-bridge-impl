@@ -51,7 +51,7 @@ import com.liferay.faces.util.logging.LoggerFactory;
 public class HeadRendererBridgeImpl extends Renderer {
 
 	// Package-Private Constants
-	/* package-private */ static final String HEAD_RESOURCES_TO_RENDER_IN_BODY = "headResourcesToRenderInBody";
+	public static final String HEAD_RESOURCES_TO_RENDER_IN_BODY = "headResourcesToRenderInBody";
 
 	// Private Constants
 	private static final String FIRST_FACET = "first";

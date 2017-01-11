@@ -47,7 +47,7 @@ public class RenderKitBridgeImpl extends RenderKitBridgeImplCompat {
 	private static final boolean ICEFACES_DETECTED = ProductFactory.getProduct(Product.Name.ICEFACES).isDetected();
 	private static final String JAVAX_FACES_BODY = "javax.faces.Body";
 	private static final String JAVAX_FACES_FORM = "javax.faces.Form";
-	private static final String JAVAX_FACES_HEAD = "javax.faces.Head";
+	public static final String JAVAX_FACES_HEAD = "javax.faces.Head";
 	private static final Product PRIMEFACES = ProductFactory.getProduct(Product.Name.PRIMEFACES);
 	private static final boolean PRIMEFACES_DETECTED = PRIMEFACES.isDetected();
 	private static final String PRIMEFACES_FAMILY = "org.primefaces.component";

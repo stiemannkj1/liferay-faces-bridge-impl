@@ -12,12 +12,13 @@ jsf.ajax.addOnEvent(function(event) {
 			// According to http://stackoverflow.com/questions/10585029/parse-a-html-string-with-js the best way to
 			// parse a string as html (in a cross-browser compatible way) is to create a temporary new <html> element
 			// and insert the string within that <html> element.
-			var tempElement = document.createElement('html');
-			tempElement.innerHTML = "<html><head>" + resources + "</head><body></body></html>";
-			var tempHeadElement = tempElement.getElementsByTagName('head')[0];
-			var updateResources = Array.prototype.slice.call(tempHeadElement.getElementsByTagName('link'), 0);
+			// TODO consider performance improvement of loading resources ourselves and removing this node so mojarra
+			// won't handle it at all (currently the JS is parsing this twice).
+			var parserElement = document.createElement('div');
+			parserElement.innerHTML = resources;
+			var updateResources = Array.prototype.slice.call(parserElement.getElementsByTagName('link'), 0);
 			updateResources = updateResources.concat(
-				Array.prototype.slice.call(tempHeadElement.getElementsByTagName('script'), 0));
+				Array.prototype.slice.call(parserElement.getElementsByTagName('script'), 0));
 			var loadedResourceIds = null;
 
 			for (var i = 0; i < updateResources.length; i++) {
@@ -45,13 +46,22 @@ jsf.ajax.addOnEvent(function(event) {
 					}
 
 					if (loadedResourceIds.indexOf(updateResourceId) > -1) {
-						tempHeadElement.removeChild(updateResources[i]);
+						parserElement.removeChild(updateResources[i]);
 					}
 				}
 			}
 
-			if (tempHeadElement.firstChild) {
-				updateResourcesElement.firstChild.nodeValue = tempHeadElement.innerHTML;
+			if (parserElement.firstChild) {
+
+				// jsf.js expects self-closing link tags, so replace HTML4 compliant unclosed link tags with XHTML/HTML5
+				// compliant self-closing link tags
+				updateResourcesElement.firstChild.nodeValue = parserElement.innerHTML
+						.replace(/([^/t])(>\s*<[^/])/igm, '$1/$2')
+						.replace(/([^/t])>$/igm, '$1/>');
+
+				if (jsf.getProjectStage() === 'Development') {
+					console.log(updateResourcesElement.firstChild.nodeValue);
+				}
 			}
 			else {
 				updateResourcesElement.parentNode.removeChild(updateResourcesElement);
@@ -59,3 +69,24 @@ jsf.ajax.addOnEvent(function(event) {
 		}
 	}
 });
+
+// TODO spec language about this in 378
+jsf.getProjectStage = function() {
+
+	var scripts = document.getElementsByTagName("script");
+	var jsfProjectStage;
+
+	for (var i = 0; i < scripts.length; i++) {
+		jsfProjectStage = scripts[i].getAttribute('data-jsf-project-stage');
+
+		if (jsfProjectStage) {
+			break;
+		}
+	}
+
+	if (!jsfProjectStage) {
+		jsfProjectStage = 'Production';
+	}
+
+	return jsfProjectStage;
+};

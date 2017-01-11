@@ -92,39 +92,39 @@ public class BodyRendererBridgeImpl extends RendererWrapper {
 		// resources are rendered at the top of the portlet body instead of the bottom because elements and scripts in
 		// the portlet body may depend on these resources (for example jquery.js), so head resource scripts must be
 		// loaded before the portlet body is rendered.
-		Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
-		List<UIComponent> headResourcesToRenderInBody = (List<UIComponent>) facesContextAttributes.get(
-				HeadRendererBridgeImpl.HEAD_RESOURCES_TO_RENDER_IN_BODY);
-
-		HeadManagedBean headManagedBean = HeadManagedBean.getInstance(facesContext);
-		Set<String> headResourceIds;
-
-		if (headManagedBean == null) {
-			headResourceIds = new HashSet<String>();
-		}
-		else {
-			headResourceIds = headManagedBean.getHeadResourceIds();
-		}
-
-		// Note: If <style> elements or <link rel="stylesheet"> elements are not able to be rendered in the head, they
-		// will be relocated to the <body>. However, because those elements are only valid in the <head> section, the
-		// generated HTML will be invalid. Despite the invalidness of the generated HTML, all popular browsers will
-		// correctly load and render the CSS. For more details about valid HTML markup, see:
-		// https://html.spec.whatwg.org/multipage/semantics.html#the-style-element
-		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
-		for (UIComponent headResource : headResourcesToRenderInBody) {
-
-			headResource.encodeAll(facesContext);
-
-			// If the portlet's body (<div>) section is reloaded during an Ajax request, stylesheet resources included
-			// in the <div> will be removed and unloaded. Since the stylesheet resources will be unloaded (and reloaded
-			// if necessary), we do not need to track them when they are rendered to the body section. However, scripts
-			// cannot be unloaded, so relocated scripts rendered in the body section must be tracked as if they were
-			// rendered in the <head> section so that they are not loaded multiple times.
-			if (HeadRendererBridgeImpl.isScriptResource(headResource)) {
-				headResourceIds.add(ResourceUtil.getResourceId(headResource));
-			}
-		}
+//		Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
+//		List<UIComponent> headResourcesToRenderInBody = (List<UIComponent>) facesContextAttributes.get(
+//				HeadRendererBridgeImpl.HEAD_RESOURCES_TO_RENDER_IN_BODY);
+//
+//		HeadManagedBean headManagedBean = HeadManagedBean.getInstance(facesContext);
+//		Set<String> headResourceIds;
+//
+//		if (headManagedBean == null) {
+//			headResourceIds = new HashSet<String>();
+//		}
+//		else {
+//			headResourceIds = headManagedBean.getHeadResourceIds();
+//		}
+//
+//		// Note: If <style> elements or <link rel="stylesheet"> elements are not able to be rendered in the head, they
+//		// will be relocated to the <body>. However, because those elements are only valid in the <head> section, the
+//		// generated HTML will be invalid. Despite the invalidness of the generated HTML, all popular browsers will
+//		// correctly load and render the CSS. For more details about valid HTML markup, see:
+//		// https://html.spec.whatwg.org/multipage/semantics.html#the-style-element
+//		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
+//		for (UIComponent headResource : headResourcesToRenderInBody) {
+//
+//			headResource.encodeAll(facesContext);
+//
+//			// If the portlet's body (<div>) section is reloaded during an Ajax request, stylesheet resources included
+//			// in the <div> will be removed and unloaded. Since the stylesheet resources will be unloaded (and reloaded
+//			// if necessary), we do not need to track them when they are rendered to the body section. However, scripts
+//			// cannot be unloaded, so relocated scripts rendered in the body section must be tracked as if they were
+//			// rendered in the <head> section so that they are not loaded multiple times.
+//			if (HeadRendererBridgeImpl.isScriptResource(headResource)) {
+//				headResourceIds.add(ResourceUtil.getResourceId(headResource));
+//			}
+//		}
 	}
 
 	@Override

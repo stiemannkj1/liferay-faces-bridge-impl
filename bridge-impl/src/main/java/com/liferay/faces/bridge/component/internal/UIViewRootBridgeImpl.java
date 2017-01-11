@@ -41,7 +41,7 @@ public class UIViewRootBridgeImpl extends PortletNamingContainerUIViewRoot {
 	private static final long serialVersionUID = 1523062041951774729L;
 
 	// Private Constants
-	private static final String JSF_JS_RESOURCE_ID = ResourceUtil.getResourceId(ResourceHandler.JSF_SCRIPT_LIBRARY_NAME,
+	public static final String JSF_JS_RESOURCE_ID = ResourceUtil.getResourceId(ResourceHandler.JSF_SCRIPT_LIBRARY_NAME,
 		ResourceHandler.JSF_SCRIPT_RESOURCE_NAME);
 
 	/**
