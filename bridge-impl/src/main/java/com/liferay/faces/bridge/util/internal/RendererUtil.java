@@ -29,7 +29,6 @@ public class RendererUtil {
 
 	public static void writePassThroughAttributes(ResponseWriter responseWriter, UIComponent uiComponent) throws IOException {
 
-		// TODO Duplicates code in HeadResponseWriterCompatImpl
 		if (uiComponent != null) {
 
 			Map<String, Object> passThroughAttributes = uiComponent.getPassThroughAttributes(false);

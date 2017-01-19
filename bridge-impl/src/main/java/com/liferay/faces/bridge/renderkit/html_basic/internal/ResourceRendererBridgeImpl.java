@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
-import com.liferay.faces.bridge.util.internal.PortletResourceUtilCompat;
 import com.liferay.faces.util.application.ResourceUtil;
 import java.io.IOException;
 

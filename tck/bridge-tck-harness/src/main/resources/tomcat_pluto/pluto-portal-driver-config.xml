@@ -275,6 +275,13 @@
 		<page name="faces-1638" uri="/WEB-INF/themes/pluto-default-theme.jsp">
 			<portlet context="/com.liferay.faces.issue.1638.portlet" name="1"/>
 		</page>
+		<page name="faces-2991" uri="/WEB-INF/themes/pluto-default-theme.jsp">
+			<portlet context="/com.liferay.faces.issue.2991.portlet" name="1"/>
+		</page>
+		<page name="faces-2991-dynamic-duplicate-test" uri="/WEB-INF/themes/pluto-default-theme.jsp">
+			<portlet context="/com.liferay.faces.issue.2991.portlet" name="2"/>
+			<portlet context="/com.liferay.faces.issue.2991.portlet" name="3"/>
+		</page>
 
 		<!-- Bridge TCK -->
 		<page name="TestPage001" uri="/WEB-INF/themes/pluto-default-theme.jsp">

@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
+import com.liferay.faces.bridge.util.internal.RendererUtil;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.EmptyStackException;
@@ -29,8 +30,6 @@ import org.w3c.dom.Element;
 import com.liferay.faces.bridge.util.internal.URLUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -197,6 +196,7 @@ public abstract class HeadResponseWriterBase extends ResponseWriterWrapper {
 			ElementWriter elementWriter = new ElementWriter(element);
 			elementWriterStack.push(elementWriter);
 			componentResourceStack.push(component);
+			RendererUtil.writePassThroughAttributes(this, component);
 			logger.trace("PUSHED element name=[{0}]", name);
 		}
 	}

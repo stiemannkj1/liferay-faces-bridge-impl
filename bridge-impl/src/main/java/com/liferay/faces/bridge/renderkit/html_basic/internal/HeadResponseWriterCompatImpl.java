@@ -61,8 +61,6 @@ public class HeadResponseWriterCompatImpl extends HeadResponseWriterBase {
 	protected void addResourceToHeadSection(Element element, String nodeName, UIComponent componentResource)
 		throws IOException {
 
-		RendererUtil.writePassThroughAttributes(this, componentResource);
-
 		if (HeadRendererBridgeImpl.isScriptResource(componentResource) ||
 				HeadRendererBridgeImpl.isStyleSheetResource(componentResource)) {
 

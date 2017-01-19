@@ -2,15 +2,16 @@
 <f:view xmlns="http://www.w3.org/1999/xhtml"
 	  xmlns:h="http://java.sun.com/jsf/html"
 	  xmlns:f="http://xmlns.jcp.org/jsf/core"
-	  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
-	<h:head>
-		<h:outputStylesheet name="hide.css" library="example" />
-		<h:outputStylesheet name="example.css" library="example" />
-	</h:head>
+	  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+	<h:head />
 	<h:body>
-		<h:link outcome="/FACES-2991.xhtml">Back to /FACES-2991.xhtml</h:link>
+		<h:link outcome="/WEB-INF/views/FACES-2991.xhtml">Back to FACES-2991.xhtml</h:link>
 		<br />
-		<div id="FACES-2991-results" class="hide"></div>
+		<h:form>
+			<h:commandLink value="Run Test" styleClass="run-ppr-button"
+				actionListener="#{bean.addExampleComponentToView}">
+				<f:ajax render="@form" />
+			</h:commandLink>
+		</h:form>
 	</h:body>
 </f:view>

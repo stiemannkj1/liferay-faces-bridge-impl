@@ -4,5 +4,7 @@
 <display>
 	<category name="category.sample">
 		<portlet id="1" />
+		<portlet id="2" />
+		<portlet id="3" />
 	</category>
 </display>

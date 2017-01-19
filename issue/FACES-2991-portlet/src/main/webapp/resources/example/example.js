@@ -9,7 +9,7 @@
 
 		var loadedResourceId = loadedResources[j].getAttribute('data-liferay-faces-bridge-resource-id');
 
-		if (loadedResourceIds.contains(loadedResourceId)) {
+		if (loadedResourceIds.includes(loadedResourceId)) {
 
 			duplicateResourcesLoaded = true;
 			break;
@@ -26,13 +26,13 @@
 
 		if (!duplicateResourcesLoaded) {
 			div.innerHTML = '<p>Test: <span id="FACES-2991-test-name">FACES-2991</span></p>' +
-							'<p>Status: <span id="FACES-2991-result-status">SUCCESS<p>' +
+							'<p>Status: <span id="FACES-2991-result-status">SUCCESS</span></p>' +
 							'<p>Detail: <span id="FACES-2991-result-detail">Dynamic JavaScript loaded successfully.</span></p>';
 		}
 		else {
 			div.innerHTML = '<p>Test: <span id="FACES-2991-test-name">FACES-2991</span></p>' +
-							'<p>Status: <span id="FACES-2991-result-status">FAILED<p>' +
+							'<p>Status: <span id="FACES-2991-result-status">FAILED</span></p>' +
 							'<p>Detail: <span id="FACES-2991-result-detail">Duplicate resources loaded.</span></p>';
 		}
 	}
-});
+})();
