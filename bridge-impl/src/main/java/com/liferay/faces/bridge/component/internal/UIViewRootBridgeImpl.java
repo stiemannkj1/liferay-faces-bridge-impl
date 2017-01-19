@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.bridge.component.internal;
 
-import com.liferay.faces.util.application.ResourceUtil;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.portlet.faces.BridgeUtil;
@@ -23,8 +22,6 @@ import javax.portlet.faces.component.PortletNamingContainerUIViewRoot;
 
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import javax.faces.application.ResourceHandler;
-import javax.faces.component.UIOutput;
 
 
 /**
@@ -39,10 +36,6 @@ public class UIViewRootBridgeImpl extends PortletNamingContainerUIViewRoot {
 
 	// serialVersionUID
 	private static final long serialVersionUID = 1523062041951774729L;
-
-	// Private Constants
-	public static final String JSF_JS_RESOURCE_ID = ResourceUtil.getResourceId(ResourceHandler.JSF_SCRIPT_LIBRARY_NAME,
-		ResourceHandler.JSF_SCRIPT_RESOURCE_NAME);
 
 	/**
 	 * <p>This method fixes a problem with {@link UIComponent#findComponent(String)} where sometimes it is unable to
@@ -62,33 +55,6 @@ public class UIViewRootBridgeImpl extends PortletNamingContainerUIViewRoot {
 
 		if (BridgeUtil.isPortletRequest(facesContext)) {
 			super.setId(getContainerClientId(facesContext));
-		}
-	}
-
-	@Override
-	public void addComponentResource(FacesContext facesContext, UIComponent componentResource, String target) {
-
-		super.addComponentResource(facesContext, componentResource, target);
-		addBridgeJSIfNecessary(facesContext, componentResource, target);
-	}
-
-	@Override
-	public void addComponentResource(FacesContext facesContext, UIComponent componentResource) {
-		super.addComponentResource(facesContext, componentResource);
-		addBridgeJSIfNecessary(facesContext, componentResource, null);
-	}
-
-	private void addBridgeJSIfNecessary(FacesContext facesContext, UIComponent componentResource, String target) {
-
-		// Ignore RenderKitUtils.renderJsfJsIfNecessary(context); use case for now.
-		// https://github.com/javaserverfaces/mojarra/blob/master/jsf-ri/src/main/java/com/sun/faces/renderkit/RenderKitUtils.java#L1186
-		if (JSF_JS_RESOURCE_ID.equals(ResourceUtil.getResourceId(componentResource))) {
-
-			UIOutput bridgeJS = new UIOutput();
-			bridgeJS.setRendererType("javax.faces.resource.Script");
-			bridgeJS.getAttributes().put("name", "bridge.js");
-			bridgeJS.getAttributes().put("library", "liferay-faces-bridge");
-			super.addComponentResource(facesContext, bridgeJS, target);
 		}
 	}
 }

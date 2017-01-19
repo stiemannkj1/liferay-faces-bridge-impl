@@ -13,8 +13,8 @@
  */
 package com.liferay.faces.bridge.context.internal;
 
-import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadRendererBridgeImpl;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.RenderKitBridgeImpl;
+import com.liferay.faces.bridge.util.internal.RendererUtil;
 import com.liferay.faces.util.context.PartialResponseWriterWrapper;
 import java.io.IOException;
 import java.util.List;
@@ -47,7 +47,7 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 		// portlets, we cannot render the <head> section during render all)
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		PartialViewContext partialViewContext = facesContext.getPartialViewContext();
-		
+
 		if (!resourcesWritten && partialViewContext.isRenderAll()) {
 
 			UIViewRoot uiViewRoot = facesContext.getViewRoot();
@@ -59,11 +59,11 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 
 				for (UIComponent child : children) {
 
-					// TODO ensure that the head renderer doesn't get run multiple times
-					// TODO clean up code
 					if (RenderKitBridgeImpl.JAVAX_FACES_HEAD.equals(child.getRendererType())) {
+
 						RenderKit renderKit = facesContext.getRenderKit();
-						Renderer headRenderer = renderKit.getRenderer(UIOutput.COMPONENT_FAMILY, RenderKitBridgeImpl.JAVAX_FACES_HEAD);
+						Renderer headRenderer = renderKit.getRenderer(UIOutput.COMPONENT_FAMILY,
+							RenderKitBridgeImpl.JAVAX_FACES_HEAD);
 						headRenderer.encodeBegin(facesContext, child);
 						headRenderer.encodeChildren(facesContext, child);
 						headRenderer.encodeEnd(facesContext, child);
@@ -72,10 +72,10 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 				}
 
 				Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
-				List<UIComponent> headResourcesToRenderInBody = (List<UIComponent>) facesContextAttributes.get(
-						HeadRendererBridgeImpl.HEAD_RESOURCES_TO_RENDER_IN_BODY);
+				List<UIComponent> relocatedHeadResources =
+					(List<UIComponent>) facesContextAttributes.remove(RendererUtil.HEAD_RESOURCES_TO_RELOCATE_KEY);
 
-				for (UIComponent componentResource : headResourcesToRenderInBody) {
+				for (UIComponent componentResource : relocatedHeadResources) {
 
 					if (!resourcesWritten) {
 

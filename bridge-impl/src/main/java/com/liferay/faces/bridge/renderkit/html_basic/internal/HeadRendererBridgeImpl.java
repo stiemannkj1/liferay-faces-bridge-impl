@@ -28,7 +28,6 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import javax.faces.render.Renderer;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -36,6 +35,7 @@ import javax.portlet.PortletResponse;
 import com.liferay.faces.bridge.component.internal.ComponentUtil;
 import com.liferay.faces.bridge.context.BridgePortalContext;
 import com.liferay.faces.bridge.context.HeadResponseWriterFactory;
+import com.liferay.faces.bridge.util.internal.RendererUtil;
 import com.liferay.faces.util.application.ResourceUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
@@ -48,10 +48,7 @@ import com.liferay.faces.util.logging.LoggerFactory;
  *
  * @author  Neil Griffin
  */
-public class HeadRendererBridgeImpl extends Renderer {
-
-	// Package-Private Constants
-	public static final String HEAD_RESOURCES_TO_RENDER_IN_BODY = "headResourcesToRenderInBody";
+public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 	// Private Constants
 	private static final String FIRST_FACET = "first";
@@ -148,7 +145,7 @@ public class HeadRendererBridgeImpl extends Renderer {
 			headResources.addAll(lastResources);
 		}
 
-		List<UIComponent> headResourcesToRenderInBody = new ArrayList<UIComponent>();
+		List<UIComponent> headResourcesToRelocate = new ArrayList<UIComponent>();
 		ExternalContext externalContext = facesContext.getExternalContext();
 		PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
 		PortalContext portalContext = portletRequest.getPortalContext();
@@ -162,8 +159,8 @@ public class HeadRendererBridgeImpl extends Renderer {
 			// portal page, then
 			if (!ableToAddResourceToHead(portalContext, headResource)) {
 
-				// Add it to the list of resources that are to be rendered in the body section by the body renderer.
-				headResourcesToRenderInBody.add(headResource);
+				// Add it to the list of resources that are to be relocated.
+				headResourcesToRelocate.add(headResource);
 
 				// Remove it from the list of resources that are to be rendered in the head section by this renderer.
 				iterator.remove();
@@ -173,7 +170,7 @@ public class HeadRendererBridgeImpl extends Renderer {
 					Map<String, Object> componentResourceAttributes = headResource.getAttributes();
 
 					logger.debug(
-						"Relocating resource to body: name=[{0}] library=[{1}] rendererType=[{2}] value=[{3}] className=[{4}]",
+						"Relocating head resource: name=[{0}] library=[{1}] rendererType=[{2}] value=[{3}] className=[{4}]",
 						componentResourceAttributes.get("name"), componentResourceAttributes.get("library"),
 						headResource.getRendererType(), ComponentUtil.getComponentValue(headResource),
 						headResource.getClass().getName());
@@ -181,9 +178,10 @@ public class HeadRendererBridgeImpl extends Renderer {
 			}
 		}
 
-		// Save the list of resources that are to be rendered in the body section so that the body renderer can find it.
+		// Save the list of resources that cannot be rendered in the head section so that they can be rendered
+		// elsewhere.
 		Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
-		facesContextAttributes.put(HEAD_RESOURCES_TO_RENDER_IN_BODY, headResourcesToRenderInBody);
+		facesContextAttributes.put(RendererUtil.HEAD_RESOURCES_TO_RELOCATE_KEY, headResourcesToRelocate);
 
 		if (!headResources.isEmpty()) {
 
@@ -232,11 +230,6 @@ public class HeadRendererBridgeImpl extends Renderer {
 	@Override
 	public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
 		// no-op because Portlets are forbidden from rendering the <head>...</head> section.
-	}
-
-	@Override
-	public boolean getRendersChildren() {
-		return true;
 	}
 
 	protected List<UIComponent> getFirstResources(FacesContext facesContext, UIComponent uiComponent) {

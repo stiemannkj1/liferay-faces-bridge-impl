@@ -32,5 +32,5 @@ public class PartialViewContextFactoryBridgeImpl extends PartialViewContextFacto
 
 	public PartialViewContextFactoryBridgeImpl(PartialViewContextFactory wrappedPartialViewContextFactory) {
 		super(wrappedPartialViewContextFactory);
-	}	
+	}
 }

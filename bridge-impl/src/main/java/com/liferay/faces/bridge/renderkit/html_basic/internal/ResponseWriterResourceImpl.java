@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
+import com.liferay.faces.bridge.util.internal.RendererUtil;
 import java.io.IOException;
 
 import javax.faces.component.UIComponent;
@@ -23,7 +24,6 @@ import javax.faces.context.ResponseWriterWrapper;
 
 import com.liferay.faces.util.render.FacesURLEncoder;
 import com.liferay.faces.util.render.FacesURLEncoderFactory;
-import java.util.Map;
 
 
 /**
@@ -66,29 +66,10 @@ public class ResponseWriterResourceImpl extends ResponseWriterWrapper {
 
 	@Override
 	public void startElement(String name, UIComponent component) throws IOException {
+
 		write("<");
 		write(name);
-
-		// TODO Duplicates code in HeadResponseWriterCompatImpl
-		if (component != null) {
-
-			Map<String, Object> passThroughAttributes = component.getPassThroughAttributes(false);
-
-			if (passThroughAttributes != null) {
-
-				for (Map.Entry<String, Object> passThroughAttribute : passThroughAttributes.entrySet()) {
-
-					String attributeName = passThroughAttribute.getKey();
-					String value = (String) passThroughAttribute.getValue();
-
-					if (value == null) {
-						value = "";
-					}
-
-					writeAttribute(attributeName, value, null);
-				}
-			}
-		}
+		RendererUtil.writePassThroughAttributes(this, component);
 	}
 
 	@Override

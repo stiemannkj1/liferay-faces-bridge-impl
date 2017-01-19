@@ -59,7 +59,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 	private static final String PRIMEFACES_THEME_RESOURCE_NAME = "theme.css";
 
 	@Override
-	public void encodeBegin(FacesContext facesContext, UIComponent uiComponent) throws IOException {
+	public void encodeChildren(FacesContext facesContext, UIComponent uiComponent) throws IOException {
 
 		UIViewRoot originalUIViewRoot = facesContext.getViewRoot();
 
@@ -276,7 +276,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 
 		// Delegate rendering to the superclass so that it can write resources found in the view root to the head
 		// section of the portal page.
-		super.encodeBegin(facesContext, uiComponent);
+		super.encodeChildren(facesContext, uiComponent);
 	}
 
 	@Override

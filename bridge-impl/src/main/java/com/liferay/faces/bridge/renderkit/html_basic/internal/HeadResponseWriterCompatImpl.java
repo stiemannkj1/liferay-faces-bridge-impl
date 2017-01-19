@@ -15,6 +15,7 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
+import com.liferay.faces.bridge.util.internal.RendererUtil;
 import java.io.IOException;
 import java.util.Map;
 
@@ -60,25 +61,7 @@ public class HeadResponseWriterCompatImpl extends HeadResponseWriterBase {
 	protected void addResourceToHeadSection(Element element, String nodeName, UIComponent componentResource)
 		throws IOException {
 
-		if (componentResource != null) {
-
-			Map<String, Object> passThroughAttributes = componentResource.getPassThroughAttributes(false);
-
-			if (passThroughAttributes != null) {
-
-				for (Map.Entry<String, Object> passThroughAttribute : passThroughAttributes.entrySet()) {
-
-					String name = passThroughAttribute.getKey();
-					String value = (String) passThroughAttribute.getValue();
-
-					if (value == null) {
-						value = "";
-					}
-
-					element.setAttribute(name, value);
-				}
-			}
-		}
+		RendererUtil.writePassThroughAttributes(this, componentResource);
 
 		if (HeadRendererBridgeImpl.isScriptResource(componentResource) ||
 				HeadRendererBridgeImpl.isStyleSheetResource(componentResource)) {

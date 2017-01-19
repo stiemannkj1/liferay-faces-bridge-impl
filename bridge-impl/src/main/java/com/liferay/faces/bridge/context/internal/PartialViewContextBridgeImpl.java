@@ -35,7 +35,7 @@ public class PartialViewContextBridgeImpl extends PartialViewContextWrapper {
 		if (partialResponseWriter == null) {
 			partialResponseWriter = new PartialResponseWriterBridgeImpl(super.getPartialResponseWriter());
 		}
-		
+
 		return partialResponseWriter;
 	}
 }
