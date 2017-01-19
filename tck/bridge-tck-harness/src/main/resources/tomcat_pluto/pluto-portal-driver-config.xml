@@ -280,7 +280,11 @@
 		</page>
 		<page name="faces-2991-dynamic-duplicate-test" uri="/WEB-INF/themes/pluto-default-theme.jsp">
 			<portlet context="/com.liferay.faces.issue.2991.portlet" name="2"/>
+			<portlet context="/com.liferay.faces.issue.2991.portlet" name="4"/>
+		</page>
+		<page name="faces-2991-dynamic-duplicate-test-jsf-ajax-request" uri="/WEB-INF/themes/pluto-default-theme.jsp">
 			<portlet context="/com.liferay.faces.issue.2991.portlet" name="3"/>
+			<portlet context="/com.liferay.faces.issue.2991.portlet" name="4"/>
 		</page>
 
 		<!-- Bridge TCK -->

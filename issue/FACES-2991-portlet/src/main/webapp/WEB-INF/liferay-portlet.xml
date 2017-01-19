@@ -23,6 +23,13 @@
 		<requires-namespaced-parameters>false</requires-namespaced-parameters>
 		<ajaxable>false</ajaxable>
 	</portlet>
+	<portlet>
+		<portlet-name>4</portlet-name>
+		<instanceable>false</instanceable>
+		<!-- JAVASERVERFACES-3031 -->
+		<requires-namespaced-parameters>false</requires-namespaced-parameters>
+		<ajaxable>false</ajaxable>
+	</portlet>
 	<role-mapper>
 		<role-name>administrator</role-name>
 		<role-link>Administrator</role-link>

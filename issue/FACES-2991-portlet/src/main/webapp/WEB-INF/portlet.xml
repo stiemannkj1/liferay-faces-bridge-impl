@@ -64,6 +64,36 @@
 	</portlet>
 	<portlet>
 		<portlet-name>3</portlet-name>
+		<display-name>FACES-2991_dynamicComponent1_jsf_ajax_request</display-name>
+		<portlet-class>javax.portlet.faces.GenericFacesPortlet</portlet-class>
+		<init-param>
+			<name>javax.portlet.faces.defaultViewId.view</name>
+			<value>/WEB-INF/views/dynamicDuplicate1_jsf_ajax_request.xhtml</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+		</supports>
+		<portlet-info>
+			<title>FACES-2991_dynamicComponent1_jsf_ajax_request</title>
+			<short-title>FACES-2991_dynamicComponent1_jsf_ajax_request</short-title>
+			<keywords>FACES-2991_dynamicComponent1_jsf_ajax_request</keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
+	<portlet>
+		<portlet-name>4</portlet-name>
 		<display-name>FACES-2991_dynamicComponent2</display-name>
 		<portlet-class>javax.portlet.faces.GenericFacesPortlet</portlet-class>
 		<init-param>
