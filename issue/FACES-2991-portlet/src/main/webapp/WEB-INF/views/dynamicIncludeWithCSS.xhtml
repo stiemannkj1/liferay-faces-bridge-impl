@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://xmlns.jcp.org/jsf/core"
+	  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	  xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head>
+		<h:outputStylesheet name="hide.css" library="example" />
+	</h:head>
+	<h:body>
+		<h:link outcome="/FACES-2991.xhtml">Back to /FACES-2991.xhtml</h:link>
+		<br />
+		<h:form>
+			<div id="FACES-2991-results" class="hide">
+				<p>Test: <span id="FACES-2991-test-name">FACES-2991</span></p>
+				<p>Status: <span id="FACES-2991-result-status">SUCCESS<p>
+				<p>Detail: <span id="FACES-2991-result-detail">Dynamic CSS loaded successfully.</span></p>
+			</div>
+			<ui:include id="include" src="#{bean.include}" /><br />
+			<h:commandButton value="Run Test" styleClass="run-ppr-button" actionListener="#{bean.includeCSS}">
+				<f:ajax render="@form" />
+			</h:commandButton>
+		</h:form>
+	</h:body>
+</f:view>
