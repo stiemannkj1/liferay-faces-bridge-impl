@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2016 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
-import com.liferay.faces.util.application.ResourceUtil;
 import java.io.IOException;
 
+import javax.faces.application.Application;
+import javax.faces.application.ProjectStage;
+import javax.faces.application.ResourceHandler;
 import javax.faces.component.StateHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.event.AbortProcessingException;
@@ -30,12 +33,9 @@ import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.Renderer;
 import javax.faces.render.RendererWrapper;
 
+import com.liferay.faces.util.application.ResourceUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import javax.faces.application.Application;
-import javax.faces.application.ProjectStage;
-import javax.faces.application.ResourceHandler;
-import javax.faces.component.UIOutput;
 
 
 /**
@@ -54,7 +54,7 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 
 	// Private Constants
 	private static final String JSF_JS_RESOURCE_ID = ResourceUtil.getResourceId(ResourceHandler.JSF_SCRIPT_LIBRARY_NAME,
-		ResourceHandler.JSF_SCRIPT_RESOURCE_NAME);
+			ResourceHandler.JSF_SCRIPT_RESOURCE_NAME);
 
 	// Private Data Members
 	private boolean transientFlag;
@@ -91,7 +91,7 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 		}
 
 		String resourceId = ResourceUtil.getResourceId(uiComponentResource);
-		boolean resourceIdNotEmpty = resourceId != null && !"".equals(resourceId);
+		boolean resourceIdNotEmpty = (resourceId != null) && !"".equals(resourceId);
 
 		if (resourceIdNotEmpty) {
 			uiComponentResource.getPassThroughAttributes().put("data-liferay-faces-bridge-resource-id", resourceId);
@@ -109,11 +109,14 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 
 			UIOutput bridgeJS = new UIOutput();
 			bridgeJS.setRendererType("javax.faces.resource.Script");
+
 			String bridgeJSResourceName = "bridge.js";
 			bridgeJS.getAttributes().put("name", bridgeJSResourceName);
+
 			String bridgeJSLibraryName = "liferay-faces-bridge";
 			bridgeJS.getAttributes().put("library", bridgeJSLibraryName);
 			bridgeJS.encodeAll(facesContext);
+
 			ResourceHandler resourceHandler = application.getResourceHandler();
 			resourceHandler.markResourceRendered(facesContext, bridgeJSResourceName, bridgeJSLibraryName);
 		}

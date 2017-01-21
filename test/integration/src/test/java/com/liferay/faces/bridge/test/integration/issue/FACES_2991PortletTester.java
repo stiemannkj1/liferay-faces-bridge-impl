@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2016 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
  */
 package com.liferay.faces.bridge.test.integration.issue;
 
-import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
-import com.liferay.faces.test.selenium.Browser;
-import org.junit.Test;
-
-import com.liferay.faces.test.selenium.IntegrationTesterBase;
-import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.junit.Test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import com.liferay.faces.bridge.test.integration.BridgeTestUtil;
+import com.liferay.faces.test.selenium.Browser;
+import com.liferay.faces.test.selenium.IntegrationTesterBase;
+import com.liferay.faces.test.selenium.assertion.SeleniumAssert;
 
 
 /**
@@ -89,8 +91,10 @@ public class FACES_2991PortletTester extends IntegrationTesterBase {
 		String runTestLinkXpath = "//a[@class=\"ppr-redisplay-link\" and contains(.,\"Run Test\")]";
 		browser.waitForElementVisible(runTestLinkXpath);
 		browser.click(runTestLinkXpath);
+
 		String testResultStatusXpath = "//span[@id='FACES-2991-result-status']";
 		browser.waitForElementVisible(testResultStatusXpath);
+
 		List<WebElement> testResultDetails = browser.findElements(By.xpath("//span[@id='FACES-2991-result-detail']"));
 
 		if (testResultDetails.size() > 0) {

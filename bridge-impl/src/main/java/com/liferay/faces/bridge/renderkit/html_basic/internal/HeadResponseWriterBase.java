@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2016 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
-import com.liferay.faces.bridge.util.internal.RendererUtil;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.EmptyStackException;
@@ -27,6 +26,7 @@ import javax.faces.context.ResponseWriterWrapper;
 
 import org.w3c.dom.Element;
 
+import com.liferay.faces.bridge.util.internal.RendererUtil;
 import com.liferay.faces.bridge.util.internal.URLUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
