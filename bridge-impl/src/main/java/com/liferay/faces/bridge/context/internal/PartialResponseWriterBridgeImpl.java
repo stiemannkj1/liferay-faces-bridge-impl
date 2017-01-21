@@ -61,6 +61,7 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 
 					if (RenderKitBridgeImpl.JAVAX_FACES_HEAD.equals(child.getRendererType())) {
 
+						// TODO is this appropriate to do here
 						RenderKit renderKit = facesContext.getRenderKit();
 						Renderer headRenderer = renderKit.getRenderer(UIOutput.COMPONENT_FAMILY,
 							RenderKitBridgeImpl.JAVAX_FACES_HEAD);
