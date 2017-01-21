@@ -7,7 +7,7 @@
 	<h:body>
 		<br />
 		<h:form>
-			<h:commandLink id="run_test" value="Run Test" styleClass="run-ppr-button"
+			<h:commandLink id="run_test" value="Run Test" styleClass="ppr-redisplay-link"
 				onclick="jsf.ajax.request(this, event, { render: '@form', execute: '@this' }); return false;"
 				actionListener="#{bean.addExampleComponentToView}" />
 		</h:form>

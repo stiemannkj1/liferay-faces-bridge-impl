@@ -17,7 +17,7 @@
 				<p>Detail: <span id="FACES-2991-result-detail">Dynamic CSS loaded successfully.</span></p>
 			</div>
 			<ui:include id="include" src="#{bean.include}" /><br />
-			<h:commandLink value="Run Test" styleClass="run-ppr-button" actionListener="#{bean.includeCSS}">
+			<h:commandLink value="Run Test" styleClass="ppr-redisplay-link" actionListener="#{bean.includeCSS}">
 				<f:ajax render="@form" />
 			</h:commandLink>
 		</h:form>
