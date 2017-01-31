@@ -61,8 +61,7 @@ public class HeadResponseWriterCompatImpl extends HeadResponseWriterBase {
 	protected void addResourceToHeadSection(Element element, String nodeName, UIComponent componentResource)
 		throws IOException {
 
-		if (RendererUtil.isScriptResource(componentResource) ||
-				RendererUtil.isStyleSheetResource(componentResource)) {
+		if (RendererUtil.isScriptResource(componentResource) || RendererUtil.isStyleSheetResource(componentResource)) {
 
 			String resourceId = ResourceUtil.getResourceId(componentResource);
 

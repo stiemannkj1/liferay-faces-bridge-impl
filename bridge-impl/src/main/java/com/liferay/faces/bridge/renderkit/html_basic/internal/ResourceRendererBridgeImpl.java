@@ -16,6 +16,8 @@
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.faces.application.Application;
 import javax.faces.application.ProjectStage;
@@ -23,6 +25,7 @@ import javax.faces.application.ResourceHandler;
 import javax.faces.component.StateHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.event.AbortProcessingException;
@@ -32,16 +35,13 @@ import javax.faces.event.ListenerFor;
 import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.Renderer;
 import javax.faces.render.RendererWrapper;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 import com.liferay.faces.util.application.ResourceUtil;
 import com.liferay.faces.util.application.ResourceVerifierFactory;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import java.util.HashSet;
-import java.util.Set;
-import javax.faces.context.ExternalContext;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 
 /**

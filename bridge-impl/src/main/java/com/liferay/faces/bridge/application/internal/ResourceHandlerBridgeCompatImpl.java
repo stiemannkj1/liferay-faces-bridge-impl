@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2016 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package com.liferay.faces.bridge.application.internal;
 
+import javax.faces.application.Resource;
 import javax.faces.application.ResourceHandlerWrapper;
 
 import com.liferay.faces.bridge.util.internal.PortletResourceUtilCompat;
-import javax.faces.application.Resource;
 
 
 /**
@@ -27,37 +27,7 @@ import javax.faces.application.Resource;
 public abstract class ResourceHandlerBridgeCompatImpl extends ResourceHandlerWrapper {
 
 	@Override
-	public boolean isResourceURL(String url) {
-		return PortletResourceUtilCompat.isPortletResourceURL(url);
-	}
-
-	@Override
-	public Resource createResource(String resourceName, String libraryName, String contentType) {
-
-		Resource resource = super.createResource(resourceName, libraryName, contentType);
-
-		if (resource != null && JSF_SCRIPT_LIBRARY_NAME.equals(libraryName) && JSF_SCRIPT_RESOURCE_NAME.equals(resourceName)) {
-			resource = new BridgeJSFJSResourceImpl(resource);
-		}
-
-		return resource;
-	}
-
-	@Override
-	public Resource createResource(String resourceName, String libraryName) {
-
-		Resource resource = super.createResource(resourceName, libraryName);
-
-		if (resource != null && JSF_SCRIPT_LIBRARY_NAME.equals(libraryName) && JSF_SCRIPT_RESOURCE_NAME.equals(resourceName)) {
-			resource = new BridgeJSFJSResourceImpl(resource);
-		}
-
-		return resource;
-	}
-
-	@Override
 	public Resource createResource(String resourceName) {
-
 
 		Resource resource = super.createResource(resourceName);
 
@@ -71,5 +41,36 @@ public abstract class ResourceHandlerBridgeCompatImpl extends ResourceHandlerWra
 		}
 
 		return resource;
+	}
+
+	@Override
+	public Resource createResource(String resourceName, String libraryName) {
+
+		Resource resource = super.createResource(resourceName, libraryName);
+
+		if ((resource != null) && JSF_SCRIPT_LIBRARY_NAME.equals(libraryName) &&
+				JSF_SCRIPT_RESOURCE_NAME.equals(resourceName)) {
+			resource = new BridgeJSFJSResourceImpl(resource);
+		}
+
+		return resource;
+	}
+
+	@Override
+	public Resource createResource(String resourceName, String libraryName, String contentType) {
+
+		Resource resource = super.createResource(resourceName, libraryName, contentType);
+
+		if ((resource != null) && JSF_SCRIPT_LIBRARY_NAME.equals(libraryName) &&
+				JSF_SCRIPT_RESOURCE_NAME.equals(resourceName)) {
+			resource = new BridgeJSFJSResourceImpl(resource);
+		}
+
+		return resource;
+	}
+
+	@Override
+	public boolean isResourceURL(String url) {
+		return PortletResourceUtilCompat.isPortletResourceURL(url);
 	}
 }

@@ -31,6 +31,22 @@ public class RendererUtil {
 	public static final String HEAD_RESOURCES_TO_RELOCATE_KEY = RendererUtil.class.getName() +
 		"_HEAD_RESOURCES_TO_RELOCATE";
 
+	public static boolean isScriptResource(UIComponent componentResource) {
+
+		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
+		String resourceName = (String) componentResourceAttributes.get("name");
+
+		return (resourceName != null) && resourceName.endsWith("js");
+	}
+
+	public static boolean isStyleSheetResource(UIComponent componentResource) {
+
+		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
+		String resourceName = (String) componentResourceAttributes.get("name");
+
+		return (resourceName != null) && resourceName.endsWith("css");
+	}
+
 	public static void writePassThroughAttributes(ResponseWriter responseWriter, UIComponent uiComponent)
 		throws IOException {
 
@@ -53,21 +69,5 @@ public class RendererUtil {
 				}
 			}
 		}
-	}
-
-	public static boolean isScriptResource(UIComponent componentResource) {
-
-		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
-		String resourceName = (String) componentResourceAttributes.get("name");
-
-		return (resourceName != null) && resourceName.endsWith("js");
-	}
-
-	public static boolean isStyleSheetResource(UIComponent componentResource) {
-
-		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
-		String resourceName = (String) componentResourceAttributes.get("name");
-
-		return (resourceName != null) && resourceName.endsWith("css");
 	}
 }
