@@ -36,7 +36,7 @@ import javax.portlet.faces.component.PortletNamingContainerUIViewRoot;
  *
  * @author  Neil Griffin
  */
-public class BodyRendererBridgeImpl extends RendererWrapper {
+public class BodyRendererBridgeImpl extends BodyRendererBridgeCompatImpl {
 
 	// Package-Private Constants
 	/* package-private */ static final String STYLE_CLASS_PORTLET_BODY = "liferay-faces-bridge-body";
@@ -76,6 +76,7 @@ public class BodyRendererBridgeImpl extends RendererWrapper {
 			responseWriterPortletBodyImpl.writeAttribute("class", STYLE_CLASS_PORTLET_BODY, "styleClass");
 		}
 
+		encodeRelocatedHeadResources(facesContext);
 		facesContext.setResponseWriter(responseWriter);
 	}
 

@@ -32,7 +32,7 @@ import javax.faces.render.Renderer;
 
 import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadManagedBean;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.RenderKitBridgeImpl;
-import com.liferay.faces.bridge.util.internal.RendererUtil;
+import com.liferay.faces.bridge.util.internal.RendererUtilCompat;
 import com.liferay.faces.util.application.ResourceUtil;
 import com.liferay.faces.util.context.PartialResponseWriterWrapper;
 
@@ -68,12 +68,12 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 
 				for (UIComponent child : children) {
 
-					if (RenderKitBridgeImpl.JAVAX_FACES_HEAD.equals(child.getRendererType())) {
+					if (RendererUtilCompat.JAVAX_FACES_HEAD.equals(child.getRendererType())) {
 
 						// TODO is this appropriate to do here?
 						RenderKit renderKit = facesContext.getRenderKit();
 						Renderer headRenderer = renderKit.getRenderer(UIOutput.COMPONENT_FAMILY,
-								RenderKitBridgeImpl.JAVAX_FACES_HEAD);
+								RendererUtilCompat.JAVAX_FACES_HEAD);
 						headRenderer.encodeBegin(facesContext, child);
 						headRenderer.encodeChildren(facesContext, child);
 						headRenderer.encodeEnd(facesContext, child);
@@ -83,8 +83,7 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 				}
 
 				Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
-				List<UIComponent> relocatedHeadResources = (List<UIComponent>) facesContextAttributes.remove(
-						RendererUtil.HEAD_RESOURCES_TO_RELOCATE_KEY);
+				List<UIComponent> relocatedHeadResources = (List<UIComponent>) facesContextAttributes.remove(RendererUtilCompat.HEAD_RESOURCES_TO_RELOCATE_KEY);
 
 				if (relocatedHeadResources != null) {
 
@@ -108,8 +107,8 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 
 						componentResource.encodeAll(facesContext);
 
-						if (RendererUtil.isScriptResource(componentResource) ||
-								RendererUtil.isStyleSheetResource(componentResource)) {
+						if (RendererUtilCompat.isScriptResource(componentResource) ||
+								RendererUtilCompat.isStyleSheetResource(componentResource)) {
 							headResourceIds.add(ResourceUtil.getResourceId(componentResource));
 						}
 					}

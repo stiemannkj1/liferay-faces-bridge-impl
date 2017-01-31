@@ -35,7 +35,7 @@ import javax.portlet.PortletResponse;
 import com.liferay.faces.bridge.component.internal.ComponentUtil;
 import com.liferay.faces.bridge.context.BridgePortalContext;
 import com.liferay.faces.bridge.context.HeadResponseWriterFactory;
-import com.liferay.faces.bridge.util.internal.RendererUtil;
+import com.liferay.faces.bridge.util.internal.RendererUtilCompat;
 import com.liferay.faces.util.application.ResourceUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
@@ -84,7 +84,7 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 		for (UIComponent headComponentResource : headComponentResources) {
 
-			if (RendererUtil.isStyleSheetResource(headComponentResource) || isInlineStyleSheet(headComponentResource)) {
+			if (RendererUtilCompat.isStyleSheetResource(headComponentResource) || isInlineStyleSheet(headComponentResource)) {
 				styleSheetResources.add(headComponentResource);
 			}
 			else {
@@ -97,10 +97,10 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 		for (UIComponent child : children) {
 
-			if (RendererUtil.isStyleSheetResource(child) || isInlineStyleSheet(child)) {
+			if (RendererUtilCompat.isStyleSheetResource(child) || isInlineStyleSheet(child)) {
 				styleSheetResources.add(child);
 			}
-			else if (RendererUtil.isScriptResource(child) || isInlineScript(child)) {
+			else if (RendererUtilCompat.isScriptResource(child) || isInlineScript(child)) {
 				scriptResources.add(child);
 			}
 		}
@@ -165,7 +165,7 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 		// Save the list of resources that cannot be rendered in the head section so that they can be rendered
 		// elsewhere.
 		Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
-		facesContextAttributes.put(RendererUtil.HEAD_RESOURCES_TO_RELOCATE_KEY, headResourcesToRelocate);
+		facesContextAttributes.put(RendererUtilCompat.HEAD_RESOURCES_TO_RELOCATE_KEY, headResourcesToRelocate);
 
 		if (!headResources.isEmpty()) {
 
@@ -201,7 +201,7 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 				headResource.encodeAll(facesContext);
 
-				if (RendererUtil.isScriptResource(headResource) || RendererUtil.isStyleSheetResource(headResource)) {
+				if (RendererUtilCompat.isScriptResource(headResource) || RendererUtilCompat.isStyleSheetResource(headResource)) {
 					headResourceIds.add(ResourceUtil.getResourceId(headResource));
 				}
 			}
@@ -260,10 +260,10 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 	private boolean ableToAddResourceToHead(PortalContext portalContext, UIComponent componentResource) {
 
-		if (RendererUtil.isStyleSheetResource(componentResource)) {
+		if (RendererUtilCompat.isStyleSheetResource(componentResource)) {
 			return (portalContext.getProperty(BridgePortalContext.ADD_STYLE_SHEET_RESOURCE_TO_HEAD_SUPPORT) != null);
 		}
-		else if (RendererUtil.isScriptResource(componentResource)) {
+		else if (RendererUtilCompat.isScriptResource(componentResource)) {
 			return (portalContext.getProperty(BridgePortalContext.ADD_SCRIPT_RESOURCE_TO_HEAD_SUPPORT) != null);
 		}
 		else if (isInlineStyleSheet(componentResource)) {

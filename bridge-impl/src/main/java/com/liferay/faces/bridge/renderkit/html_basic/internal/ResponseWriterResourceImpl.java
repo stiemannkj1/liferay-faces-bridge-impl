@@ -21,7 +21,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ResponseWriter;
 import javax.faces.context.ResponseWriterWrapper;
 
-import com.liferay.faces.bridge.util.internal.RendererUtil;
+import com.liferay.faces.bridge.util.internal.RendererUtilCompat;
 import com.liferay.faces.util.render.FacesURLEncoder;
 import com.liferay.faces.util.render.FacesURLEncoderFactory;
 
@@ -69,7 +69,7 @@ public class ResponseWriterResourceImpl extends ResponseWriterWrapper {
 
 		write("<");
 		write(name);
-		RendererUtil.writePassThroughAttributes(this, component);
+		RendererUtilCompat.writePassThroughAttributes(this, component);
 	}
 
 	@Override

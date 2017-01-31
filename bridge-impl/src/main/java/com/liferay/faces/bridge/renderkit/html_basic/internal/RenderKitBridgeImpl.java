@@ -27,6 +27,7 @@ import com.liferay.faces.bridge.renderkit.primefaces.internal.FileUploadRenderer
 import com.liferay.faces.bridge.renderkit.primefaces.internal.FormRendererPrimeFacesImpl;
 import com.liferay.faces.bridge.renderkit.primefaces.internal.HeadRendererPrimeFacesImpl;
 import com.liferay.faces.bridge.renderkit.richfaces.internal.FileUploadRendererRichFacesImpl;
+import com.liferay.faces.bridge.util.internal.RendererUtilCompat;
 import com.liferay.faces.util.product.Product;
 import com.liferay.faces.util.product.ProductFactory;
 
@@ -38,9 +39,6 @@ import com.liferay.faces.util.product.ProductFactory;
  * @author  Neil Griffin
  */
 public class RenderKitBridgeImpl extends RenderKitBridgeImplCompat {
-
-	// Public Constants
-	public static final String JAVAX_FACES_HEAD = "javax.faces.Head";
 
 	// Package-Private Constants
 	/* package-private */ static final String SCRIPT_RENDERER_TYPE = "javax.faces.resource.Script";
@@ -67,7 +65,7 @@ public class RenderKitBridgeImpl extends RenderKitBridgeImplCompat {
 
 		if (UIOutput.COMPONENT_FAMILY.equals(family)) {
 
-			if (JAVAX_FACES_HEAD.equals(rendererType)) {
+			if (RendererUtilCompat.JAVAX_FACES_HEAD.equals(rendererType)) {
 
 				if (ICEFACES_DETECTED) {
 					renderer = new HeadRendererICEfacesImpl();

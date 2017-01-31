@@ -25,11 +25,12 @@ import javax.faces.context.ResponseWriter;
 /**
  * @author  Kyle Stiemann
  */
-public class RendererUtil {
+public class RendererUtilCompat {
 
 	// Public Constants
-	public static final String HEAD_RESOURCES_TO_RELOCATE_KEY = RendererUtil.class.getName() +
+	public static final String HEAD_RESOURCES_TO_RELOCATE_KEY = RendererUtilCompat.class.getName() +
 		"_HEAD_RESOURCES_TO_RELOCATE";
+	public static final String JAVAX_FACES_HEAD = "javax.faces.Head";
 
 	public static boolean isScriptResource(UIComponent componentResource) {
 

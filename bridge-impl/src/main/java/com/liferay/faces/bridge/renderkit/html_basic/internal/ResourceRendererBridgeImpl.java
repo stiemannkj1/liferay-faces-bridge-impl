@@ -16,16 +16,9 @@
 package com.liferay.faces.bridge.renderkit.html_basic.internal;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.faces.application.Application;
-import javax.faces.application.ProjectStage;
-import javax.faces.application.ResourceHandler;
 import javax.faces.component.StateHolder;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIOutput;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.event.AbortProcessingException;
@@ -34,12 +27,7 @@ import javax.faces.event.ComponentSystemEventListener;
 import javax.faces.event.ListenerFor;
 import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.Renderer;
-import javax.faces.render.RendererWrapper;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
-import com.liferay.faces.util.application.ResourceUtil;
-import com.liferay.faces.util.application.ResourceVerifierFactory;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 
@@ -53,14 +41,10 @@ import com.liferay.faces.util.logging.LoggerFactory;
  * @author  Neil Griffin
  */
 @ListenerFor(systemEventClass = PostAddToViewEvent.class)
-public class ResourceRendererBridgeImpl extends RendererWrapper implements ComponentSystemEventListener, StateHolder {
+public class ResourceRendererBridgeImpl extends ResourceRendererBridgeCompatImpl implements ComponentSystemEventListener, StateHolder {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(ResourceRendererBridgeImpl.class);
-
-	// Private Constants
-	private static final String JSF_JS_RESOURCE_ID = ResourceUtil.getResourceId(ResourceHandler.JSF_SCRIPT_LIBRARY_NAME,
-			ResourceHandler.JSF_SCRIPT_RESOURCE_NAME);
 
 	// Private Data Members
 	private boolean transientFlag;
@@ -96,20 +80,7 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 			facesContext.setResponseWriter(new ResponseWriterResourceImpl(responseWriter));
 		}
 
-		String resourceId = ResourceUtil.getResourceId(uiComponentResource);
-		boolean resourceIdNotEmpty = (resourceId != null) && !"".equals(resourceId);
-
-		if (resourceIdNotEmpty) {
-			uiComponentResource.getPassThroughAttributes().put("data-liferay-faces-bridge-resource-id", resourceId);
-		}
-
-		if (JSF_JS_RESOURCE_ID.equals(ResourceUtil.getResourceId(uiComponentResource))) {
-
-			Application application = facesContext.getApplication();
-			ProjectStage projectStage = application.getProjectStage();
-			String projectStageString = projectStage.toString();
-			uiComponentResource.getPassThroughAttributes().put("data-jsf-project-stage", projectStageString);
-		}
+		addBridgeAttributes(facesContext, uiComponentResource);
 
 		// Ask the wrapped renderer to encode the script.
 		super.encodeEnd(facesContext, uiComponentResource);

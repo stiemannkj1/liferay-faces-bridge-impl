@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import com.liferay.faces.bridge.util.internal.RendererUtil;
+import com.liferay.faces.bridge.util.internal.RendererUtilCompat;
 import com.liferay.faces.util.application.ResourceUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
@@ -61,7 +61,7 @@ public class HeadResponseWriterCompatImpl extends HeadResponseWriterBase {
 	protected void addResourceToHeadSection(Element element, String nodeName, UIComponent componentResource)
 		throws IOException {
 
-		if (RendererUtil.isScriptResource(componentResource) || RendererUtil.isStyleSheetResource(componentResource)) {
+		if (RendererUtilCompat.isScriptResource(componentResource) || RendererUtilCompat.isStyleSheetResource(componentResource)) {
 
 			String resourceId = ResourceUtil.getResourceId(componentResource);
 

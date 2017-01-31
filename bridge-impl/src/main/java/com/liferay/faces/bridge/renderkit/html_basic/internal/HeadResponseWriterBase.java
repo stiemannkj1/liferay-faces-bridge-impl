@@ -26,7 +26,7 @@ import javax.faces.context.ResponseWriterWrapper;
 
 import org.w3c.dom.Element;
 
-import com.liferay.faces.bridge.util.internal.RendererUtil;
+import com.liferay.faces.bridge.util.internal.RendererUtilCompat;
 import com.liferay.faces.bridge.util.internal.URLUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
@@ -196,7 +196,7 @@ public abstract class HeadResponseWriterBase extends ResponseWriterWrapper {
 			ElementWriter elementWriter = new ElementWriter(element);
 			elementWriterStack.push(elementWriter);
 			componentResourceStack.push(component);
-			RendererUtil.writePassThroughAttributes(this, component);
+			RendererUtilCompat.writePassThroughAttributes(this, component);
 			logger.trace("PUSHED element name=[{0}]", name);
 		}
 	}
