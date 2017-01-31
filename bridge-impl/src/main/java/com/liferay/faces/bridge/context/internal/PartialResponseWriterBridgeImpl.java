@@ -83,7 +83,8 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 				}
 
 				Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
-				List<UIComponent> relocatedHeadResources = (List<UIComponent>) facesContextAttributes.remove(RendererUtilCompat.HEAD_RESOURCES_TO_RELOCATE_KEY);
+				List<UIComponent> relocatedHeadResources = (List<UIComponent>) facesContextAttributes.remove(
+						RendererUtilCompat.HEAD_RESOURCES_TO_RELOCATE_KEY);
 
 				if (relocatedHeadResources != null) {
 

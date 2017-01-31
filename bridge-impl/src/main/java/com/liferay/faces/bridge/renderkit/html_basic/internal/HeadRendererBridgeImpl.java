@@ -84,7 +84,8 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 		for (UIComponent headComponentResource : headComponentResources) {
 
-			if (RendererUtilCompat.isStyleSheetResource(headComponentResource) || isInlineStyleSheet(headComponentResource)) {
+			if (RendererUtilCompat.isStyleSheetResource(headComponentResource) ||
+					isInlineStyleSheet(headComponentResource)) {
 				styleSheetResources.add(headComponentResource);
 			}
 			else {
@@ -201,7 +202,8 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 				headResource.encodeAll(facesContext);
 
-				if (RendererUtilCompat.isScriptResource(headResource) || RendererUtilCompat.isStyleSheetResource(headResource)) {
+				if (RendererUtilCompat.isScriptResource(headResource) ||
+						RendererUtilCompat.isStyleSheetResource(headResource)) {
 					headResourceIds.add(ResourceUtil.getResourceId(headResource));
 				}
 			}

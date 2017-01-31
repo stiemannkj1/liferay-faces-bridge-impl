@@ -41,7 +41,8 @@ import com.liferay.faces.util.logging.LoggerFactory;
  * @author  Neil Griffin
  */
 @ListenerFor(systemEventClass = PostAddToViewEvent.class)
-public class ResourceRendererBridgeImpl extends ResourceRendererBridgeCompatImpl implements ComponentSystemEventListener, StateHolder {
+public class ResourceRendererBridgeImpl extends ResourceRendererBridgeCompatImpl
+	implements ComponentSystemEventListener, StateHolder {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(ResourceRendererBridgeImpl.class);
