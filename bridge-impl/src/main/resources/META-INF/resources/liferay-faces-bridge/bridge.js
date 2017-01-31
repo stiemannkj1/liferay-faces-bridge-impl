@@ -1,3 +1,6 @@
+/**
+ * Comments.
+ */
 jsf.ajax.addOnEvent(function(event) {
 
 	if (event.status === 'complete' && event.responseXML !== null) {
@@ -10,8 +13,8 @@ jsf.ajax.addOnEvent(function(event) {
 			var resources = updateResourcesElement.firstChild.nodeValue;
 
 			// According to http://stackoverflow.com/questions/10585029/parse-a-html-string-with-js the best way to
-			// parse a string as html (in a cross-browser compatible way) is to create a temporary new <html> element
-			// and insert the string within that <html> element.
+			// parse a string as html (in a cross-browser compatible way) is to create a temporary new <div> element
+			// and insert the string within that <div> element.
 
 			// TODO consider performance improvement of loading resources ourselves and removing this node so mojarra
 			// won't handle it at all (currently the JS is parsing this twice).

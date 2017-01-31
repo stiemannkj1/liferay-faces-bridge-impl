@@ -54,4 +54,20 @@ public class RendererUtil {
 			}
 		}
 	}
+
+	public static boolean isScriptResource(UIComponent componentResource) {
+
+		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
+		String resourceName = (String) componentResourceAttributes.get("name");
+
+		return (resourceName != null) && resourceName.endsWith("js");
+	}
+
+	public static boolean isStyleSheetResource(UIComponent componentResource) {
+
+		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
+		String resourceName = (String) componentResourceAttributes.get("name");
+
+		return (resourceName != null) && resourceName.endsWith("css");
+	}
 }

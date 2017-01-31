@@ -59,7 +59,7 @@ public abstract class ResourceHandlerBridgeImpl extends ResourceHandlerBridgeCom
 	@Override
 	public Resource createResource(String resourceName) {
 
-		Resource wrappableResource = getWrapped().createResource(resourceName);
+		Resource wrappableResource = super.createResource(resourceName);
 
 		if (wrappableResource == null) {
 			return new MissingResourceImpl(getWrapped(), resourceName);
@@ -72,7 +72,7 @@ public abstract class ResourceHandlerBridgeImpl extends ResourceHandlerBridgeCom
 	@Override
 	public Resource createResource(String resourceName, String libraryName) {
 
-		Resource wrappableResource = getWrapped().createResource(resourceName, libraryName);
+		Resource wrappableResource = super.createResource(resourceName, libraryName);
 
 		if (wrappableResource == null) {
 			return new MissingResourceImpl(getWrapped(), resourceName, libraryName);
@@ -85,7 +85,7 @@ public abstract class ResourceHandlerBridgeImpl extends ResourceHandlerBridgeCom
 	@Override
 	public Resource createResource(String resourceName, String libraryName, String contentType) {
 
-		Resource wrappableResource = getWrapped().createResource(resourceName, libraryName, contentType);
+		Resource wrappableResource = super.createResource(resourceName, libraryName, contentType);
 
 		if (wrappableResource == null) {
 			return new MissingResourceImpl(getWrapped(), resourceName, libraryName, contentType);
@@ -144,7 +144,7 @@ public abstract class ResourceHandlerBridgeImpl extends ResourceHandlerBridgeCom
 
 			logger.debug("NOT HANDLED - Missing request parameter {0} so delegating handleResourceRequest to chain",
 				"javax.faces.resource");
-			getWrapped().handleResourceRequest(facesContext);
+			super.handleResourceRequest(facesContext);
 		}
 	}
 
@@ -167,7 +167,7 @@ public abstract class ResourceHandlerBridgeImpl extends ResourceHandlerBridgeCom
 			logger.debug("Did not find the {0} request parameter so delegating isResourceRequest to chain",
 				"javax.faces.resource");
 
-			return getWrapped().isResourceRequest(facesContext);
+			return super.isResourceRequest(facesContext);
 		}
 	}
 

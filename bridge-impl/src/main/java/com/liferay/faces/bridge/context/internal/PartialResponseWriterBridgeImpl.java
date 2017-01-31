@@ -13,12 +13,16 @@
  */
 package com.liferay.faces.bridge.context.internal;
 
+import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadManagedBean;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.RenderKitBridgeImpl;
 import com.liferay.faces.bridge.util.internal.RendererUtil;
+import com.liferay.faces.util.application.ResourceUtil;
 import com.liferay.faces.util.context.PartialResponseWriterWrapper;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIViewRoot;
@@ -61,7 +65,7 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 
 					if (RenderKitBridgeImpl.JAVAX_FACES_HEAD.equals(child.getRendererType())) {
 
-						// TODO is this appropriate to do here
+						// TODO is this appropriate to do here?
 						RenderKit renderKit = facesContext.getRenderKit();
 						Renderer headRenderer = renderKit.getRenderer(UIOutput.COMPONENT_FAMILY,
 							RenderKitBridgeImpl.JAVAX_FACES_HEAD);
@@ -76,19 +80,36 @@ public class PartialResponseWriterBridgeImpl extends PartialResponseWriterWrappe
 				List<UIComponent> relocatedHeadResources =
 					(List<UIComponent>) facesContextAttributes.remove(RendererUtil.HEAD_RESOURCES_TO_RELOCATE_KEY);
 
-				for (UIComponent componentResource : relocatedHeadResources) {
+				if (relocatedHeadResources != null) {
 
-					if (!resourcesWritten) {
+					HeadManagedBean headManagedBean = HeadManagedBean.getInstance(facesContext);
+					Set<String> headResourceIds;
 
-						super.startUpdate("javax.faces.Resource");
-						resourcesWritten = true;
+					if (headManagedBean == null) {
+						headResourceIds = new HashSet<String>();
+					}
+					else {
+						headResourceIds = headManagedBean.getHeadResourceIds();
 					}
 
-					componentResource.encodeAll(facesContext);
-				}
+					for (UIComponent componentResource : relocatedHeadResources) {
 
-				if (resourcesWritten) {
-					super.endUpdate();
+						if (!resourcesWritten) {
+
+							super.startUpdate("javax.faces.Resource");
+							resourcesWritten = true;
+						}
+
+						componentResource.encodeAll(facesContext);
+
+						if (RendererUtil.isScriptResource(componentResource) || RendererUtil.isStyleSheetResource(componentResource)) {
+							headResourceIds.add(ResourceUtil.getResourceId(componentResource));
+						}
+					}
+
+					if (resourcesWritten) {
+						super.endUpdate();
+					}
 				}
 			}
 		}

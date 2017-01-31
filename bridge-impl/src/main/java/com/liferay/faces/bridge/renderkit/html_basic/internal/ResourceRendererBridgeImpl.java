@@ -34,8 +34,14 @@ import javax.faces.render.Renderer;
 import javax.faces.render.RendererWrapper;
 
 import com.liferay.faces.util.application.ResourceUtil;
+import com.liferay.faces.util.application.ResourceVerifierFactory;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import java.util.HashSet;
+import java.util.Set;
+import javax.faces.context.ExternalContext;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 
 /**
@@ -103,28 +109,10 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 			ProjectStage projectStage = application.getProjectStage();
 			String projectStageString = projectStage.toString();
 			uiComponentResource.getPassThroughAttributes().put("data-jsf-project-stage", projectStageString);
-
-			// Ask the wrapped renderer to encode the script.
-			super.encodeEnd(facesContext, uiComponentResource);
-
-			UIOutput bridgeJS = new UIOutput();
-			bridgeJS.setRendererType("javax.faces.resource.Script");
-
-			String bridgeJSResourceName = "bridge.js";
-			bridgeJS.getAttributes().put("name", bridgeJSResourceName);
-
-			String bridgeJSLibraryName = "liferay-faces-bridge";
-			bridgeJS.getAttributes().put("library", bridgeJSLibraryName);
-			bridgeJS.encodeAll(facesContext);
-
-			ResourceHandler resourceHandler = application.getResourceHandler();
-			resourceHandler.markResourceRendered(facesContext, bridgeJSResourceName, bridgeJSLibraryName);
 		}
-		else {
 
-			// Ask the wrapped renderer to encode the script.
-			super.encodeEnd(facesContext, uiComponentResource);
-		}
+		// Ask the wrapped renderer to encode the script.
+		super.encodeEnd(facesContext, uiComponentResource);
 
 		if (ajaxRequest) {
 

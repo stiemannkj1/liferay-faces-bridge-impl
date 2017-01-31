@@ -58,22 +58,6 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(HeadRendererBridgeImpl.class);
 
-	/* package-private */ static boolean isScriptResource(UIComponent componentResource) {
-
-		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
-		String resourceName = (String) componentResourceAttributes.get("name");
-
-		return (resourceName != null) && resourceName.endsWith("js");
-	}
-
-	/* package-private */ static boolean isStyleSheetResource(UIComponent componentResource) {
-
-		Map<String, Object> componentResourceAttributes = componentResource.getAttributes();
-		String resourceName = (String) componentResourceAttributes.get("name");
-
-		return (resourceName != null) && resourceName.endsWith("css");
-	}
-
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
 		// no-op because Portlets are forbidden from rendering the <head>...</head> section.
@@ -100,7 +84,7 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 		for (UIComponent headComponentResource : headComponentResources) {
 
-			if (isStyleSheetResource(headComponentResource) || isInlineStyleSheet(headComponentResource)) {
+			if (RendererUtil.isStyleSheetResource(headComponentResource) || isInlineStyleSheet(headComponentResource)) {
 				styleSheetResources.add(headComponentResource);
 			}
 			else {
@@ -113,10 +97,10 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 		for (UIComponent child : children) {
 
-			if (isStyleSheetResource(child) || isInlineStyleSheet(child)) {
+			if (RendererUtil.isStyleSheetResource(child) || isInlineStyleSheet(child)) {
 				styleSheetResources.add(child);
 			}
-			else if (isScriptResource(child) || isInlineScript(child)) {
+			else if (RendererUtil.isScriptResource(child) || isInlineScript(child)) {
 				scriptResources.add(child);
 			}
 		}
@@ -217,7 +201,7 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 				headResource.encodeAll(facesContext);
 
-				if (isScriptResource(headResource) || isStyleSheetResource(headResource)) {
+				if (RendererUtil.isScriptResource(headResource) || RendererUtil.isStyleSheetResource(headResource)) {
 					headResourceIds.add(ResourceUtil.getResourceId(headResource));
 				}
 			}
@@ -276,10 +260,10 @@ public class HeadRendererBridgeImpl extends HeadRendererBridgeCompatImpl {
 
 	private boolean ableToAddResourceToHead(PortalContext portalContext, UIComponent componentResource) {
 
-		if (isStyleSheetResource(componentResource)) {
+		if (RendererUtil.isStyleSheetResource(componentResource)) {
 			return (portalContext.getProperty(BridgePortalContext.ADD_STYLE_SHEET_RESOURCE_TO_HEAD_SUPPORT) != null);
 		}
-		else if (isScriptResource(componentResource)) {
+		else if (RendererUtil.isScriptResource(componentResource)) {
 			return (portalContext.getProperty(BridgePortalContext.ADD_SCRIPT_RESOURCE_TO_HEAD_SUPPORT) != null);
 		}
 		else if (isInlineStyleSheet(componentResource)) {
