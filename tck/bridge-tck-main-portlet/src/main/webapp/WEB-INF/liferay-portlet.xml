@@ -1106,6 +1106,11 @@
 		<!-- JAVASERVERFACES-3031 -->
 		<requires-namespaced-parameters>false</requires-namespaced-parameters>
 	</portlet>
+	<portlet>
+		<portlet-name>chapterX_XTests-resourcesRenderedInHeadTest-portlet</portlet-name>
+		<!-- JAVASERVERFACES-3031 -->
+		<requires-namespaced-parameters>false</requires-namespaced-parameters>
+	</portlet>
 	<role-mapper>
 		<role-name>administrator</role-name>
 		<role-link>Administrator</role-link>

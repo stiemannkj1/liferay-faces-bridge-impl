@@ -213,4 +213,5 @@
 	<entry key="testpage210">chapter6_7Tests-setsIsPostbackAttributeTest-portlet</entry>
 	<entry key="testpage211">chapter6_9Tests-usesConfiguredRenderKitTest-portlet</entry>
 	<entry key="testPage212">chapter5_2Tests-resourcesRenderedInHeadTest-portlet</entry>
+	<entry key="testPage213">chapterX_XTests-resourcesRenderedInHeadTest-portlet</entry>
 </properties>

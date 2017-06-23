@@ -4989,6 +4989,22 @@
 		</portlet-info>
 	</portlet>
 
+	<portlet>
+		<portlet-name>chapterX_XTests-resourcesRenderedInHeadTest-portlet</portlet-name>
+		<portlet-class>com.liferay.faces.bridge.tck.common.portlet.GenericFacesTestSuitePortlet</portlet-class>
+		<init-param>
+			<name>javax.portlet.faces.defaultViewId.view</name>
+			<value>/tests/resourceLibraryContractsTest.xhtml</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+		</supports>
+		<portlet-info>
+			<title>chapterX_XTests-resourcesRenderedInHeadTest-portlet</title>
+		</portlet-info>
+	</portlet>
+
 	<event-definition>
 		<qname xmlns:bridge="http://liferay.com/faces/event_ns">bridge:faces.liferay.com.tck.testEvent</qname>
 		<value-type>java.lang.String</value-type>

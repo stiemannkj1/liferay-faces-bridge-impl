@@ -774,6 +774,9 @@ limitations under the License.
 		<page name="TestPage212" uri="/WEB-INF/themes/pluto-default-theme.jsp">
 			<portlet context="/com.liferay.faces.test.bridge.tck.main.portlet" name="chapter5_2Tests-resourcesRenderedInHeadTest-portlet"/>
 		</page>
+		<page name="TestPage213" uri="/WEB-INF/themes/pluto-default-theme.jsp">
+			<portlet context="/com.liferay.faces.test.bridge.tck.main.portlet" name="chapterX_XTests-resourcesRenderedInHeadTest-portlet"/>
+		</page>
 
 	</render-config>
 
