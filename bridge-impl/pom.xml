@@ -12,6 +12,37 @@
 	<name>Liferay Faces Bridge Implementation</name>
 	<description>Implementation of the API for Liferay Faces Bridge</description>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>3.5.0</version>
+				<configuration>
+					<bnd>
+						<![CDATA[
+							# javax.el is automatically imported with the following versions:
+							# javax.el;version="[2.2.0,3.0.0)", but versions 3.0.0+ are also valid.
+							Import-Package: javax.el;version="[2.2.0,4.0.0)",*
+							SPI-Provider: *
+							# Require-Capability: osgi.extender;filter:="(osgi.extender=osgi.serviceloader.registrar)"
+							# Provide-Capability: osgi.serviceloader;osgi.serviceloader=javax.portet.faces.Bridge
+							# Provide-Capability: osgi.serviceloader;osgi.serviceloader:=(|(com.liferay.faces.bridge.BridgeFactoryFinder)(javax.portet.faces.Bridge))
+							# Provide-Capability: osgi.serviceloader;osgi.serviceloader=com.liferay.faces.bridge.BridgeFactoryFinder,osgi.serviceloader;osgi.serviceloader=javax.portet.faces.Bridge
+						]]>
+					</bnd>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>bnd-process</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<!-- BEGIN: Only required for bridge:inputFile -->
 		<dependency>
