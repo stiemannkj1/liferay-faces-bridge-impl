@@ -1,1 +1,1 @@
-com.liferay.faces.bridge.ext.mojarra.servlet.FacesInitializer
+com.liferay.faces.bridge.ext.osgi.mojarra.servlet.FacesInitializer
