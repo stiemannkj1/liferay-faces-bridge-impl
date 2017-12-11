@@ -42,11 +42,10 @@
 							# javax.el is automatically imported with the following versions:
 							# javax.el;version="[2.2.0,3.0.0)", but versions 3.0.0+ are also valid.
 							Import-Package: javax.el;version="[2.2.0,4.0.0)",*
-							SPI-Provider: *
-							# Require-Capability: osgi.extender;filter:="(osgi.extender=osgi.serviceloader.registrar)"
-							# Provide-Capability: osgi.serviceloader;osgi.serviceloader=javax.portet.faces.Bridge
-							# Provide-Capability: osgi.serviceloader;osgi.serviceloader:=(|(com.liferay.faces.bridge.BridgeFactoryFinder)(javax.portet.faces.Bridge))
-							# Provide-Capability: osgi.serviceloader;osgi.serviceloader=com.liferay.faces.bridge.BridgeFactoryFinder,osgi.serviceloader;osgi.serviceloader=javax.portet.faces.Bridge
+							Require-Capability: osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"
+							Provide-Capability: \
+								osgi.serviceloader;osgi.serviceloader=javax.portlet.faces.Bridge,\
+								osgi.serviceloader;osgi.serviceloader=com.liferay.faces.bridge.BridgeFactoryFinder
 						]]>
 					</bnd>
 				</configuration>
