@@ -96,6 +96,7 @@
 		<faces.impl.scope>runtime</faces.impl.scope>
 		<faces.spec.version>2.2</faces.spec.version>
 		<faces.version>${mojarra.version}</faces.version>
+		<filter.web.inf.properties>false</filter.web.inf.properties>
 		<full.version>${project.version} (${timestamp} AD)</full.version>
 		<icefaces.version>4.2.0</icefaces.version>
 		<jstl.version>1.2</jstl.version>
@@ -256,6 +257,16 @@
 						<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
 						<packagingExcludes>${war.packaging.excludes}</packagingExcludes>
 						<webXml>${basedir}/src/main/webapp/WEB-INF/${webapp.descriptor}</webXml>
+						<webResources>
+							<resource>
+								<directory>${basedir}/src/main/webapp/WEB-INF</directory>
+								<filtering>${filter.web.inf.properties}</filtering>
+								<targetPath>WEB-INF</targetPath>
+								<includes>
+									<include>**/*.properties</include>
+								</includes>
+							</resource>
+						</webResources>
 					</configuration>
 				</plugin>
 				<plugin>
