@@ -12,6 +12,12 @@
 	<packaging>war</packaging>
 	<name>primefaces-applicant Portlet</name>
 
+	<properties>
+		<filter.web.inf.properties>true</filter.web.inf.properties>
+		<import.package></import.package>
+		<war.dependency.scope>compile</war.dependency.scope>
+	</properties>
+
 	<profiles>
 		<profile>
 			<id>liferay</id>
@@ -20,6 +26,7 @@
 					<groupId>com.liferay.faces</groupId>
 					<artifactId>com.liferay.faces.bridge.ext</artifactId>
 					<version>${liferay.faces.bridge.ext.version}</version>
+					<scope>${war.dependency.scope}</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -53,6 +60,74 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>thin-war</id>
+			<properties>
+				<!--
+					The package of FacesInitializer must also be explicitly imported below since the BND tools do not
+					automatically add ServletContainerInitializer imports.
+				-->
+				<faces.servlet.container.initializer>com.liferay.faces.bridge.ext.osgi.mojarra.servlet.FacesInitializer</faces.servlet.container.initializer>
+				<!-- JSP imports are necessary for Mojarra even though this webapp doesn't use JSP. -->
+				<!-- EL imports are necessary for Mojarra. -->
+				<!--
+					The optional imports are automatically added by Liferay but are not provided, they are not necessary
+					so mark them as optional to allow the portlet to deploy without them.
+				-->
+				<import.package>
+					Import-Package: \
+						!com.liferay.faces.demos.*,\
+						javax.el;version="[2.2.0,4.0.0)",\
+						javax.faces.view;version="[2.2,3)",\
+						javax.faces.webapp;version="[2.2,3)",\
+						com.liferay.faces.bridge.ext.osgi.mojarra.servlet,\
+						com.swabunga.spell.*;resolution:=optional,\
+						org.apache.axis.*;resolution:=optional,\
+						org.apache.bsf.*;resolution:=optional,\
+						org.apache.poi.*;resolution:=optional,\
+						org.apache.portals.*;resolution:=optional,\
+						net.fortuna.ical4j.*;resolution:=optional,\
+						*
+				</import.package>
+				<webapp.descriptor>web-thin-war.xml</webapp.descriptor>
+				<war.dependency.scope>provided</war.dependency.scope>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<mkdir dir="${project.build.outputDirectory}/META-INF/services" />
+										<echo message="${faces.servlet.container.initializer}"
+											  file="${project.build.outputDirectory}/META-INF/services/javax.servlet.ServletContainerInitializer" />
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<dependencies>
+				<dependency>
+					<groupId>com.liferay.faces</groupId>
+					<artifactId>com.liferay.faces.util</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.glassfish</groupId>
+					<artifactId>javax.faces</artifactId>
+					<version>${mojarra.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
 
 	<dependencies>
@@ -68,19 +143,28 @@
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
 			<version>${primefaces.version}</version>
+			<scope>${war.dependency.scope}</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.faces</groupId>
+			<artifactId>com.liferay.faces.bridge.api</artifactId>
+			<scope>${war.dependency.scope}</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.faces</groupId>
 			<artifactId>com.liferay.faces.bridge.impl</artifactId>
 			<version>${project.version}</version>
+			<scope>${war.dependency.scope}</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.faces</groupId>
 			<artifactId>com.liferay.faces.alloy</artifactId>
+			<scope>${war.dependency.scope}</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
+			<scope>${war.dependency.scope}</scope>
 		</dependency>
 	</dependencies>
 
