@@ -87,18 +87,51 @@
 		<app.server.type>tomcat</app.server.type>
 		<cdi.version>1.2</cdi.version>
 		<component.namespace>none</component.namespace>
+		<!--
+			The packages of alloy:column, alloy:field, alloy:fieldset, and alloy:row must be explicitly
+			imported since the BND tools do not automatically add imports from xhtml files.
+		-->
+		<default.alloy.imported.packages>
+			com.liferay.faces.alloy.component.column,\
+			com.liferay.faces.alloy.component.field,\
+			com.liferay.faces.alloy.component.fieldset,\
+			com.liferay.faces.alloy.component.row,\
+		</default.alloy.imported.packages>
+		<!--
+			The package of FacesInitializer must also be explicitly imported since the BND tools do not automatically
+			add ServletContainerInitializer imports.
+		-->
+		<!-- EL imports are necessary for Mojarra. -->
+		<!--
+			The optional imports are automatically added by Liferay but are not provided, they are not necessary
+			so mark them as optional to allow the portlet to deploy without them.
+		-->
+		<default.liferay.faces.imported.packages>
+			!com.liferay.faces.demos.*,\
+			javax.el;version="[2.2.0,4.0.0)",\
+			javax.faces.view;version="[2.2,3)",\
+			javax.faces.webapp;version="[2.2,3)",\
+			com.liferay.faces.bridge.ext.osgi.mojarra.servlet,\
+			com.swabunga.spell.*;resolution:=optional,\
+			org.apache.axis.*;resolution:=optional,\
+			org.apache.bsf.*;resolution:=optional,\
+			org.apache.poi.*;resolution:=optional,\
+			org.apache.portals.*;resolution:=optional,\
+			net.fortuna.ical4j.*;resolution:=optional,\
+		</default.liferay.faces.imported.packages>
 		<faces.api.group.id>javax.faces</faces.api.group.id>
 		<faces.api.artifact.id>javax.faces-api</faces.api.artifact.id>
 		<faces.api.scope>provided</faces.api.scope>
 		<faces.api.version>${faces.spec.version}</faces.api.version>
 		<faces.impl.group.id>org.glassfish</faces.impl.group.id>
 		<faces.impl.artifact.id>javax.faces</faces.impl.artifact.id>
-		<faces.impl.scope>runtime</faces.impl.scope>
+		<faces.impl.scope>provided</faces.impl.scope>
+		<faces.servlet.container.initializer>com.liferay.faces.bridge.ext.osgi.mojarra.servlet.FacesInitializer</faces.servlet.container.initializer>
 		<faces.spec.version>2.2</faces.spec.version>
 		<faces.version>${mojarra.version}</faces.version>
-		<filter.web.inf.properties>false</filter.web.inf.properties>
 		<full.version>${project.version} (${timestamp} AD)</full.version>
 		<icefaces.version>4.2.0</icefaces.version>
+		<import.package></import.package>
 		<jstl.version>1.2</jstl.version>
 		<log4j.version>1.2.14</log4j.version>
 		<liferay.app.server.dir>${liferay.home}/tomcat-${liferay.tomcat.version}</liferay.app.server.dir>
@@ -137,9 +170,12 @@
 		<project.stage>Production</project.stage>
 		<richfaces.version>4.5.17.Final</richfaces.version>
 		<selenium.version>2.53.0</selenium.version>
+		<skip.thin.war.setup>true</skip.thin.war.setup>
 		<spring.version>4.2.5.RELEASE</spring.version>
 		<surefire.version>2.12</surefire.version>
 		<tck.trinidad.version>2.0.1</tck.trinidad.version>
+		<filter.web.inf.properties>true</filter.web.inf.properties>
+		<war.dependency.scope>provided</war.dependency.scope>
 		<war.packaging.excludes>
 			WEB-INF/glassfish-*.xml,
 			WEB-INF/ibm-*.xml,
@@ -151,6 +187,13 @@
 		<webapp.descriptor>web.xml</webapp.descriptor>
 		<weblogic.jaxb.version>2.2.7</weblogic.jaxb.version>
 		<weld.version>2.3.3.Final</weld.version>
+		<!--
+			Workaround LPS-74553: ClassNotFoundException: HtmlTopTag cannot be found after restart by importing
+			com.liferay.taglib.util.
+		-->
+		<workaround.LPS-74553.imported.packages>
+			com.liferay.taglib.util,\
+		</workaround.LPS-74553.imported.packages>
 	</properties>
 
 	<build>
@@ -171,6 +214,24 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
 					<version>1.7</version>
+					<executions>
+						<execution>
+							<id>thin-war-setup</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<skip>${skip.thin.war.setup}</skip>
+								<target>
+									<mkdir dir="${project.build.outputDirectory}/META-INF/services" />
+									<echo message="${faces.servlet.container.initializer}"
+										file="${project.build.outputDirectory}/META-INF/services/javax.servlet.ServletContainerInitializer" />
+									<mkdir dir="${project.build.outputDirectory}/WEB-INF" />
+								</target>
+							</configuration>
+						</execution>
+					</executions>
 					<dependencies>
 						<dependency>
 							<groupId>ant-contrib</groupId>
@@ -456,6 +517,17 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<properties>
+				<skip.thin.war.setup>false</skip.thin.war.setup>
+			</properties>
+		</profile>
+		<profile>
+			<id>fatWar</id>
+			<properties>
+				<filter.web.inf.properties>false</filter.web.inf.properties>
+				<skip.thin.war.setup>true</skip.thin.war.setup>
+				<war.dependency.scope>compile</war.dependency.scope>
+			</properties>
 		</profile>
 		<profile>
 			<id>liferay62</id>
@@ -781,7 +853,7 @@
 				<groupId>com.liferay.faces</groupId>
 				<artifactId>com.liferay.faces.alloy</artifactId>
 				<version>${liferay.faces.alloy.version}</version>
-				<scope>runtime</scope>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.liferay.faces</groupId>
@@ -793,19 +865,19 @@
 				<groupId>com.liferay.faces</groupId>
 				<artifactId>com.liferay.faces.bridge.api</artifactId>
 				<version>4.1.0</version>
-				<scope>compile</scope>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.liferay.faces</groupId>
 				<artifactId>com.liferay.faces.bridge.impl</artifactId>
 				<version>${project.version}</version>
-				<scope>runtime</scope>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.liferay.faces</groupId>
 				<artifactId>com.liferay.faces.util</artifactId>
-				<version>3.1.0</version>
-				<scope>compile</scope>
+				<version>3.2.0-SNAPSHOT</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish</groupId>
@@ -817,16 +889,19 @@
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
 				<version>1.3.1</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>2.2</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>1.1.1</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax.annotation</groupId>
@@ -856,6 +931,7 @@
 				<groupId>javax.inject</groupId>
 				<artifactId>javax.inject</artifactId>
 				<version>1</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax.portlet</groupId>
@@ -879,6 +955,7 @@
 				<groupId>javax.validation</groupId>
 				<artifactId>validation-api</artifactId>
 				<version>1.1.0.Final</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
@@ -890,21 +967,25 @@
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.myfaces.core</groupId>
 				<artifactId>myfaces-api</artifactId>
 				<version>${myfaces.version}</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.myfaces.core</groupId>
 				<artifactId>myfaces-impl</artifactId>
 				<version>${myfaces.version}</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.web</groupId>
 				<artifactId>jstl-impl</artifactId>
 				<version>${jstl.version}</version>
+				<scope>${war.dependency.scope}</scope>
 				<exclusions>
 				    <exclusion>
 				        <groupId>javax.servlet</groupId>
@@ -920,6 +1001,7 @@
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>5.1.3.Final</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.icefaces</groupId>
@@ -971,11 +1053,13 @@
 				<groupId>org.jboss.weld.servlet</groupId>
 				<artifactId>weld-servlet</artifactId>
 				<version>${weld.version}</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
 				<version>${spring.version}</version>
+				<scope>${war.dependency.scope}</scope>
 			</dependency>
 
 			<!-- Integration test dependencies. -->

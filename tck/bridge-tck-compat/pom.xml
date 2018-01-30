@@ -33,7 +33,6 @@
 		<dependency>
 			<groupId>com.liferay.faces</groupId>
 			<artifactId>com.liferay.faces.bridge.impl</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

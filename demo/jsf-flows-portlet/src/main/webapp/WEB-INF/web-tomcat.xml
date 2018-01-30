@@ -38,9 +38,6 @@
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>ERROR</dispatcher>
 	</filter-mapping>
-	<listener>
-		<listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
-	</listener>
 	<!-- Although the FacesServlet will not be invoked by any portlet requests, it is required to initialize JSF. -->
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
