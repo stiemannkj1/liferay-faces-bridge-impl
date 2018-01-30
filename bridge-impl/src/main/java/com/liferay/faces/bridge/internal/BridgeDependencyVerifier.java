@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
  */
 package com.liferay.faces.bridge.internal;
 
+import javax.faces.context.ExternalContext;
+
+import com.liferay.faces.util.factory.FactoryExtensionFinder;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -29,43 +32,45 @@ public class BridgeDependencyVerifier {
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(BridgeDependencyVerifier.class);
 
-	public static void verify() {
+	public static void verify(ExternalContext externalContext) {
 
 		Package bridgePackage = BridgeDependencyVerifier.class.getPackage();
 		String implementationTitle = bridgePackage.getImplementationTitle();
 		String implementationVersion = bridgePackage.getImplementationVersion();
-		Product liferayPortal = ProductFactory.getProduct(Product.Name.LIFERAY_PORTAL);
+		ProductInfoFactory productInfoFactory = (ProductInfoFactory) FactoryExtensionFinder.getFactory(externalContext,
+				ProductInfoFactory.class);
+		final ProductInfo LIFERAY_PORTAL = productInfoFactory.getProductInfo(ProductInfo.Name.LIFERAY_PORTAL);
 
-		if (liferayPortal.isDetected()) {
+		if (LIFERAY_PORTAL.isDetected()) {
 
-			Product liferayFacesBridgeExt = ProductFactory.getProduct(Product.Name.LIFERAY_FACES_BRIDGE_EXT);
+			final ProductInfo LIFERAY_FACES_BRIDGE_EXT = productInfoFactory.getProductInfo(
+					ProductInfo.Name.LIFERAY_FACES_BRIDGE_EXT);
 
-			if (!liferayFacesBridgeExt.isDetected()) {
+			if (!LIFERAY_FACES_BRIDGE_EXT.isDetected()) {
 				logger.error(
 					"{0} {1} is running in Liferay Portal {2}.{3} but the com.liferay.faces.bridge.ext.jar dependency is not in the classpath",
-					implementationTitle, implementationVersion, liferayPortal.getMajorVersion(),
-					liferayPortal.getMinorVersion());
+					implementationTitle, implementationVersion, LIFERAY_PORTAL.getMajorVersion(),
+					LIFERAY_PORTAL.getMinorVersion());
 			}
 		}
 
-		Product portletApi = ProductFactory.getProduct(Product.Name.PORTLET_API);
-		int portletApiMajorVersion = portletApi.getMajorVersion();
-		int portletApiMinorVersion = portletApi.getMinorVersion();
+		final ProductInfo PORTLET_API = productInfoFactory.getProductInfo(ProductInfo.Name.PORTLET_API);
+		final int PORTLET_API_MAJOR_VERSION = PORTLET_API.getMajorVersion();
+		final int PORTLET_API_MINOR_VERSION = PORTLET_API.getMinorVersion();
 
-		if (!((portletApiMajorVersion == 2) && (portletApiMinorVersion >= 0))) {
+		if (!((PORTLET_API_MAJOR_VERSION == 2) && (PORTLET_API_MINOR_VERSION >= 0))) {
 
 			logger.error("{0} {1} is designed to be used with Portlet 2.0 but detected {2}.{3}", implementationTitle,
-				implementationVersion, portletApiMajorVersion, portletApiMinorVersion);
+				implementationVersion, PORTLET_API_MAJOR_VERSION, PORTLET_API_MINOR_VERSION);
 		}
 
-		Product jsf = ProductFactory.getProduct(Product.Name.JSF);
+		final ProductInfo JSF = productInfoFactory.getProductInfo(ProductInfo.Name.JSF);
+		final int JSF_MAJOR_VERSION = JSF.getMajorVersion();
+		final int JSF_MINOR_VERSION = JSF.getMinorVersion();
 
-		int jsfMajorVersion = jsf.getMajorVersion();
-		int jsfMinorVersion = jsf.getMinorVersion();
-
-		if (!((jsfMajorVersion == 2) && (jsfMinorVersion == 2))) {
+		if (!((JSF_MAJOR_VERSION == 2) && (JSF_MINOR_VERSION == 2))) {
 			logger.error("{0} {1} is designed to be used with JSF 2.2 but detected {2}.{3}", implementationTitle,
-				implementationVersion, jsfMajorVersion, jsfMinorVersion);
+				implementationVersion, JSF_MAJOR_VERSION, JSF_MINOR_VERSION);
 		}
 	}
 }

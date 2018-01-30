@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ import javax.faces.render.ResponseStateManager;
 
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -31,26 +31,24 @@ public class FacesRuntimeUtil {
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(FacesRuntimeUtil.class);
 
-	// Private Constants
-	private static final boolean JSF_RUNTIME_SUPPORTS_NAMESPACING_VIEWSTATE;
+	public static boolean isNamespacedViewStateSupported(ProductInfoFactory productInfoFactory) {
 
-	static {
 		boolean namespacedViewStateSupported = false;
-		Product mojarra = ProductFactory.getProduct(Product.Name.MOJARRA);
+		final ProductInfo MOJARRA = productInfoFactory.getProductInfo(ProductInfo.Name.MOJARRA);
 
-		if (mojarra.isDetected()) {
+		if (MOJARRA.isDetected()) {
 
-			int mojarraMajorVersion = mojarra.getMajorVersion();
+			int mojarraMajorVersion = MOJARRA.getMajorVersion();
 
 			if (mojarraMajorVersion == 2) {
 
-				int mojarraMinorVersion = mojarra.getMinorVersion();
+				int mojarraMinorVersion = MOJARRA.getMinorVersion();
 
 				if (mojarraMinorVersion == 1) {
-					namespacedViewStateSupported = (mojarra.getPatchVersion() >= 27);
+					namespacedViewStateSupported = (MOJARRA.getPatchVersion() >= 27);
 				}
 				else if (mojarraMinorVersion == 2) {
-					namespacedViewStateSupported = (mojarra.getPatchVersion() >= 4);
+					namespacedViewStateSupported = (MOJARRA.getPatchVersion() >= 4);
 				}
 				else if (mojarraMinorVersion > 2) {
 					namespacedViewStateSupported = true;
@@ -61,15 +59,14 @@ public class FacesRuntimeUtil {
 			}
 		}
 
-		Product jsf = ProductFactory.getProduct(Product.Name.JSF);
-		logger.debug("JSF runtime [{0}] version [{1}].[{2}].[{3}] supports namespacing [{4}]: [{5}]", jsf.getTitle(),
-			jsf.getMajorVersion(), jsf.getMinorVersion(), jsf.getPatchVersion(), ResponseStateManager.VIEW_STATE_PARAM,
-			namespacedViewStateSupported);
+		if (logger.isDebugEnabled()) {
 
-		JSF_RUNTIME_SUPPORTS_NAMESPACING_VIEWSTATE = namespacedViewStateSupported;
-	}
+			final ProductInfo JSF = productInfoFactory.getProductInfo(ProductInfo.Name.JSF);
+			logger.debug("JSF runtime [{0}] version [{1}].[{2}].[{3}] supports namespacing [{4}]: [{5}]",
+				JSF.getTitle(), JSF.getMajorVersion(), JSF.getMinorVersion(), JSF.getPatchVersion(),
+				ResponseStateManager.VIEW_STATE_PARAM, namespacedViewStateSupported);
+		}
 
-	public static boolean isNamespacedViewStateSupported() {
-		return JSF_RUNTIME_SUPPORTS_NAMESPACING_VIEWSTATE;
+		return namespacedViewStateSupported;
 	}
 }

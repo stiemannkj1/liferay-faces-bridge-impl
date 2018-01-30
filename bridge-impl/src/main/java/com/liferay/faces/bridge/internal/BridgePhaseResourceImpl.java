@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ import com.liferay.faces.util.config.FacesConfig;
 import com.liferay.faces.util.helper.BooleanHelper;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -53,8 +53,6 @@ public class BridgePhaseResourceImpl extends BridgePhaseCompat_2_2_Impl {
 	private static final Logger logger = LoggerFactory.getLogger(BridgePhaseResourceImpl.class);
 
 	// Private Constants
-	private static final boolean LIFERAY_PORTAL_DETECTED = ProductFactory.getProduct(Product.Name.LIFERAY_PORTAL)
-		.isDetected();
 	private static final String[] URL_SEPARATOR_CHARS = new String[] { "?", "#", ";" };
 
 	// Private Data Members
@@ -150,7 +148,10 @@ public class BridgePhaseResourceImpl extends BridgePhaseCompat_2_2_Impl {
 						// has been enforced.
 						if (resourcePath.trim().length() == 0) {
 
-							if (LIFERAY_PORTAL_DETECTED) {
+							final ProductInfo LIFERAY_PORTAL = ProductInfoFactory.getProductInfoInstance(
+									externalContext, ProductInfo.Name.LIFERAY_PORTAL);
+
+							if (LIFERAY_PORTAL.isDetected()) {
 
 								logger.warn(
 									"Invalid request for resourceId=[] possibly due to Liferay Portal enforcing the portlet.resource.id.banned.paths.regexp property.");

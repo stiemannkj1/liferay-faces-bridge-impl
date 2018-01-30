@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,21 +44,20 @@ public class BridgeRequestScopeManagerImpl implements BridgeRequestScopeManager 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(BridgeRequestScopeManagerImpl.class);
 
-	// Static field must be declared volatile in order for the double-check idiom to work (requires JRE 1.5+)
-	private static volatile Cache<String, BridgeRequestScope> bridgeRequestScopeCache;
+	// Private field must be declared volatile in order for the double-check idiom to work (requires JRE 1.5+)
+	private volatile Cache<String, BridgeRequestScope> bridgeRequestScopeCache;
 
 	@Override
 	public Cache<String, BridgeRequestScope> getBridgeRequestScopeCache(PortletContext portletContext) {
 
-		Cache<String, BridgeRequestScope> bridgeRequestScopeCache =
-			BridgeRequestScopeManagerImpl.bridgeRequestScopeCache;
+		Cache<String, BridgeRequestScope> bridgeRequestScopeCache = this.bridgeRequestScopeCache;
 
 		// First check without locking (not yet thread-safe)
 		if (bridgeRequestScopeCache == null) {
 
-			synchronized (BridgeRequestScopeManagerImpl.class) {
+			synchronized (this) {
 
-				bridgeRequestScopeCache = BridgeRequestScopeManagerImpl.bridgeRequestScopeCache;
+				bridgeRequestScopeCache = this.bridgeRequestScopeCache;
 
 				// Second check with locking (thread-safe)
 				if (bridgeRequestScopeCache == null) {
@@ -73,12 +72,12 @@ public class BridgeRequestScopeManagerImpl implements BridgeRequestScopeManager 
 							emptyPortletConfig);
 
 					if (maxCacheCapacity > -1) {
-						bridgeRequestScopeCache = BridgeRequestScopeManagerImpl.bridgeRequestScopeCache =
-								cacheFactory.getConcurrentLRUCache(initialCacheCapacity, maxCacheCapacity);
+						bridgeRequestScopeCache = this.bridgeRequestScopeCache = cacheFactory.getConcurrentLRUCache(
+									initialCacheCapacity, maxCacheCapacity);
 					}
 					else {
-						bridgeRequestScopeCache = BridgeRequestScopeManagerImpl.bridgeRequestScopeCache =
-								cacheFactory.getConcurrentCache(initialCacheCapacity);
+						bridgeRequestScopeCache = this.bridgeRequestScopeCache = cacheFactory.getConcurrentCache(
+									initialCacheCapacity);
 					}
 				}
 			}
@@ -90,12 +89,9 @@ public class BridgeRequestScopeManagerImpl implements BridgeRequestScopeManager 
 	@Override
 	public void removeBridgeRequestScopesByPortlet(PortletConfig portletConfig) {
 
-		String portletNameToRemove = portletConfig.getPortletName();
 		PortletContext portletContext = portletConfig.getPortletContext();
-		BridgeRequestScopeManager bridgeRequestScopeManager = BridgeRequestScopeManagerFactory
-			.getBridgeRequestScopeManagerInstance(portletContext);
-		Cache<String, BridgeRequestScope> bridgeRequestScopeCache =
-			bridgeRequestScopeManager.getBridgeRequestScopeCache(portletContext);
+		Cache<String, BridgeRequestScope> bridgeRequestScopeCache = getBridgeRequestScopeCache(portletContext);
+		String portletNameToRemove = portletConfig.getPortletName();
 		removeBridgeRequestScopes(bridgeRequestScopeCache, true, portletNameToRemove);
 	}
 
@@ -109,49 +105,10 @@ public class BridgeRequestScopeManagerImpl implements BridgeRequestScopeManager 
 	@Override
 	public void removeBridgeRequestScopesBySession(HttpSession httpSession) {
 
-		ServletContext servletContext = httpSession.getServletContext();
-		Enumeration<String> attributeNames = servletContext.getAttributeNames();
-		String sessionId = httpSession.getId();
+		if (bridgeRequestScopeCache != null) {
 
-		while (attributeNames.hasMoreElements()) {
-
-			String attributeName = attributeNames.nextElement();
-			Object attribute = servletContext.getAttribute(attributeName);
-
-			if (attribute instanceof Cache) {
-
-				boolean bridgeRequestScopeCacheFound = false;
-				Cache cache = (Cache) attribute;
-				Set keySet = cache.getKeys();
-				Iterator iterator = keySet.iterator();
-
-				while (iterator.hasNext()) {
-
-					Object key = iterator.next();
-
-					if (key instanceof String) {
-
-						Object value = cache.getValue(key);
-
-						if (value instanceof BridgeRequestScope) {
-
-							bridgeRequestScopeCacheFound = true;
-
-							break;
-						}
-						else {
-							break;
-						}
-					}
-					else {
-						break;
-					}
-				}
-
-				if (bridgeRequestScopeCacheFound) {
-					removeBridgeRequestScopes(cache, false, sessionId);
-				}
-			}
+			String sessionId = httpSession.getId();
+			removeBridgeRequestScopes(bridgeRequestScopeCache, false, sessionId);
 		}
 	}
 

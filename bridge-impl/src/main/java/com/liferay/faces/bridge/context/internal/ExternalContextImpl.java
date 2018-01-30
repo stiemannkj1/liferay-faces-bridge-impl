@@ -75,8 +75,8 @@ import com.liferay.faces.bridge.util.internal.ViewUtil;
 import com.liferay.faces.util.config.ConfiguredServletMapping;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 import com.liferay.faces.util.render.FacesURLEncoder;
 import com.liferay.faces.util.render.FacesURLEncoderFactory;
 
@@ -93,7 +93,6 @@ public class ExternalContextImpl extends ExternalContextCompat_Portlet3_Impl {
 	private static final String ORG_RICHFACES_EXTENSION = "org.richfaces.extension";
 	private static final String REQUEST_ATTR_PORTLET_REQUEST = "javax.portlet.request";
 	private static final String REQUEST_ATTR_QUERY_STRING = "javax.servlet.forward.query_string";
-	private static final boolean RICHFACES_DETECTED = ProductFactory.getProduct(Product.Name.RICHFACES).isDetected();
 
 	// Pre-initialized Data Members
 	private Map<String, Object> applicationMap;
@@ -214,6 +213,9 @@ public class ExternalContextImpl extends ExternalContextCompat_Portlet3_Impl {
 	 */
 	@Override
 	public String encodeNamespace(String name) {
+
+		final ProductInfo RICHFACES = ProductInfoFactory.getProductInfoInstance(this, ProductInfo.Name.RICHFACES);
+		final boolean RICHFACES_DETECTED = RICHFACES.isDetected();
 
 		if (name == null) {
 			return portletResponse.getNamespace();

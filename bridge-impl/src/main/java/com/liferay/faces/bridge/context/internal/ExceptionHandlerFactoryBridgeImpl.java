@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,17 @@ package com.liferay.faces.bridge.context.internal;
 
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerFactory;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
  * @author  Neil Griffin
  */
 public class ExceptionHandlerFactoryBridgeImpl extends ExceptionHandlerFactory {
-
-	// Private Constants
-	private static final Product ICEFACES = ProductFactory.getProduct(Product.Name.ICEFACES);
-	private static final boolean ICEFACES_DETECTED = ICEFACES.isDetected();
-	private static final int ICEFACES_MAJOR_VERSION = ICEFACES.getMajorVersion();
-	private static final int ICEFACES_MINOR_VERSION = ICEFACES.getMinorVersion();
 
 	// Private Data Members
 	private ExceptionHandlerFactory wrappedExceptionHandlerFactory;
@@ -45,12 +40,15 @@ public class ExceptionHandlerFactoryBridgeImpl extends ExceptionHandlerFactory {
 	public ExceptionHandler getExceptionHandler() {
 
 		ExceptionHandler wrappedExceptionHandler = wrappedExceptionHandlerFactory.getExceptionHandler();
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		ProductInfo ICEFACES = ProductInfoFactory.getProductInfoInstance(externalContext, ProductInfo.Name.ICEFACES);
+		final int MAJOR_VERSION = ICEFACES.getMajorVersion();
 
-		if (ICEFACES_DETECTED &&
-				(((ICEFACES_MAJOR_VERSION == 4) && (ICEFACES_MINOR_VERSION < 2)) || (ICEFACES_MAJOR_VERSION < 4))) {
+		if (ICEFACES.isDetected() &&
+				(((MAJOR_VERSION == 4) && (ICEFACES.getMinorVersion() < 2)) || (MAJOR_VERSION < 4))) {
 
 			// Workaround for https://issues.liferay.com/browse/FACES-3012
-			FacesContext facesContext = FacesContext.getCurrentInstance();
 			facesContext.getPartialViewContext();
 		}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.servlet.ServletContext;
 
+import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.context.BridgePortalContext;
 import com.liferay.faces.bridge.model.UploadedFile;
 import com.liferay.faces.bridge.model.internal.UploadedFileBridgeImpl;
@@ -37,8 +38,8 @@ import com.liferay.faces.bridge.scope.internal.BridgeRequestScope;
 import com.liferay.faces.bridge.util.internal.FacesRuntimeUtil;
 import com.liferay.faces.util.context.map.FacesRequestParameterMap;
 import com.liferay.faces.util.context.map.MultiPartFormData;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -47,7 +48,6 @@ import com.liferay.faces.util.product.ProductFactory;
 public class ContextMapFactoryImpl extends ContextMapFactoryCompatImpl {
 
 	// Private Constants
-	private static final boolean ICEFACES_DETECTED = ProductFactory.getProduct(Product.Name.ICEFACES).isDetected();
 	private static final String MULTIPART_FORM_DATA_FQCN = MultiPartFormData.class.getName();
 
 	@Override
@@ -174,7 +174,11 @@ public class ContextMapFactoryImpl extends ContextMapFactoryCompatImpl {
 		String strictNamespacedParametersSupport = portalContext.getProperty(
 				BridgePortalContext.STRICT_NAMESPACED_PARAMETERS_SUPPORT);
 		boolean strictParameterNamespacing = (strictNamespacedParametersSupport != null);
-		boolean namespaceViewState = strictParameterNamespacing && FacesRuntimeUtil.isNamespacedViewStateSupported();
+		PortletContext portletContext = portletConfig.getPortletContext();
+		ProductInfoFactory productInfoFactory = (ProductInfoFactory) BridgeFactoryFinder.getFactory(portletContext,
+				ProductInfoFactory.class);
+		boolean namespaceViewState = strictParameterNamespacing &&
+			FacesRuntimeUtil.isNamespacedViewStateSupported(productInfoFactory);
 
 		if (portletRequest instanceof ClientDataRequest) {
 
@@ -182,6 +186,9 @@ public class ContextMapFactoryImpl extends ContextMapFactoryCompatImpl {
 			String contentType = clientDataRequest.getContentType();
 
 			// Note: ICEfaces ace:fileEntry relies on its own mechanism for handling file upload.
+			final ProductInfo ICEFACES = productInfoFactory.getProductInfo(ProductInfo.Name.ICEFACES);
+			final boolean ICEFACES_DETECTED = ICEFACES.isDetected();
+
 			if (!ICEFACES_DETECTED && (contentType != null) && contentType.toLowerCase().startsWith("multipart/")) {
 
 				MultiPartFormData multiPartFormData = (MultiPartFormData) portletRequest.getAttribute(
