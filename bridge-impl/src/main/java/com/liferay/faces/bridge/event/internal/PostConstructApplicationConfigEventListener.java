@@ -18,19 +18,16 @@ package com.liferay.faces.bridge.event.internal;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ListenerFor;
 import javax.faces.event.SystemEvent;
 import javax.faces.event.SystemEventListener;
 
 import com.liferay.faces.bridge.internal.BridgeDependencyVerifier;
 import com.liferay.faces.util.config.ApplicationConfig;
-import com.liferay.faces.util.event.PostConstructApplicationConfigEvent;
 
 
 /**
  * @author  Kyle Stiemann
  */
-@ListenerFor(systemEventClass = PostConstructApplicationConfigEvent.class)
 public class PostConstructApplicationConfigEventListener implements SystemEventListener {
 
 	@Override

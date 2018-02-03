@@ -31,8 +31,6 @@ import javax.portlet.faces.Bridge.PortletPhase;
 import javax.portlet.faces.BridgeUtil;
 
 import com.liferay.faces.bridge.internal.BridgeExt;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
 import com.liferay.faces.util.product.info.ProductInfo;
 import com.liferay.faces.util.product.info.ProductInfoFactory;
 

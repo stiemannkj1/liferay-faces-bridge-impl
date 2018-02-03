@@ -15,11 +15,14 @@
  */
 package com.liferay.faces.bridge.bean.internal;
 
+import com.liferay.faces.bridge.BridgeFactoryFinder;
 import javax.portlet.PortletContext;
 import javax.servlet.ServletContext;
 
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 
 /**
@@ -30,9 +33,12 @@ public class PreDestroyInvokerFactoryImpl extends PreDestroyInvokerFactory {
 	@Override
 	public PreDestroyInvoker getPreDestroyInvoker(ServletContext servletContext) {
 
-		final boolean MOJARRA_DETECTED = ProductFactory.getProduct(Product.Name.MOJARRA).isDetected();
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		final ProductInfo MOJARRA =
+				ProductInfoFactory.getProductInfoInstance(externalContext, ProductInfo.Name.MOJARRA);
 
-		if (MOJARRA_DETECTED) {
+		if (MOJARRA.isDetected()) {
 			return new PreDestroyInvokerMojarraImpl(servletContext);
 		}
 		else {
@@ -43,9 +49,11 @@ public class PreDestroyInvokerFactoryImpl extends PreDestroyInvokerFactory {
 	@Override
 	public PreDestroyInvoker getPreDestroyInvoker(PortletContext portletContext) {
 
-		final boolean MOJARRA_DETECTED = ProductFactory.getProduct(Product.Name.MOJARRA).isDetected();
+		ProductInfoFactory productInfoFactory =
+				(ProductInfoFactory) BridgeFactoryFinder.getFactory(portletContext, ProductInfoFactory.class);
+		final ProductInfo MOJARRA = productInfoFactory.getProductInfo(ProductInfo.Name.MOJARRA);
 
-		if (MOJARRA_DETECTED) {
+		if (MOJARRA.isDetected()) {
 			return new PreDestroyInvokerMojarraImpl(portletContext);
 		}
 		else {

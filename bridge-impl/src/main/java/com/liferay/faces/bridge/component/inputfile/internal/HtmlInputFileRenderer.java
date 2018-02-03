@@ -15,7 +15,6 @@
  */
 package com.liferay.faces.bridge.component.inputfile.internal;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +34,8 @@ import com.liferay.faces.bridge.context.map.internal.ContextMapFactory;
 import com.liferay.faces.bridge.model.UploadedFile;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 import com.liferay.faces.util.render.DelegatingRendererBase;
 import com.liferay.faces.util.render.RendererUtil;
 
@@ -49,27 +48,8 @@ public class HtmlInputFileRenderer extends DelegatingRendererBase {
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(HtmlInputFileRenderer.class);
 
-	// Private Data Members
-	private Renderer delegateRenderer;
-
-	public HtmlInputFileRenderer() {
-
-		String delegateBodyRendererFQCN = "com.sun.faces.renderkit.html_basic.FileRenderer";
-
-		final boolean MYFACES_DETECTED = ProductFactory.getProduct(Product.Name.MYFACES).isDetected();
-
-		if (MYFACES_DETECTED) {
-			delegateBodyRendererFQCN = "org.apache.myfaces.renderkit.html.HtmlInputFileRenderer";
-		}
-
-		try {
-			Class<?> delegateBodyRendererClass = Class.forName(delegateBodyRendererFQCN);
-			delegateRenderer = (Renderer) delegateBodyRendererClass.newInstance();
-		}
-		catch (Exception e) {
-			logger.error(e);
-		}
-	}
+	// Instance field must be declared volatile in order for the double-check idiom to work (requires JRE 1.5+)
+	private volatile Renderer delegateRenderer;
 
 	@Override
 	public void decode(FacesContext facesContext, UIComponent uiComponent) {
@@ -120,6 +100,42 @@ public class HtmlInputFileRenderer extends DelegatingRendererBase {
 
 	@Override
 	public Renderer getDelegateRenderer(FacesContext facesContext) {
+
+		Renderer delegateRenderer = this.delegateRenderer;
+
+		// First check without locking (not yet thread-safe)
+		if (delegateRenderer == null) {
+
+			synchronized (this) {
+
+				delegateRenderer = this.delegateRenderer;
+
+				// Second check with locking (thread-safe)
+				if (delegateRenderer == null) {
+
+					String delegateBodyRendererFQCN = "com.sun.faces.renderkit.html_basic.FileRenderer";
+					ExternalContext externalContext = facesContext.getExternalContext();
+					final ProductInfo MYFACES =
+							ProductInfoFactory.getProductInfoInstance(externalContext, ProductInfo.Name.MYFACES);
+
+					if (MYFACES.isDetected()) {
+						delegateBodyRendererFQCN = "org.apache.myfaces.renderkit.html.HtmlInputFileRenderer";
+					}
+
+					try {
+
+						Class<?> delegateBodyRendererClass = Class.forName(delegateBodyRendererFQCN);
+						delegateRenderer = this.delegateRenderer = (Renderer) delegateBodyRendererClass.newInstance();
+					}
+					catch (Exception e) {
+
+						logger.error(e);
+						delegateRenderer = this.delegateRenderer = new NoOpRenderer();
+					}
+				}
+			}
+		}
+
 		return delegateRenderer;
 	}
 

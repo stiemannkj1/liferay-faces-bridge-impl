@@ -33,8 +33,6 @@ import com.liferay.faces.bridge.filter.internal.RenderResponseHttpServletAdapter
 import com.liferay.faces.bridge.filter.internal.ResourceRequestHttpServletAdapter;
 import com.liferay.faces.bridge.filter.internal.ResourceResponseHttpServletAdapter;
 import com.liferay.faces.util.factory.FactoryExtensionFinder;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
 import com.liferay.faces.util.product.info.ProductInfo;
 import com.liferay.faces.util.product.info.ProductInfoFactory;
 

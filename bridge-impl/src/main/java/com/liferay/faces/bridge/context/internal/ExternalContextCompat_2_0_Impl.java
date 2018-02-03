@@ -44,8 +44,8 @@ import com.liferay.faces.bridge.internal.PortletConfigParam;
 import com.liferay.faces.bridge.util.internal.FileNameUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -640,11 +640,11 @@ public abstract class ExternalContextCompat_2_0_Impl extends ExternalContextComp
 
 			if ((requestContentType != null) && requestContentType.toLowerCase().startsWith("multipart/")) {
 
-				Product iceFaces = ProductFactory.getProduct(Product.Name.ICEFACES);
+				final ProductInfo ICEFACES = ProductInfoFactory.getProductInfoInstance(this, ProductInfo.Name.ICEFACES);
 
-				if (iceFaces.isDetected() &&
-						((iceFaces.getMajorVersion() == 2) ||
-							((iceFaces.getMajorVersion() == 3) && (iceFaces.getMinorVersion() == 0)))) {
+				if (ICEFACES.isDetected() &&
+						((ICEFACES.getMajorVersion() == 2) ||
+							((ICEFACES.getMajorVersion() == 3) && (ICEFACES.getMinorVersion() == 0)))) {
 
 					iceFacesLegacyMode = Boolean.TRUE;
 				}

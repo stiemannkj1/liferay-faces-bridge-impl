@@ -36,8 +36,8 @@ import com.liferay.faces.bridge.scope.internal.BridgeRequestScopeManagerFactory;
 import com.liferay.faces.util.config.ApplicationConfig;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -104,21 +104,26 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 		if (firstInstance) {
 
 			// Determine if Mojarra is able to cleanup the active view maps.
-			Product mojarra = ProductFactory.getProduct(Product.Name.MOJARRA);
+			HttpSession httpSession = httpSessionEvent.getSession();
+			ServletContext servletContext = httpSession.getServletContext();
+			PortletContext portletContext = new PortletContextAdapter(servletContext);
+			ProductInfoFactory productInfoFactory =
+					(ProductInfoFactory) BridgeFactoryFinder.getFactory(portletContext, ProductInfoFactory.class);
+			final ProductInfo MOJARRA = productInfoFactory.getProductInfo(ProductInfo.Name.MOJARRA);
 			boolean mojarraAbleToCleanup = true;
 
-			if (mojarra.isDetected() && (mojarra.getMajorVersion() == 2) && (mojarra.getMinorVersion() == 1)) {
+			if (MOJARRA.isDetected() && (MOJARRA.getMajorVersion() == 2) && (MOJARRA.getMinorVersion() == 1)) {
 
-				if (mojarra.getPatchVersion() < 18) {
+				if (MOJARRA.getPatchVersion() < 18) {
 					mojarraAbleToCleanup = false;
 
 					boolean logWarning = true;
-					Product iceFaces = ProductFactory.getProduct(Product.Name.ICEFACES);
+					final ProductInfo ICEFACES = productInfoFactory.getProductInfo(ProductInfo.Name.ICEFACES);
 
-					if (iceFaces.isDetected()) {
+					if (ICEFACES.isDetected()) {
 
-						if ((iceFaces.getMajorVersion() == 2) ||
-								((iceFaces.getMajorVersion() == 3) && (iceFaces.getMinorVersion() <= 2))) {
+						if ((ICEFACES.getMajorVersion() == 2) ||
+								((ICEFACES.getMajorVersion() == 3) && (ICEFACES.getMinorVersion() <= 2))) {
 
 							// Versions of ICEfaces prior to 3.3 can only go as high as Mojarra 2.1.6 so don't bother to
 							// log the warning.
@@ -139,9 +144,6 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 			BridgeRequestScopeManagerFactory bridgeRequestScopeManagerFactory = null;
 
 			try {
-				HttpSession httpSession = httpSessionEvent.getSession();
-				ServletContext servletContext = httpSession.getServletContext();
-				PortletContext portletContext = new PortletContextAdapter(servletContext);
 				beanManagerFactory = (BeanManagerFactory) BridgeFactoryFinder.getFactory(portletContext,
 						BeanManagerFactory.class);
 				bridgeRequestScopeManagerFactory = (BridgeRequestScopeManagerFactory) BridgeFactoryFinder.getFactory(
@@ -151,18 +153,8 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 
 				String contextPath = "unknown";
 
-				if (httpSessionEvent != null) {
-
-					HttpSession httpSession = httpSessionEvent.getSession();
-
-					if (httpSession != null) {
-
-						ServletContext servletContext = httpSession.getServletContext();
-
-						if (servletContext != null) {
-							contextPath = servletContext.getContextPath();
-						}
-					}
+				if (servletContext != null) {
+					contextPath = servletContext.getContextPath();
 				}
 
 				logger.error(
@@ -173,14 +165,12 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 			if ((beanManagerFactory != null) && (bridgeRequestScopeManagerFactory != null)) {
 
 				// Cleanup instances of BridgeRequestScope that are associated with the expiring session.
-				HttpSession httpSession = httpSessionEvent.getSession();
 				BridgeRequestScopeManager bridgeRequestScopeManager =
 					bridgeRequestScopeManagerFactory.getBridgeRequestScopeManager();
 				bridgeRequestScopeManager.removeBridgeRequestScopesBySession(httpSession);
 
 				// For each session attribute:
 				String appConfigAttrName = ApplicationConfig.class.getName();
-				ServletContext servletContext = httpSession.getServletContext();
 				ApplicationConfig applicationConfig = (ApplicationConfig) servletContext.getAttribute(
 						appConfigAttrName);
 				BeanManager beanManager = beanManagerFactory.getBeanManager(applicationConfig.getFacesConfig());
@@ -217,7 +207,6 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 									// one would get cleaned-up by Mojarra.
 									if (beanManager.isManagedBean(attributeName, attributeValue)) {
 
-										PortletContext portletContext = new PortletContextAdapter(servletContext);
 										PreDestroyInvokerFactory preDestroyInvokerFactory = (PreDestroyInvokerFactory)
 											BridgeFactoryFinder.getFactory(portletContext,
 												PreDestroyInvokerFactory.class);

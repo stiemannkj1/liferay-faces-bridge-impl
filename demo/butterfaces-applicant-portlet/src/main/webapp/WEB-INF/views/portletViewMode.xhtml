@@ -3,7 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 	<h:head>
-		<c:if test="#{product.LIFERAY_PORTAL.detected}">
+		<c:if test="#{productInfo.LIFERAY_PORTAL.detected}">
 			<h:outputScript library="butterfaces-dist-bower" name="bootstrap.js" />
 		</c:if>
 	</h:head>
@@ -14,16 +14,16 @@
 		<alloy:row>
 			<alloy:column>
 				<ul>
-					<li><em><h:outputText value="#{product.JSF}" /></em></li>
-					<li><em><h:outputText value="#{product.BUTTERFACES}" /></em></li>
-					<li><em><h:outputText value="#{product.LIFERAY_FACES_ALLOY}" /></em></li>
-					<li><em><h:outputText value="#{product.LIFERAY_FACES_BRIDGE}" /></em></li>
-					<c:if test="#{product.LIFERAY_FACES_BRIDGE_EXT.detected}">
-						<li><em><h:outputText value="#{product.LIFERAY_FACES_BRIDGE_EXT}" /></em></li>
+					<li><em><h:outputText value="#{productInfo.JSF}" /></em></li>
+					<li><em><h:outputText value="#{productInfo.BUTTERFACES}" /></em></li>
+					<li><em><h:outputText value="#{productInfo.LIFERAY_FACES_ALLOY}" /></em></li>
+					<li><em><h:outputText value="#{productInfo.LIFERAY_FACES_BRIDGE}" /></em></li>
+					<c:if test="#{productInfo.LIFERAY_FACES_BRIDGE_EXT.detected}">
+						<li><em><h:outputText value="#{productInfo.LIFERAY_FACES_BRIDGE_EXT}" /></em></li>
 					</c:if>
-					<li><em><h:outputText value="#{product.PORTLET_API}" /></em></li>
-					<li><em><h:outputText value="#{product.PORTLET_CONTAINER}" /></em></li>
-					<li><em><h:outputText value="#{product.SERVLET_CONTAINER}" /></em></li>
+					<li><em><h:outputText value="#{productInfo.PORTLET_API}" /></em></li>
+					<li><em><h:outputText value="#{productInfo.PORTLET_CONTAINER}" /></em></li>
+					<li><em><h:outputText value="#{productInfo.SERVLET_CONTAINER}" /></em></li>
 				</ul>
 			</alloy:column>
 		</alloy:row>
