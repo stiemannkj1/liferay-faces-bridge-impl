@@ -18,6 +18,15 @@
 			<properties>
 				<import.package>
 					Import-Package: \
+						javax.enterprise.*;version="1.0.0";resolution:=optional,\
+						javax.inject.*;version="1.0.0";resolution:=optional,\
+						com.beust.jcommander.*;resolution:=optional,\
+						com.opensymphony.oscache.*;resolution:=optional,\
+						com.yahoo.platform.yui.compressor.*;resolution:=optional,\
+						org.atmosphere.*;resolution:=optional,\
+						org.jboss.cache.*;resolution:=optional,\
+						org.mozilla.javascript.*;resolution:=optional,\
+						org.reflections.*;resolution:=optional,\
 						${workaround.LPS-74553.imported.packages}
 						${default.alloy.imported.packages}
 						${default.liferay.faces.imported.packages}

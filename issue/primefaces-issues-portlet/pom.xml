@@ -19,6 +19,19 @@
 				<import.package>
 					Import-Package: \
 						${workaround.LPS-74553.imported.packages}
+						org.primefaces.component.commandbutton,\
+						org.primefaces.component.inputtext,\
+						org.primefaces.component.outputlabel,\
+						org.primefaces.component.outputpanel,\
+						org.primefaces.mobile.component.content,\
+						org.primefaces.mobile.component.field,\
+						org.primefaces.mobile.component.footer,\
+						org.primefaces.mobile.component.header,\
+						org.primefaces.mobile.component.inputslider,\
+						org.primefaces.mobile.component.page,\
+						org.primefaces.mobile.component.rangeslider,\
+						org.primefaces.mobile.component.uiswitch,\
+						org.primefaces.mobile.renderkit,\
 						${default.liferay.faces.imported.packages}
 						*
 				</import.package>

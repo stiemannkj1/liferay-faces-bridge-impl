@@ -18,6 +18,7 @@
 			<properties>
 				<import.package>
 					Import-Package: \
+						org.icepush.*;resolution:=optional,\
 						${workaround.LPS-74553.imported.packages}
 						${default.alloy.imported.packages}
 						${default.liferay.faces.imported.packages}

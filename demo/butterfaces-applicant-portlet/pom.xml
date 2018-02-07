@@ -19,6 +19,7 @@
 				<provide.bootstrap>false</provide.bootstrap>
 				<import.package>
 					Import-Package: \
+						sun.reflect.generics.reflectiveObjects.*;resolution:=optional,\
 						${workaround.LPS-74553.imported.packages}
 						${default.alloy.imported.packages}
 						${default.liferay.faces.imported.packages}
@@ -61,7 +62,6 @@
 			<groupId>de.larmic.butterfaces</groupId>
 			<artifactId>components</artifactId>
 			<version>2.1.21</version>
-			<scope>${war.dependency.scope}</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.el</groupId>
