@@ -374,6 +374,7 @@ public class TckTestCase extends BrowserDriverManagingTesterBase {
 						browserDriver.waitForElementDisplayed(resultXpath);
 						recordResult(browserDriver);
 						resultObtained = true;
+						break;
 					}
 					catch (TimeoutException e) {
 						// continue.
@@ -381,7 +382,10 @@ public class TckTestCase extends BrowserDriverManagingTesterBase {
 				}
 			}
 
-			if (!resultObtained && !areElementsDisplayed(browserDriver, RUN_AJAX_TEST_XPATHS)) {
+			if (resultObtained) {
+				break;
+			}
+			else if (!resultObtained && !areElementsDisplayed(browserDriver, RUN_AJAX_TEST_XPATHS)) {
 
 				String failureMessage = (i + 1) + " ajax action(s) executed with no valid result.";
 				failTckTestCase(failureMessage, browserDriver);
@@ -418,6 +422,7 @@ public class TckTestCase extends BrowserDriverManagingTesterBase {
 
 						recordResult(browserDriver);
 						resultObtained = true;
+						break;
 					}
 					else {
 						runAfterEachFullPageTestAction();
@@ -426,7 +431,10 @@ public class TckTestCase extends BrowserDriverManagingTesterBase {
 				}
 			}
 
-			if (!resultObtained && !areElementsDisplayed(browserDriver, RUN_TEST_XPATHS)) {
+			if (resultObtained) {
+				break;
+			}
+			else if (!resultObtained && !areElementsDisplayed(browserDriver, RUN_TEST_XPATHS)) {
 
 				String failureMessage = (i + 1) +
 					" full page request action(s) have been performed on this portlet without any final result or test components to exercise.";
