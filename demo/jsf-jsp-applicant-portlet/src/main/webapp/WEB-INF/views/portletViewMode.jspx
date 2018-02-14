@@ -17,7 +17,7 @@
 				<ul>
 					<li><em><h:outputText value="#{productInfo.JSF}" /></em></li>
 					<li><em><h:outputText value="#{productInfo.LIFERAY_FACES_BRIDGE}" /></em></li>
-					<c:if test="${product.LIFERAY_FACES_BRIDGE_EXT.detected}">
+					<c:if test="${productInfo.LIFERAY_FACES_BRIDGE_EXT.detected}">
 						<li><em><h:outputText value="#{productInfo.LIFERAY_FACES_BRIDGE_EXT}" /></em></li>
 					</c:if>
 					<li><em><h:outputText value="#{productInfo.PORTLET_API}" /></em></li>

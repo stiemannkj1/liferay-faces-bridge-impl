@@ -45,7 +45,9 @@
 							Require-Capability: osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"
 							Provide-Capability: \
 								osgi.serviceloader;osgi.serviceloader=javax.portlet.faces.Bridge,\
-								osgi.serviceloader;osgi.serviceloader=com.liferay.faces.bridge.BridgeFactoryFinder
+								osgi.serviceloader;osgi.serviceloader=com.liferay.faces.bridge.BridgeFactoryFinder,\
+								osgi.extender;osgi.extender="jsp.taglib";uri="http://liferay.com/faces/bridge";\
+								version:Version="4.0"
 						]]>
 					</bnd>
 				</configuration>

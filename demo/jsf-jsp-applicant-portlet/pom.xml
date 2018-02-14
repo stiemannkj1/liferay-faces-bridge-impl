@@ -22,6 +22,12 @@
 						${default.liferay.faces.imported.packages}
 						*
 				</import.package>
+				<require.capability>
+					Require-Capability:\
+						osgi.extender;filter:="(&amp;(osgi.extender=jsp.taglib)(uri=http://java.sun.com/jsf/html))",\
+						osgi.extender;filter:="(&amp;(osgi.extender=jsp.taglib)(uri=http://java.sun.com/jsf/core))",\
+						osgi.extender;filter:="(&amp;(osgi.extender=jsp.taglib)(uri=http://liferay.com/faces/bridge))"
+				</require.capability>
 			</properties>
 			<dependencies>
 				<dependency>
