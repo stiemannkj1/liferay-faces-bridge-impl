@@ -24,7 +24,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.portlet.ActionResponse;
 import javax.portlet.faces.annotation.BridgePreDestroy;
-import javax.portlet.faces.annotation.BridgeRequestScopeAttributeAdded;
 import javax.xml.namespace.QName;
 
 import com.liferay.faces.util.logging.Logger;
@@ -52,13 +51,6 @@ public class BookingsBackingBean {
 	public void bridgePreDestroy() {
 		logger.trace(
 			"@BridgePreDestroy annotation worked -- should only be called if com.liferay.faces.bridge.preferPreDestroy init param is false in portlet.xml");
-	}
-
-	@BridgeRequestScopeAttributeAdded
-	public void bridgeRequestScopeAttributeAdded() {
-		okToHandlePreDestroy = false;
-		logger.trace(
-			"@BridgeRequestScopeAttributeAdded annotation worked -- should only be called for remote WSRP portlets");
 	}
 
 	@PostConstruct
