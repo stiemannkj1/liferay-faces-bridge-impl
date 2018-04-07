@@ -18,6 +18,9 @@
 			<properties>
 				<import.package>
 					Import-Package: \
+						!org.xhtmlrenderer.test.*,\
+						!junit.*,\
+						com.apple.mrj.*;resolution:=optional,\
 						${workaround.LPS-74553.imported.packages}
 						${default.liferay.faces.imported.packages}
 						*
