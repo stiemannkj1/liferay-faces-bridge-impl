@@ -92,6 +92,7 @@
 			<properties>
 				<import.package>
 					Import-Package: \
+						!org.apache.pluto.driver.*,\
 						${workaround.LPS-74553.imported.packages}
 						${default.liferay.faces.imported.packages}
 						*
@@ -111,6 +112,7 @@
 					<groupId>com.liferay.faces.test</groupId>
 					<artifactId>com.liferay.faces.test.bridge.tck.liferay.harness</artifactId>
 					<version>${project.version}</version>
+					<scope>test</scope>
 				</dependency>
 			</dependencies>
 		</profile>
