@@ -98,7 +98,7 @@
 			com.liferay.faces.alloy.component.row,\
 		</default.alloy.imported.packages>
 		<!--
-			The package of FacesInitializer must also be explicitly imported since the BND tools do not automatically
+			The package of LiferayFacesThinWabInitializer must also be explicitly imported since the BND tools do not automatically
 			add ServletContainerInitializer imports.
 		-->
 		<!-- EL imports are necessary for Mojarra. -->
@@ -124,7 +124,7 @@
 		<faces.api.version>${faces.spec.version}</faces.api.version>
 		<faces.impl.group.id>org.glassfish</faces.impl.group.id>
 		<faces.impl.artifact.id>javax.faces</faces.impl.artifact.id>
-		<faces.servlet.container.initializer>com.liferay.faces.bridge.ext.osgi.mojarra.servlet.FacesInitializer</faces.servlet.container.initializer>
+		<liferay.faces.thin.wab.initializer>com.liferay.faces.bridge.ext.osgi.mojarra.servlet.LiferayFacesThinWabInitializer</liferay.faces.thin.wab.initializer>
 		<faces.spec.version>2.2</faces.spec.version>
 		<faces.version>${mojarra.version}</faces.version>
 		<full.version>${project.version} (${timestamp} AD)</full.version>
@@ -223,7 +223,7 @@
 								<skip>${skip.thin.war.setup}</skip>
 								<target>
 									<mkdir dir="${project.build.outputDirectory}/META-INF/services" />
-									<echo message="${faces.servlet.container.initializer}"
+									<echo message="${liferay.faces.thin.wab.initializer}"
 										file="${project.build.outputDirectory}/META-INF/services/javax.servlet.ServletContainerInitializer" />
 									<mkdir dir="${project.build.outputDirectory}/WEB-INF" />
 								</target>
