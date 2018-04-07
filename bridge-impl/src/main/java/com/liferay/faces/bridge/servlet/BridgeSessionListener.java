@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSessionListener;
 import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.bean.internal.BeanManager;
 import com.liferay.faces.bridge.bean.internal.BeanManagerFactory;
+import com.liferay.faces.bridge.bean.internal.BeanManagerImpl;
 import com.liferay.faces.bridge.bean.internal.PreDestroyInvoker;
 import com.liferay.faces.bridge.bean.internal.PreDestroyInvokerFactory;
 import com.liferay.faces.bridge.context.internal.PortletContextAdapter;
@@ -55,67 +56,26 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 	private static final String MOJARRA_PACKAGE_PREFIX = "com.sun.faces";
 	private static final String MOJARRA_VIEW_SCOPE_MANAGER = "com.sun.faces.application.view.viewScopeManager";
 
-	// Private Data Members
-	private boolean firstInstance;
+	// Usage of a non-volatile boolean here is thread-safe since it is only set during contextInitialized() which is
+	// called in a single-threaded environment. It is only read during sessionDestroyed() (which is called in a multi-
+	// threaded environment).
+	private boolean activeBridgeSessionListenerInstance;
 
-	@Override
-	public void contextDestroyed(ServletContextEvent servletContextEvent) {
-		ServletContext servletContext = servletContextEvent.getServletContext();
-		PortletContext portletContext = new PortletContextAdapter(servletContext);
-		BridgeFactoryFinder.getInstance().releaseFactories(portletContext);
-	}
+	private static boolean isMojarraAbleToCleanUpViewScopes(PortletContext portletContext) {
 
-	/**
-	 * This method provides the ability to discover the Mojarra InjectionProvider at startup.
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent servletContextEvent) {
+		boolean mojarraAbleToCleanupViewScopes = true;
 
-		ServletContext servletContext = servletContextEvent.getServletContext();
+		ProductInfoFactory productInfoFactory = (ProductInfoFactory) BridgeFactoryFinder.getFactory(portletContext,
+				ProductInfoFactory.class);
 
-		if (servletContext.getAttribute(BridgeSessionListener.class.getName()) == null) {
+		if (productInfoFactory != null) {
 
-			logger.info("Context initialized for contextPath=[{0}]", servletContext.getContextPath());
-
-			// Prevent multiple-instantiation of this listener.
-			servletContext.setAttribute(BridgeSessionListener.class.getName(), Boolean.TRUE);
-			firstInstance = true;
-
-		}
-		else {
-			logger.debug("Preventing multiple instantiation for contextPath=[{0}]", servletContext.getContextPath());
-		}
-	}
-
-	@Override
-	public void sessionCreated(HttpSessionEvent httpSessionEvent) {
-
-		// FACES-2427: Prevent an error message during session expiration by ensuring that the BridgeFactoryFinder has
-		// been initialized during session creation.
-		HttpSession httpSession = httpSessionEvent.getSession();
-		ServletContext servletContext = httpSession.getServletContext();
-		PortletContext portletContext = new PortletContextAdapter(servletContext);
-		BridgeFactoryFinder.getFactory(portletContext, BeanManagerFactory.class);
-	}
-
-	@Override
-	public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
-
-		if (firstInstance) {
-
-			// Determine if Mojarra is able to cleanup the active view maps.
-			HttpSession httpSession = httpSessionEvent.getSession();
-			ServletContext servletContext = httpSession.getServletContext();
-			PortletContext portletContext = new PortletContextAdapter(servletContext);
-			ProductInfoFactory productInfoFactory =
-					(ProductInfoFactory) BridgeFactoryFinder.getFactory(portletContext, ProductInfoFactory.class);
 			final ProductInfo MOJARRA = productInfoFactory.getProductInfo(ProductInfo.Name.MOJARRA);
-			boolean mojarraAbleToCleanup = true;
 
 			if (MOJARRA.isDetected() && (MOJARRA.getMajorVersion() == 2) && (MOJARRA.getMinorVersion() == 1)) {
 
 				if (MOJARRA.getPatchVersion() < 18) {
-					mojarraAbleToCleanup = false;
+					mojarraAbleToCleanupViewScopes = false;
 
 					boolean logWarning = true;
 					final ProductInfo ICEFACES = productInfoFactory.getProductInfo(ProductInfo.Name.ICEFACES);
@@ -138,6 +98,56 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 					}
 				}
 			}
+		}
+
+		return mojarraAbleToCleanupViewScopes;
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent servletContextEvent) {
+		ServletContext servletContext = servletContextEvent.getServletContext();
+		PortletContext portletContext = new PortletContextAdapter(servletContext);
+		BridgeFactoryFinder.getInstance().releaseFactories(portletContext);
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent servletContextEvent) {
+
+		ServletContext servletContext = servletContextEvent.getServletContext();
+
+		if (servletContext.getAttribute(BridgeSessionListener.class.getName()) == null) {
+
+			logger.info("Context initialized for contextPath=[{0}]", servletContext.getContextPath());
+
+			// Prevent multiple-instantiation of this listener.
+			servletContext.setAttribute(BridgeSessionListener.class.getName(), Boolean.TRUE);
+			activeBridgeSessionListenerInstance = true;
+		}
+		else {
+			logger.debug("Preventing multiple instantiation for contextPath=[{0}]", servletContext.getContextPath());
+		}
+	}
+
+	@Override
+	public void sessionCreated(HttpSessionEvent httpSessionEvent) {
+
+		// FACES-2427: Prevent an error message during session expiration by ensuring that the BridgeFactoryFinder has
+		// been initialized during session creation.
+		HttpSession httpSession = httpSessionEvent.getSession();
+		ServletContext servletContext = httpSession.getServletContext();
+		PortletContext portletContext = new PortletContextAdapter(servletContext);
+		BridgeFactoryFinder.getFactory(portletContext, BeanManagerFactory.class);
+	}
+
+	@Override
+	public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
+
+		if (activeBridgeSessionListenerInstance) {
+
+			// Determine if Mojarra is able to cleanup the active view maps.
+			HttpSession httpSession = httpSessionEvent.getSession();
+			ServletContext servletContext = httpSession.getServletContext();
+			PortletContext portletContext = new PortletContextAdapter(servletContext);
 
 			// Discover Factories
 			BeanManagerFactory beanManagerFactory = null;
@@ -178,6 +188,7 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 				try {
 
 					Enumeration<String> attributeNames = httpSession.getAttributeNames();
+					boolean mojarraAbleToCleanUpViewScopes = isMojarraAbleToCleanUpViewScopes(portletContext);
 
 					while (attributeNames.hasMoreElements()) {
 
@@ -185,7 +196,7 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 
 						// If the current session attribute name is namespaced with the standard portlet prefix, then it
 						// is an attribute that was set using PortletSession.setAttribute(String, Object).
-						if ((attributeName != null) && attributeName.startsWith("javax.portlet.p.")) {
+						if ((attributeName != null) && attributeName.startsWith(BeanManagerImpl.JAVAX_PORTLET_P)) {
 							int pos = attributeName.indexOf("?");
 
 							if (pos > 0) {
@@ -235,7 +246,7 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 											// If this is the attribute that contains all of the active view maps, then
 											if (MOJARRA_ACTIVE_VIEW_MAPS.equals(nonPrefixedName)) {
 
-												if (mojarraAbleToCleanup) {
+												if (mojarraAbleToCleanUpViewScopes) {
 
 													// Invoke the Mojarra
 													// ViewScopeManager.sessionDestroyed(HttpSessionEvent) method in

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.liferay.faces.util.config.ConfiguredManagedBean;
 public class BeanManagerImpl extends BeanManagerCompatImpl {
 
 	// Private Constants
-	private static final String JAVAX_PORTLET_P = "javax.portlet.p.";
+	public static final String JAVAX_PORTLET_P = "javax.portlet.p.";
 
 	// Private Data Members
 	private Map<String, ConfiguredManagedBean> configuredManagedBeanSet;
