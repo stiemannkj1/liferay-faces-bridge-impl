@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import javax.faces.component.StateHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.event.AbortProcessingException;
@@ -31,6 +32,8 @@ import javax.faces.render.RendererWrapper;
 
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -71,12 +74,16 @@ public class ResourceRendererBridgeImpl extends RendererWrapper implements Compo
 	public void encodeEnd(FacesContext facesContext, UIComponent uiComponentResource) throws IOException {
 
 		boolean ajaxRequest = facesContext.getPartialViewContext().isAjaxRequest();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		final ProductInfo BOOTSFACES = ProductInfoFactory.getProductInfoInstance(externalContext,
+				ProductInfo.Name.BOOTSFACES);
+		final boolean BOOTSFACES_DETECTED = BOOTSFACES.isDetected();
 		ResponseWriter responseWriter = null;
 
 		// If this is taking place during an Ajax request, then:
 		if (ajaxRequest &&
-				(RenderKitUtil.isScriptResource(uiComponentResource) ||
-					RenderKitUtil.isStyleSheetResource(uiComponentResource))) {
+				(RenderKitUtil.isScriptResource(uiComponentResource, BOOTSFACES_DETECTED) ||
+					RenderKitUtil.isStyleSheetResource(uiComponentResource, BOOTSFACES_DETECTED))) {
 
 			// Set a custom response writer that doesn't escape ampersands from URLs.
 			responseWriter = facesContext.getResponseWriter();
