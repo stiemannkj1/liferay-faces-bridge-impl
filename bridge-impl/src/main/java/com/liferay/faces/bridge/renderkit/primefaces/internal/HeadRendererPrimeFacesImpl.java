@@ -36,8 +36,11 @@ import com.liferay.faces.bridge.component.internal.ResourceComponent;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadRendererBridgeImpl;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.InlineScript;
 import com.liferay.faces.bridge.util.internal.URLUtil;
+import com.liferay.faces.util.helper.BooleanHelper;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import com.liferay.faces.util.product.info.ProductInfo;
+import com.liferay.faces.util.product.info.ProductInfoFactory;
 
 
 /**
@@ -52,10 +55,38 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 	private static final Logger logger = LoggerFactory.getLogger(HeadRendererPrimeFacesImpl.class);
 
 	// Private Constants
+	private static final String ENCODE_BEGIN = HeadRendererPrimeFacesImpl.class.getName() + "ENCODE_BEGIN";
+	private static final String CAPTURED_RESOURCES = HeadRendererPrimeFacesImpl.class.getName() + "CAPTURED_RESOURCES";
 	private static final String MOBILE_COMPONENT_RESOURCES_KEY = HeadRendererPrimeFacesImpl.class.getName() +
 		"_mobileComponentResources";
 	private static final String PRIMEFACES_THEME_PREFIX = "primefaces-";
 	private static final String PRIMEFACES_THEME_RESOURCE_NAME = "theme.css";
+
+	public static void addCapturedResource(FacesContext facesContext, UIComponent componentResource) {
+		getCapturedResources(facesContext).add(componentResource);
+	}
+
+	public static boolean isEncodeBegin(FacesContext facesContext) {
+
+		Map<Object, Object> attributes = facesContext.getAttributes();
+		Object primeFacesHeadRendererEncodeBeginValue = attributes.get(HeadRendererPrimeFacesImpl.ENCODE_BEGIN);
+
+		return BooleanHelper.toBoolean(primeFacesHeadRendererEncodeBeginValue, false);
+	}
+
+	private static List<UIComponent> getCapturedResources(FacesContext facesContext) {
+
+		Map<Object, Object> attributes = facesContext.getAttributes();
+		List<UIComponent> capturedResources = (List<UIComponent>) attributes.get(CAPTURED_RESOURCES);
+
+		if (capturedResources == null) {
+
+			capturedResources = new ArrayList<UIComponent>();
+			attributes.put(CAPTURED_RESOURCES, capturedResources);
+		}
+
+		return capturedResources;
+	}
 
 	@Override
 	public void encodeBegin(FacesContext facesContext, UIComponent uiComponent) throws IOException {
@@ -93,21 +124,21 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 		// Invoke the PrimeFaces HeadRenderer so that it has the opportunity to add css and/or script resources to the
 		// view root. However, the PrimeFaces HeadRenderer must be captured (and thus prevented from actually rendering
 		// any resources) so that they can instead be rendered by the superclass.
-		FacesContext primeFacesContext = new FacesContextPrimeFacesHeadImpl(facesContext);
-		ResponseWriter origResponseWriter = primeFacesContext.getResponseWriter();
+		ResponseWriter origResponseWriter = facesContext.getResponseWriter();
 		PrimeFacesHeadResponseWriter primeFacesHeadResponseWriter = new PrimeFacesHeadResponseWriter();
-		primeFacesContext.setResponseWriter(primeFacesHeadResponseWriter);
-
-		ResourceCapturingUIViewRoot resourceCapturingUIViewRoot = new ResourceCapturingUIViewRoot();
-		primeFacesContext.setViewRoot(resourceCapturingUIViewRoot);
+		facesContext.setResponseWriter(primeFacesHeadResponseWriter);
 
 		Renderer primeFacesHeadRenderer = getPrimeFacesHeadRenderer(facesContext);
-		primeFacesHeadRenderer.encodeBegin(primeFacesContext, uiComponent);
-		primeFacesContext.setViewRoot(originalUIViewRoot);
-		primeFacesContext.setResponseWriter(origResponseWriter);
+		Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
+		facesContextAttributes.put(ENCODE_BEGIN, true);
+		primeFacesHeadRenderer.encodeBegin(facesContext, uiComponent);
+		facesContextAttributes.remove(ENCODE_BEGIN);
+		facesContext.setResponseWriter(origResponseWriter);
 
 		// Get the list of captured resources.
-		List<UIComponent> capturedResources = resourceCapturingUIViewRoot.getCapturedComponentResources("head");
+		List<UIComponent> capturedResources = getCapturedResources(facesContext);
+		facesContextAttributes.remove(CAPTURED_RESOURCES);
+
 		List<UIComponent> capturedMobileResources = new ArrayList<UIComponent>();
 
 		// The PrimeFaces 5.1+ HeadRenderer properly adds resources like "validation/validation.js" to the view root,
@@ -185,7 +216,6 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 
 						ResourceComponent primefacesThemeResource = new ResourceComponent(facesContext, resourceName,
 								libraryName, externalContext.encodeNamespace(""));
-						Map<Object, Object> facesContextAttributes = facesContext.getAttributes();
 						facesContextAttributes.put("primefacesTheme", primefacesThemeResource);
 					}
 					else {
@@ -270,7 +300,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 			// For more information, see HeadRendererBridgeImpl.encodeChildren(),
 			// http://demos.jquerymobile.com/1.0/docs/api/globalconfig.html, and
 			// https://github.com/primefaces/primefaces/blob/6_0/src/main/java/org/primefaces/mobile/renderkit/HeadRenderer.java#L68-L87.
-			Map<Object, Object> attributes = facesContext.getAttributes();
+			Map<Object, Object> attributes = facesContextAttributes;
 			attributes.put(MOBILE_COMPONENT_RESOURCES_KEY, capturedMobileResources);
 		}
 
@@ -328,10 +358,10 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 	private Renderer getPrimeFacesHeadRenderer(FacesContext facesContext) {
 
 		if (isMobile(facesContext)) {
-			return OnDemandPrimeFacesMobileHeadRenderer.instance;
+			return OnDemandPrimeFacesMobileHeadRenderer.INSTANCE;
 		}
 		else {
-			return OnDemandPrimeFacesHeadRenderer.instance;
+			return OnDemandPrimeFacesHeadRenderer.INSTANCE;
 		}
 	}
 
@@ -402,7 +432,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 				"core.js".equals(resourceName) || "components-mobile.js".equals(resourceName));
 	}
 
-	private static class OnDemandPrimeFacesHeadRenderer {
+	private static final class OnDemandPrimeFacesHeadRenderer {
 
 		// Since this class is not referenced until HeadRendererPrimeFacesImpl.getPrimeFacesHeadRenderer() is called,
 		// the primeFacesHeadRenderer instance will be lazily initialized when
@@ -410,7 +440,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 		// false. Class initialization is thread-safe. For more details on this pattern, see
 		// http://stackoverflow.com/questions/7420504/threading-lazy-initialization-vs-static-lazy-initialization and
 		// http://docs.oracle.com/javase/specs/jls/se7/html/jls-12.html#jls-12.4.2
-		private static final Renderer instance;
+		private static final Renderer INSTANCE;
 
 		static {
 
@@ -424,11 +454,11 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 				logger.error(e);
 			}
 
-			instance = primeFacesHeadRenderer;
+			INSTANCE = primeFacesHeadRenderer;
 		}
 	}
 
-	private static class OnDemandPrimeFacesMobileHeadRenderer {
+	private static final class OnDemandPrimeFacesMobileHeadRenderer {
 
 		// Since this class is not referenced until HeadRendererPrimeFacesImpl.getPrimeFacesHeadRenderer() is called,
 		// the primeFacesMobileHeadRenderer instance will be lazily initialized when
@@ -436,7 +466,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 		// true. Class initialization is thread-safe. For more details on this pattern, see
 		// http://stackoverflow.com/questions/7420504/threading-lazy-initialization-vs-static-lazy-initialization and
 		// http://docs.oracle.com/javase/specs/jls/se7/html/jls-12.html#jls-12.4.2
-		private static final Renderer instance;
+		private static final Renderer INSTANCE;
 
 		static {
 
@@ -450,7 +480,7 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 				logger.error(e);
 			}
 
-			instance = primeFacesMobileHeadRenderer;
+			INSTANCE = primeFacesMobileHeadRenderer;
 		}
 	}
 }

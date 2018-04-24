@@ -32,6 +32,17 @@
 						org.primefaces.mobile.component.rangeslider,\
 						org.primefaces.mobile.component.uiswitch,\
 						org.primefaces.mobile.renderkit,\
+						com.google.zxing.qrcode.decoder;resolution:=optional,\
+						com.hazelcast.*;resolution:=optional,\
+						com.lowagie.text.*;resolution:=optional,\
+						com.rometools.rome.*;resolution:=optional,\
+						javax.enterprise.*;resolution:=optional,\
+						javax.faces.component.search;resolution:=optional,\
+						javax.inject;resolution:=optional,\
+						net.glxn.qrgen.*;resolution:=optional,\
+						org.apache.xmlbeans.impl.common;resolution:=optional,\
+						org.atmosphere.*;resolution:=optional,\
+						org.krysalis.barcode4j.*;resolution:=optional,\
 						${default.liferay.faces.imported.packages}
 						*
 				</import.package>
@@ -67,12 +78,12 @@
 		<dependency>
 			<groupId>com.liferay.faces</groupId>
 			<artifactId>com.liferay.faces.bridge.impl</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
 			<version>${primefaces.version}</version>
+			<scope>${war.dependency.scope}</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.primefaces.extensions</groupId>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import javax.faces.event.SystemEventListener;
 import javax.portlet.faces.BridgeUtil;
 
 import com.liferay.faces.bridge.component.internal.UIViewRootBridgeImpl;
+import com.liferay.faces.bridge.renderkit.primefaces.internal.HeadRendererPrimeFacesImpl;
 import com.liferay.faces.util.application.ApplicationUtil;
 import com.liferay.faces.util.config.ConfiguredSystemEventListener;
 import com.liferay.faces.util.logging.Logger;
@@ -95,7 +96,10 @@ public abstract class ApplicationCompatImpl extends ApplicationWrapper {
 				resourceHandler = new ResourceHandlerRichfacesImpl(resourceHandler);
 			}
 
-			if (!ApplicationUtil.isStartupOrShutdown(FacesContext.getCurrentInstance())) {
+			FacesContext facesContext = FacesContext.getCurrentInstance();
+
+			if (!ApplicationUtil.isStartupOrShutdown(facesContext) &&
+					!HeadRendererPrimeFacesImpl.isEncodeBegin(facesContext)) {
 				resourceHandler = new ResourceHandlerOuterImpl(resourceHandler);
 			}
 		}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
  */
 package com.liferay.faces.bridge.component.internal;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.portlet.faces.BridgeUtil;
 import javax.portlet.faces.component.PortletNamingContainerUIViewRoot;
 
+import com.liferay.faces.bridge.renderkit.primefaces.internal.HeadRendererPrimeFacesImpl;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 
@@ -36,6 +40,28 @@ public class UIViewRootBridgeImpl extends PortletNamingContainerUIViewRoot {
 
 	// serialVersionUID
 	private static final long serialVersionUID = 1523062041951774729L;
+
+	@Override
+	public void addComponentResource(FacesContext context, UIComponent componentResource, String target) {
+
+		if ("head".equals(target) && HeadRendererPrimeFacesImpl.isEncodeBegin(context)) {
+			HeadRendererPrimeFacesImpl.addCapturedResource(context, componentResource);
+		}
+		else {
+			super.addComponentResource(context, componentResource, target);
+		}
+	}
+
+	@Override
+	public List<UIComponent> getComponentResources(FacesContext context, String target) {
+
+		if ("head".equals(target) && HeadRendererPrimeFacesImpl.isEncodeBegin(context)) {
+			return Collections.emptyList();
+		}
+		else {
+			return super.getComponentResources(context, target);
+		}
+	}
 
 	/**
 	 * <p>This method fixes a problem with {@link UIComponent#findComponent(String)} where sometimes it is unable to
