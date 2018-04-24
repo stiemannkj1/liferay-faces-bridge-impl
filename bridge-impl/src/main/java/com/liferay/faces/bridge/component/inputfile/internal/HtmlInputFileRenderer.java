@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2017 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.component.inputfile.InputFile;
 import com.liferay.faces.bridge.context.map.internal.ContextMapFactory;
 import com.liferay.faces.bridge.model.UploadedFile;
+import com.liferay.faces.util.lang.OnDemand;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 import com.liferay.faces.util.product.info.ProductInfo;
@@ -48,8 +49,8 @@ public class HtmlInputFileRenderer extends DelegatingRendererBase {
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(HtmlInputFileRenderer.class);
 
-	// Instance field must be declared volatile in order for the double-check idiom to work (requires JRE 1.5+)
-	private volatile Renderer delegateRenderer;
+	// Private Constants
+	private static final OnDemandDelegateRenderer ON_DEMAND_DELEGATE_RENDERER = new OnDemandDelegateRenderer();
 
 	@Override
 	public void decode(FacesContext facesContext, UIComponent uiComponent) {
@@ -100,43 +101,7 @@ public class HtmlInputFileRenderer extends DelegatingRendererBase {
 
 	@Override
 	public Renderer getDelegateRenderer(FacesContext facesContext) {
-
-		Renderer delegateRenderer = this.delegateRenderer;
-
-		// First check without locking (not yet thread-safe)
-		if (delegateRenderer == null) {
-
-			synchronized (this) {
-
-				delegateRenderer = this.delegateRenderer;
-
-				// Second check with locking (thread-safe)
-				if (delegateRenderer == null) {
-
-					String delegateBodyRendererFQCN = "com.sun.faces.renderkit.html_basic.FileRenderer";
-					ExternalContext externalContext = facesContext.getExternalContext();
-					final ProductInfo MYFACES =
-							ProductInfoFactory.getProductInfoInstance(externalContext, ProductInfo.Name.MYFACES);
-
-					if (MYFACES.isDetected()) {
-						delegateBodyRendererFQCN = "org.apache.myfaces.renderkit.html.HtmlInputFileRenderer";
-					}
-
-					try {
-
-						Class<?> delegateBodyRendererClass = Class.forName(delegateBodyRendererFQCN);
-						delegateRenderer = this.delegateRenderer = (Renderer) delegateBodyRendererClass.newInstance();
-					}
-					catch (Exception e) {
-
-						logger.error(e);
-						delegateRenderer = this.delegateRenderer = new NoOpRenderer();
-					}
-				}
-			}
-		}
-
-		return delegateRenderer;
+		return ON_DEMAND_DELEGATE_RENDERER.get(facesContext);
 	}
 
 	@Override
@@ -154,5 +119,35 @@ public class HtmlInputFileRenderer extends DelegatingRendererBase {
 		PortletRequest portletRequest = (PortletRequest) externalContext.getRequest();
 
 		return contextMapFactory.getUploadedFileMap(portletRequest);
+	}
+
+	private static final class OnDemandDelegateRenderer extends OnDemand<Renderer, FacesContext> {
+
+		@Override
+		protected Renderer computeInitialValue(FacesContext facesContext) {
+
+			Renderer delegateRenderer;
+			String delegateBodyRendererFQCN = "com.sun.faces.renderkit.html_basic.FileRenderer";
+			ExternalContext externalContext = facesContext.getExternalContext();
+			final ProductInfo MYFACES = ProductInfoFactory.getProductInfoInstance(externalContext,
+					ProductInfo.Name.MYFACES);
+
+			if (MYFACES.isDetected()) {
+				delegateBodyRendererFQCN = "org.apache.myfaces.renderkit.html.HtmlInputFileRenderer";
+			}
+
+			try {
+
+				Class<?> delegateBodyRendererClass = Class.forName(delegateBodyRendererFQCN);
+				delegateRenderer = (Renderer) delegateBodyRendererClass.newInstance();
+			}
+			catch (Exception e) {
+
+				logger.error(e);
+				delegateRenderer = new NoOpRenderer();
+			}
+
+			return delegateRenderer;
+		}
 	}
 }
