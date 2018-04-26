@@ -176,7 +176,7 @@ public class BridgeSessionListener implements HttpSessionListener, ServletContex
 
 				// Cleanup instances of BridgeRequestScope that are associated with the expiring session.
 				BridgeRequestScopeManager bridgeRequestScopeManager =
-					bridgeRequestScopeManagerFactory.getBridgeRequestScopeManager();
+					bridgeRequestScopeManagerFactory.getBridgeRequestScopeManager(portletContext);
 				bridgeRequestScopeManager.removeBridgeRequestScopesBySession(httpSession);
 
 				// For each session attribute:

@@ -15,7 +15,15 @@
  */
 package com.liferay.faces.bridge.scope.internal;
 
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
+
+import com.liferay.faces.bridge.BridgeFactoryFinder;
+import com.liferay.faces.bridge.internal.PortletConfigEmptyImpl;
+import com.liferay.faces.bridge.internal.PortletConfigParam;
 import com.liferay.faces.util.cache.Cache;
+import com.liferay.faces.util.cache.CacheFactory;
+import com.liferay.faces.util.lang.OnDemand;
 
 
 /**
@@ -24,15 +32,12 @@ import com.liferay.faces.util.cache.Cache;
 public class BridgeRequestScopeManagerFactoryImpl extends BridgeRequestScopeManagerFactory {
 
 	// Private Final Data Members
-	private final BridgeRequestScopeManager bridgeRequestScopeManager;
-
-	public BridgeRequestScopeManagerFactoryImpl() {
-		bridgeRequestScopeManager = new BridgeRequestScopeManagerImpl();
-	}
+	private final OnDemandBridgeRequestScopeManager onDemandBridgeRequestScopeManager =
+		new OnDemandBridgeRequestScopeManager();
 
 	@Override
-	public BridgeRequestScopeManager getBridgeRequestScopeManager() {
-		return bridgeRequestScopeManager;
+	public BridgeRequestScopeManager getBridgeRequestScopeManager(PortletContext portletContext) {
+		return onDemandBridgeRequestScopeManager.get(portletContext);
 	}
 
 	public BridgeRequestScopeManagerFactory getWrapped() {
@@ -41,4 +46,30 @@ public class BridgeRequestScopeManagerFactoryImpl extends BridgeRequestScopeMana
 		return null;
 	}
 
+	private static final class OnDemandBridgeRequestScopeManager
+		extends OnDemand<BridgeRequestScopeManagerImpl, PortletContext> {
+
+		@Override
+		protected BridgeRequestScopeManagerImpl computeInitialValue(PortletContext portletContext) {
+
+			CacheFactory cacheFactory = (CacheFactory) BridgeFactoryFinder.getFactory(portletContext,
+					CacheFactory.class);
+
+			PortletConfig emptyPortletConfig = new PortletConfigEmptyImpl(portletContext);
+			int initialCacheCapacity = PortletConfigParam.BridgeRequestScopeInitialCacheCapacity.getIntegerValue(
+					emptyPortletConfig);
+			int maxCacheCapacity = PortletConfigParam.BridgeRequestScopeMaxCacheCapacity.getIntegerValue(
+					emptyPortletConfig);
+			Cache<String, BridgeRequestScope> bridgeRequestScopeCache;
+
+			if (maxCacheCapacity > -1) {
+				bridgeRequestScopeCache = cacheFactory.getConcurrentLRUCache(initialCacheCapacity, maxCacheCapacity);
+			}
+			else {
+				bridgeRequestScopeCache = cacheFactory.getConcurrentCache(initialCacheCapacity);
+			}
+
+			return new BridgeRequestScopeManagerImpl(bridgeRequestScopeCache);
+		}
+	}
 }

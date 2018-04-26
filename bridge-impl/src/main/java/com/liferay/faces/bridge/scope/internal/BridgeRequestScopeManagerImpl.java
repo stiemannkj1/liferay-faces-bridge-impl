@@ -20,17 +20,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
-import com.liferay.faces.bridge.BridgeFactoryFinder;
-import com.liferay.faces.bridge.internal.PortletConfigEmptyImpl;
-import com.liferay.faces.bridge.internal.PortletConfigParam;
 import com.liferay.faces.bridge.servlet.BridgeSessionListener;
 import com.liferay.faces.util.cache.Cache;
-import com.liferay.faces.util.cache.CacheFactory;
-import com.liferay.faces.util.lang.OnDemand;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
 
@@ -44,46 +37,36 @@ public class BridgeRequestScopeManagerImpl implements BridgeRequestScopeManager 
 	private static final Logger logger = LoggerFactory.getLogger(BridgeRequestScopeManagerImpl.class);
 
 	// Private Final Data Members
-	private final OnDemandBridgeRequestScopeCache onDemandBridgeRequestScopeCache =
-		new OnDemandBridgeRequestScopeCache();
+	private final Cache<String, BridgeRequestScope> bridgeRequestScopeCache;
+
+	public BridgeRequestScopeManagerImpl(Cache<String, BridgeRequestScope> bridgeRequestScopeCache) {
+		this.bridgeRequestScopeCache = bridgeRequestScopeCache;
+	}
 
 	@Override
-	public Cache<String, BridgeRequestScope> getBridgeRequestScopeCache(PortletContext portletContext) {
-		return onDemandBridgeRequestScopeCache.get(portletContext);
+	public Cache<String, BridgeRequestScope> getBridgeRequestScopeCache() {
+		return bridgeRequestScopeCache;
 	}
 
 	@Override
 	public void removeBridgeRequestScopesByPortlet(PortletConfig portletConfig) {
 
-		PortletContext portletContext = portletConfig.getPortletContext();
-		Cache<String, BridgeRequestScope> bridgeRequestScopeCache = getBridgeRequestScopeCache(portletContext);
 		String portletNameToRemove = portletConfig.getPortletName();
-		removeBridgeRequestScopes(bridgeRequestScopeCache, true, portletNameToRemove);
+		removeBridgeRequestScopes(true, portletNameToRemove);
 	}
 
 	/**
 	 * This method is designed to be invoked from a {@link javax.servlet.http.HttpSessionListener} like {@link
-	 * BridgeSessionListener} when a session timeout/expiration occurs. The logic in this method is a little awkward
-	 * because we have to try and remove BridgeRequestScope instances from {@link Cache} instances in the {@link
-	 * ServletContext} rather than the {@link PortletContext} because we only have access to the Servlet-API when
-	 * sessions expire.
+	 * BridgeSessionListener} when a session timeout/expiration occurs.
 	 */
 	@Override
 	public void removeBridgeRequestScopesBySession(HttpSession httpSession) {
 
-		if (onDemandBridgeRequestScopeCache.isInitialized()) {
-
-			String sessionId = httpSession.getId();
-
-			// Since the bridge request scope has already been initialized, there's no need to consult the
-			// PortletContext.
-			Cache<String, BridgeRequestScope> bridgeRequestScopeCache = onDemandBridgeRequestScopeCache.get(null);
-			removeBridgeRequestScopes(bridgeRequestScopeCache, false, sessionId);
-		}
+		String sessionId = httpSession.getId();
+		removeBridgeRequestScopes(false, sessionId);
 	}
 
-	private void removeBridgeRequestScopes(Cache bridgeRequestScopeCache, boolean removeByPortletId,
-		String portletOrSessionId) {
+	private void removeBridgeRequestScopes(boolean removeByPortletId, String portletOrSessionId) {
 
 		int indexOfSessionIdSection = -1;
 
@@ -124,33 +107,6 @@ public class BridgeRequestScopeManagerImpl implements BridgeRequestScopeManager 
 					"Removed bridgeRequestScopeId=[{0}] bridgeRequestScope=[{1}] from cache due to session timeout",
 					keyToRemove, bridgeRequestScope);
 			}
-		}
-	}
-
-	private static final class OnDemandBridgeRequestScopeCache
-		extends OnDemand<Cache<String, BridgeRequestScope>, PortletContext> {
-
-		@Override
-		protected Cache<String, BridgeRequestScope> computeInitialValue(PortletContext portletContext) {
-
-			Cache<String, BridgeRequestScope> bridgeRequestScopeCache;
-			CacheFactory cacheFactory = (CacheFactory) BridgeFactoryFinder.getFactory(portletContext,
-					CacheFactory.class);
-
-			PortletConfig emptyPortletConfig = new PortletConfigEmptyImpl(portletContext);
-			int initialCacheCapacity = PortletConfigParam.BridgeRequestScopeInitialCacheCapacity.getIntegerValue(
-					emptyPortletConfig);
-			int maxCacheCapacity = PortletConfigParam.BridgeRequestScopeMaxCacheCapacity.getIntegerValue(
-					emptyPortletConfig);
-
-			if (maxCacheCapacity > -1) {
-				bridgeRequestScopeCache = cacheFactory.getConcurrentLRUCache(initialCacheCapacity, maxCacheCapacity);
-			}
-			else {
-				bridgeRequestScopeCache = cacheFactory.getConcurrentCache(initialCacheCapacity);
-			}
-
-			return bridgeRequestScopeCache;
 		}
 	}
 }
