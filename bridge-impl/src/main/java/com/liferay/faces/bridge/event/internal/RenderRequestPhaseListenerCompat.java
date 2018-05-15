@@ -25,7 +25,7 @@ import com.liferay.faces.bridge.internal.PortletConfigParam;
  */
 public class RenderRequestPhaseListenerCompat {
 
-	protected boolean isViewParametersEnabled(PortletConfig portletConfig) {
+	protected static boolean isViewParametersEnabled(PortletConfig portletConfig) {
 		return PortletConfigParam.ViewParametersEnabled.getBooleanValue(portletConfig);
 	}
 }

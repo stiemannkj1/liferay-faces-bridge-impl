@@ -42,8 +42,8 @@ public abstract class BridgeRequestScopeManagerFactory implements FacesWrapper<B
 		BridgeRequestScopeManagerFactory bridgeRequestScopeManagerFactory = (BridgeRequestScopeManagerFactory)
 			BridgeFactoryFinder.getFactory(portletContext, BridgeRequestScopeManagerFactory.class);
 
-		return bridgeRequestScopeManagerFactory.getBridgeRequestScopeManager();
+		return bridgeRequestScopeManagerFactory.getBridgeRequestScopeManager(portletContext);
 	}
 
-	public abstract BridgeRequestScopeManager getBridgeRequestScopeManager();
+	public abstract BridgeRequestScopeManager getBridgeRequestScopeManager(PortletContext portletContext);
 }

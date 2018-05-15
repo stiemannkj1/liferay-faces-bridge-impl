@@ -90,7 +90,7 @@ public abstract class BridgePhaseBaseImpl implements BridgePhase {
 		// Get the bridge request scope cache from the bridge request scope manager.
 		BridgeRequestScopeManager bridgeRequestScopeManager = BridgeRequestScopeManagerFactory
 			.getBridgeRequestScopeManagerInstance(portletContext);
-		this.bridgeRequestScopeCache = bridgeRequestScopeManager.getBridgeRequestScopeCache(portletContext);
+		this.bridgeRequestScopeCache = bridgeRequestScopeManager.getBridgeRequestScopeCache();
 
 		// Get the default lifecycle instance from the factory.
 		LifecycleFactory lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(
