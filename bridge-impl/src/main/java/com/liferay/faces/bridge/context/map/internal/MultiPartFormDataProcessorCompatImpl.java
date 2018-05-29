@@ -305,7 +305,7 @@ public abstract class MultiPartFormDataProcessorCompatImpl {
 	 *
 	 * @author  Neil Griffin
 	 */
-	private static class ActionRequestAdapter implements ActionRequest {
+	private static final class ActionRequestAdapter implements ActionRequest {
 
 		private ResourceRequest resourceRequest;
 

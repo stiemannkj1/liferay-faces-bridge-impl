@@ -25,7 +25,11 @@ import javax.faces.lifecycle.ClientWindow;
  *
  * @author  Neil Griffin
  */
-class ClientWindowTestUtil {
+final class ClientWindowTestUtil {
+
+	private ClientWindowTestUtil() {
+		throw new AssertionError();
+	}
 
 	static String getClientWindowId(ExternalContext externalContext) {
 

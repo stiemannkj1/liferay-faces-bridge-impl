@@ -47,10 +47,6 @@ public class BridgeURLFactoryImpl extends BridgeURLFactory implements Serializab
 	// serialVersionUID
 	private static final long serialVersionUID = 4036112087598188923L;
 
-	public BridgeURLFactoryImpl() {
-		BridgeDependencyVerifier.verify();
-	}
-
 	@Override
 	public BridgeURL getBridgeActionURL(FacesContext facesContext, String uri) throws BridgeException {
 
@@ -170,7 +166,7 @@ public class BridgeURLFactoryImpl extends BridgeURLFactory implements Serializab
 		return null;
 	}
 
-	private static class ContextInfo {
+	private static final class ContextInfo {
 
 		// Private Final Data Members
 		private final BridgeConfig bridgeConfig;

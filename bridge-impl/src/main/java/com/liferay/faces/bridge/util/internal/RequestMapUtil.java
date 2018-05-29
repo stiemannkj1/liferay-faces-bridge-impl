@@ -27,7 +27,11 @@ import com.liferay.faces.bridge.scope.internal.BridgeRequestScope;
 /**
  * @author  Neil Griffin
  */
-public class RequestMapUtil {
+public final class RequestMapUtil {
+
+	private RequestMapUtil() {
+		throw new AssertionError();
+	}
 
 	public static BridgeConfig getBridgeConfig(FacesContext facesContext) {
 		return getBridgeConfig(facesContext.getExternalContext());

@@ -20,7 +20,11 @@ package com.liferay.faces.bridge.tck.tests.chapter_6.section_6_1_3_1;
  *
  * @author  Neil Griffin
  */
-class EncodeURLTestUtil {
+final class EncodeURLTestUtil {
+
+	private EncodeURLTestUtil() {
+		throw new AssertionError();
+	}
 
 	static boolean isStrictXhtmlEncoded(String url) {
 

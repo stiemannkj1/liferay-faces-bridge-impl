@@ -22,7 +22,11 @@ import javax.portlet.filter.PortletResponseWrapper;
 /**
  * @author  Neil Griffin
  */
-public class PortletContainerDetector {
+public final class PortletContainerDetectorUtil {
+
+	private PortletContainerDetectorUtil() {
+		throw new AssertionError();
+	}
 
 	/**
 	 * Determines whether or not the specified {@link javax.portlet.PortletResponse} is one created by Pluto Portal. If

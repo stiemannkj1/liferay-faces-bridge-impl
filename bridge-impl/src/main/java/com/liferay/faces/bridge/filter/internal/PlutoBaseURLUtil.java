@@ -23,7 +23,11 @@ import javax.portlet.BaseURL;
 /**
  * @author  Neil Griffin
  */
-public class PlutoBaseURLUtil {
+public final class PlutoBaseURLUtil {
+
+	private PlutoBaseURLUtil() {
+		throw new AssertionError();
+	}
 
 	public static void removeParameter(BaseURL baseURL, String name) {
 

@@ -39,10 +39,14 @@ import com.liferay.faces.util.render.FacesURLEncoder;
 /**
  * @author  Neil Griffin
  */
-public class URLUtil {
+public final class URLUtil {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(URLUtil.class);
+
+	private URLUtil() {
+		throw new AssertionError();
+	}
 
 	public static String encodeParameterNameOrValue(String nameOrValue, String encoding)
 		throws UnsupportedEncodingException {

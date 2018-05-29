@@ -128,7 +128,8 @@ public class FileUploadRendererPrimeFacesImpl extends RendererWrapper {
 							FileItem fileItem = new PrimeFacesFileItem(clientId, uploadedFile);
 
 							// Reflectively create an instance of the PrimeFaces DefaultUploadedFile class.
-							final Product PRIMEFACES = ProductFactory.getProduct(Product.Name.PRIMEFACES);
+							final Product PRIMEFACES = ProductFactory.getProductInstance(externalContext,
+									Product.Name.PRIMEFACES);
 							Object defaultUploadedFile;
 							Class<?> defaultUploadedFileClass = Class.forName(FQCN_DEFAULT_UPLOADED_FILE);
 

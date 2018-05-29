@@ -27,9 +27,14 @@ import com.liferay.faces.util.logging.LoggerFactory;
 /**
  * @author  Neil Griffin
  */
-public class PDFUtil {
+public final class PDFUtil {
 
+	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(PDFUtil.class);
+
+	private PDFUtil() {
+		throw new AssertionError();
+	}
 
 	public static byte[] TXT2PDF(String htmlFragment, String headMarkup, String pdfTitle, String description,
 		String author) throws IOException {
