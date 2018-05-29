@@ -30,7 +30,11 @@ import com.liferay.faces.util.helper.LongHelper;
  *
  * @author  Neil Griffin
  */
-public class PortletConfigParamUtil {
+public final class PortletConfigParamUtil {
+
+	private PortletConfigParamUtil() {
+		throw new AssertionError();
+	}
 
 	public static boolean getBooleanValue(PortletConfig portletConfig, String name, String alternateName,
 		boolean defaultBooleanValue) {

@@ -22,10 +22,9 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
+import com.liferay.faces.bridge.util.internal.RichFacesUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
 
 
 /**
@@ -35,11 +34,6 @@ public class ExternalContextFactoryImpl extends ExternalContextFactory {
 
 	// Logger
 	private static final Logger logger = LoggerFactory.getLogger(ExternalContextFactoryImpl.class);
-
-	// Private Constants
-	private static final Product RICHFACES = ProductFactory.getProduct(Product.Name.RICHFACES);
-	private static final boolean FACES_2638 = RICHFACES.isDetected() && (RICHFACES.getMajorVersion() == 4) &&
-		(RICHFACES.getMinorVersion() == 5) && (RICHFACES.getPatchVersion() >= 16);
 
 	// Private Data Members
 	private ExternalContextFactory wrappedFactory;
@@ -70,7 +64,7 @@ public class ExternalContextFactoryImpl extends ExternalContextFactory {
 			}
 
 			// Workaround for FACES_2638
-			else if (FACES_2638) {
+			else if (RichFacesUtil.shouldWorkAroundFACES_2638(externalContext)) {
 				return new ExternalContextRichFacesImpl(portletContext, portletRequest, portletResponse);
 			}
 			else {

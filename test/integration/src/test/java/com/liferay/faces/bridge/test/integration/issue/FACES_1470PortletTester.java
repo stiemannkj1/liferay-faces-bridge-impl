@@ -280,7 +280,7 @@ public class FACES_1470PortletTester extends BrowserDriverManagingTesterBase {
 		waitingAsserter.assertElementDisplayed(as7LeakInstanceXpath + "/code[contains(text(),'AS7Leak')]");
 	}
 
-	private static class SwitchedToWindow implements ExpectedCondition<Boolean> {
+	private static final class SwitchedToWindow implements ExpectedCondition<Boolean> {
 
 		// Private Data Members
 		private String expectedWindowId;

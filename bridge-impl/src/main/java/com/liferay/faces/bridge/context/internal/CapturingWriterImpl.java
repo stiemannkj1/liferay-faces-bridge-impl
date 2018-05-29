@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class CapturingWriterImpl extends CapturingWriter {
 
-	// Protected Data Members
+	// Private Data Members
 	private List<WriterOperation> writerOperations;
 
 	public CapturingWriterImpl() {

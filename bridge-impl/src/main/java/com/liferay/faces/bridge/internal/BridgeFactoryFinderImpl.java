@@ -60,7 +60,7 @@ public class BridgeFactoryFinderImpl extends BridgeFactoryFinder {
 		FactoryExtensionFinder.getInstance().releaseFactories(factoryExternalContext);
 	}
 
-	private static class FactoryApplicationScopeMap extends AbstractMutablePropertyMap<Object> {
+	private static final class FactoryApplicationScopeMap extends AbstractMutablePropertyMap<Object> {
 
 		// Private Data Members
 		private PortletContext portletContext;
@@ -95,7 +95,7 @@ public class BridgeFactoryFinderImpl extends BridgeFactoryFinder {
 		}
 	}
 
-	private static class FactoryExternalContext extends ExternalContextWrapper {
+	private static final class FactoryExternalContext extends ExternalContextWrapper {
 
 		// Private Data Members
 		private Map<String, Object> applicationMap;

@@ -702,11 +702,11 @@ public abstract class BridgeURLBase extends BridgeURLBaseCompat implements Bridg
 		return uriParameters;
 	}
 
-	private static class FacesViewActionURL extends PortletURLWrapper {
+	private static final class FacesViewActionURL extends PortletURLWrapper {
 
-		// Private Data Members
-		private PortletURL portletURL;
-		private String viewId;
+		// Private Final Data Members
+		private final PortletURL portletURL;
+		private final String viewId;
 
 		public FacesViewActionURL(PortletURL portletURL, String viewId) {
 			this.portletURL = portletURL;
@@ -723,11 +723,11 @@ public abstract class BridgeURLBase extends BridgeURLBaseCompat implements Bridg
 		}
 	}
 
-	private static class URIParameter {
+	private static final class URIParameter {
 
-		// Private Data Members
-		private String name;
-		private String[] values;
+		// Private Final Data Members
+		private final String name;
+		private final String[] values;
 
 		public URIParameter(String name, String value) {
 			this(name, new String[] { value });

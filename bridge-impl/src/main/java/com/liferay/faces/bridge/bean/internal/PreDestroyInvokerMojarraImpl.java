@@ -134,16 +134,21 @@ public class PreDestroyInvokerMojarraImpl extends PreDestroyInvokerImpl {
 
 	}
 
-	private static class ContextAdapter {
+	private static final class ContextAdapter {
 
-		private PortletContext portletContext;
-		private ServletContext servletContext;
+		// Private Final Data Members
+		private final PortletContext portletContext;
+		private final ServletContext servletContext;
 
 		public ContextAdapter(PortletContext portletContext) {
+
 			this.portletContext = portletContext;
+			this.servletContext = null;
 		}
 
 		public ContextAdapter(ServletContext servletContext) {
+
+			this.portletContext = null;
 			this.servletContext = servletContext;
 		}
 

@@ -21,7 +21,11 @@ import javax.portlet.PortletRequest;
 /**
  * @author  Neil Griffin
  */
-public class RequestAttributeUtil {
+public final class RequestAttributeUtil {
+
+	private RequestAttributeUtil() {
+		throw new AssertionError();
+	}
 
 	public static Object getAttribute(PortletRequest portletRequest, String name) {
 

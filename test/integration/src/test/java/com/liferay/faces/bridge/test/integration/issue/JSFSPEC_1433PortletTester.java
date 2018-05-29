@@ -125,7 +125,7 @@ public class JSFSPEC_1433PortletTester extends BrowserDriverManagingTesterBase {
 		return failedComponents;
 	}
 
-	private static class NameAttributeRemoved implements ExpectedCondition<Boolean> {
+	private static final class NameAttributeRemoved implements ExpectedCondition<Boolean> {
 
 		// Private Data Members
 		private WebElement webElement;

@@ -32,10 +32,9 @@ import javax.portlet.PortletRequest;
 import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.context.map.internal.ContextMapFactory;
 import com.liferay.faces.bridge.model.UploadedFile;
+import com.liferay.faces.bridge.util.internal.RichFacesUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
-import com.liferay.faces.util.product.Product;
-import com.liferay.faces.util.product.ProductFactory;
 
 
 /**
@@ -52,9 +51,6 @@ public class FileUploadRendererRichFacesImpl extends RendererWrapper {
 	// Private Constants
 	private static final String RICHFACES_UPLOADED_FILE_FQCN = "org.richfaces.model.UploadedFile";
 	private static final String RICHFACES_FILE_UPLOAD_EVENT_FQCN = "org.richfaces.event.FileUploadEvent";
-	private static final Product RICHFACES = ProductFactory.getProduct(Product.Name.RICHFACES);
-	private static final boolean FACES_2638 = RICHFACES.isDetected() && (RICHFACES.getMajorVersion() == 4) &&
-		(RICHFACES.getMinorVersion() == 5) && (RICHFACES.getPatchVersion() >= 16);
 
 	// Private Data Members
 	private Renderer wrappedRenderer;
@@ -117,9 +113,10 @@ public class FileUploadRendererRichFacesImpl extends RendererWrapper {
 	@Override
 	public void encodeEnd(FacesContext facesContext, UIComponent uiComponent) throws IOException {
 
-		if (FACES_2638) {
+		ExternalContext externalContext = facesContext.getExternalContext();
 
-			ExternalContext externalContext = facesContext.getExternalContext();
+		if (RichFacesUtil.shouldWorkAroundFACES_2638(externalContext)) {
+
 			Map<String, Object> requestMap = externalContext.getRequestMap();
 			requestMap.put("FACES-2638", Boolean.TRUE);
 			super.encodeEnd(facesContext, uiComponent);
