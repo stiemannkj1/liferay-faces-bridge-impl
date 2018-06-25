@@ -206,7 +206,10 @@ public final class ExporterComponentsTestUtil {
 			return string;
 		}
 		finally {
-			ClosableUtil.close(scanner);
+
+			if (scanner != null) {
+				scanner.close();
+			}
 		}
 	}
 }

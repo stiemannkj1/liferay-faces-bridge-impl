@@ -83,6 +83,10 @@
 	</profiles>
 
 	<properties>
+		<filter.web.inf.properties>false</filter.web.inf.properties>
+		<faces.impl.scope>runtime</faces.impl.scope>
+		<skip.thin.war.setup>true</skip.thin.war.setup>
+		<war.dependency.scope>compile</war.dependency.scope>
 		<webapp.descriptor>web-${app.server.type}.xml</webapp.descriptor>
 	</properties>
 	
@@ -120,7 +124,6 @@
 		<dependency>
 			<groupId>com.liferay.faces</groupId>
 			<artifactId>com.liferay.faces.bridge.impl</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.faces</groupId>

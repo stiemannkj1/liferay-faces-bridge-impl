@@ -126,9 +126,9 @@ public class ResourceRendererImpl extends RendererWrapper implements ComponentSy
 
 		if (wrappedRenderer == null) {
 
+			Class<?> wrappedRendererClass = (Class<?>) state;
+
 			try {
-				String wrappedRendererClassName = (String) state;
-				Class<?> wrappedRendererClass = Class.forName(wrappedRendererClassName);
 				wrappedRenderer = (Renderer) wrappedRendererClass.newInstance();
 			}
 			catch (Exception e) {
@@ -139,7 +139,7 @@ public class ResourceRendererImpl extends RendererWrapper implements ComponentSy
 
 	@Override
 	public Object saveState(FacesContext facesContext) {
-		return wrappedRenderer.getClass().getName();
+		return wrappedRenderer.getClass();
 	}
 
 	@Override

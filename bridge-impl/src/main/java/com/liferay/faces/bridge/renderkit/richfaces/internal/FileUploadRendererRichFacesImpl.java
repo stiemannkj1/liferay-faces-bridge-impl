@@ -33,8 +33,10 @@ import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.context.map.internal.ContextMapFactory;
 import com.liferay.faces.bridge.model.UploadedFile;
 import com.liferay.faces.bridge.util.internal.RichFacesUtil;
+import com.liferay.faces.bridge.util.internal.TCCLUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import com.liferay.faces.util.osgi.OSGiClassLoaderUtil;
 
 
 /**
@@ -81,9 +83,13 @@ public class FileUploadRendererRichFacesImpl extends RendererWrapper {
 			if (uploadedFileMap != null) {
 
 				// Use reflection to create a dynamic proxy class that implements the RichFaces UploadedFile interface.
-				Class<?> uploadedFileInterface = Class.forName(RICHFACES_UPLOADED_FILE_FQCN);
-				Class<?> fileUploadEventClass = Class.forName(RICHFACES_FILE_UPLOAD_EVENT_FQCN);
-				ClassLoader classLoader = uploadedFileInterface.getClassLoader();
+				Class<?> clazz = getClass();
+				ClassLoader classLoader = TCCLUtil.getThreadContextClassLoaderOrDefault(clazz);
+				Class<?> uploadedFileInterface = OSGiClassLoaderUtil.classForName(RICHFACES_UPLOADED_FILE_FQCN, true,
+						facesContext, classLoader);
+				Class<?> fileUploadEventClass = OSGiClassLoaderUtil.classForName(RICHFACES_FILE_UPLOAD_EVENT_FQCN, true,
+						facesContext, classLoader);
+				ClassLoader uploadedFileClassLoader = uploadedFileInterface.getClassLoader();
 
 				String clientId = uiComponent.getClientId(facesContext);
 				List<UploadedFile> uploadedFiles = uploadedFileMap.get(clientId);
@@ -93,7 +99,7 @@ public class FileUploadRendererRichFacesImpl extends RendererWrapper {
 					for (UploadedFile uploadedFile : uploadedFiles) {
 						RichFacesUploadedFileHandler richFacesUploadedFileHandler = new RichFacesUploadedFileHandler(
 								uploadedFile);
-						Object richFacesUploadedFile = Proxy.newProxyInstance(classLoader,
+						Object richFacesUploadedFile = Proxy.newProxyInstance(uploadedFileClassLoader,
 								new Class[] { uploadedFileInterface }, richFacesUploadedFileHandler);
 						FacesEvent fileUploadEvent = (FacesEvent) fileUploadEventClass.getConstructor(UIComponent.class,
 								uploadedFileInterface).newInstance(uiComponent, richFacesUploadedFile);

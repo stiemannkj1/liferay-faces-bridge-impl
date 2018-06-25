@@ -35,10 +35,12 @@ import javax.faces.render.Renderer;
 import com.liferay.faces.bridge.component.internal.ResourceComponent;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.HeadRendererBridgeImpl;
 import com.liferay.faces.bridge.renderkit.html_basic.internal.InlineScript;
+import com.liferay.faces.bridge.util.internal.TCCLUtil;
 import com.liferay.faces.bridge.util.internal.URLUtil;
 import com.liferay.faces.util.lang.ThreadSafeAccessor;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import com.liferay.faces.util.osgi.OSGiClassLoaderUtil;
 
 
 /**
@@ -59,9 +61,10 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 	private static final String PRIMEFACES_THEME_RESOURCE_NAME = "theme.css";
 
 	// Private Final Data Members
-	private final PrimeFacesHeadRendererAccessor primeFacesHeadRendererAccessor = new PrimeFacesHeadRendererAccessor();
-	private final PrimeFacesMobileHeadRendererAccessor primeFacesMobileHeadRendererAccessor =
-		new PrimeFacesMobileHeadRendererAccessor();
+	private final PrimeFacesHeadRendererAccessor primeFacesHeadRendererAccessor = new PrimeFacesHeadRendererAccessor(
+			"org.primefaces.renderkit.HeadRenderer");
+	private final PrimeFacesHeadRendererAccessor primeFacesMobileHeadRendererAccessor =
+		new PrimeFacesHeadRendererAccessor("org.primefaces.mobile.renderkit.HeadRenderer");
 
 	@Override
 	public void encodeBegin(FacesContext facesContext, UIComponent uiComponent) throws IOException {
@@ -334,10 +337,10 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 	private Renderer getPrimeFacesHeadRenderer(FacesContext facesContext) {
 
 		if (isMobile(facesContext)) {
-			return primeFacesMobileHeadRendererAccessor.computeValue(facesContext);
+			return primeFacesMobileHeadRendererAccessor.computeValue(null);
 		}
 		else {
-			return primeFacesHeadRendererAccessor.computeValue(facesContext);
+			return primeFacesHeadRendererAccessor.computeValue(null);
 		}
 	}
 
@@ -408,15 +411,24 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 				"core.js".equals(resourceName) || "components-mobile.js".equals(resourceName));
 	}
 
-	private static final class PrimeFacesHeadRendererAccessor extends ThreadSafeAccessor<Renderer, FacesContext> {
+	private static final class PrimeFacesHeadRendererAccessor extends ThreadSafeAccessor<Renderer, Boolean> {
+
+		// Private Final Data Members
+		private final String headRendererClassName;
+
+		public PrimeFacesHeadRendererAccessor(String headRendererClassName) {
+			this.headRendererClassName = headRendererClassName;
+		}
 
 		@Override
-		protected Renderer computeValue(FacesContext facesContext) {
+		protected Renderer computeValue(Boolean unused) {
 
 			Renderer primeFacesHeadRenderer = null;
 
 			try {
-				Class<?> headRendererClass = Class.forName("org.primefaces.renderkit.HeadRenderer");
+
+				Class<?> clazz = getClass();
+				Class<?> headRendererClass = TCCLUtil.classForName(headRendererClassName, clazz);
 				primeFacesHeadRenderer = (Renderer) headRendererClass.newInstance();
 			}
 			catch (Exception e) {
@@ -424,25 +436,6 @@ public class HeadRendererPrimeFacesImpl extends HeadRendererBridgeImpl {
 			}
 
 			return primeFacesHeadRenderer;
-		}
-	}
-
-	private static final class PrimeFacesMobileHeadRendererAccessor extends ThreadSafeAccessor<Renderer, FacesContext> {
-
-		@Override
-		protected Renderer computeValue(FacesContext facesContext) {
-
-			Renderer primeFacesMobileHeadRenderer = null;
-
-			try {
-				Class<?> headRendererClass = Class.forName("org.primefaces.mobile.renderkit.HeadRenderer");
-				primeFacesMobileHeadRenderer = (Renderer) headRendererClass.newInstance();
-			}
-			catch (Exception e) {
-				logger.error(e);
-			}
-
-			return primeFacesMobileHeadRenderer;
 		}
 	}
 }

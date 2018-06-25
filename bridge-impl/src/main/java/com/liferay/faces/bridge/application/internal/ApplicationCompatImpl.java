@@ -27,6 +27,7 @@ import javax.faces.event.SystemEventListener;
 import javax.portlet.faces.BridgeUtil;
 
 import com.liferay.faces.bridge.component.internal.UIViewRootBridgeImpl;
+import com.liferay.faces.bridge.util.internal.TCCLUtil;
 import com.liferay.faces.util.application.ApplicationUtil;
 import com.liferay.faces.util.config.ConfiguredSystemEventListener;
 import com.liferay.faces.util.logging.Logger;
@@ -114,12 +115,14 @@ public abstract class ApplicationCompatImpl extends ApplicationWrapper {
 	protected void subscribeToJSF2SystemEvent(ConfiguredSystemEventListener configuredSystemEventListener) {
 
 		try {
+
+			Class<? extends ApplicationCompatImpl> clazz = getClass();
 			@SuppressWarnings("unchecked")
-			Class<? extends SystemEvent> systemEventClass = (Class<? extends SystemEvent>) Class.forName(
-					configuredSystemEventListener.getSystemEventClass());
+			Class<? extends SystemEvent> systemEventClass = (Class<? extends SystemEvent>) TCCLUtil.classForName(
+					configuredSystemEventListener.getSystemEventClass(), clazz);
 			@SuppressWarnings("unchecked")
-			Class<? extends SystemEventListener> systemEventListenerClass = (Class<? extends SystemEventListener>) Class
-				.forName(configuredSystemEventListener.getSystemEventListenerClass());
+			Class<? extends SystemEventListener> systemEventListenerClass = (Class<? extends SystemEventListener>)
+				TCCLUtil.classForName(configuredSystemEventListener.getSystemEventListenerClass(), clazz);
 			SystemEventListener systemEventListener = systemEventListenerClass.newInstance();
 
 			logger.debug("Subscribing UIViewRootBridgeImpl for systemEventClass=[{0}] systemEventListener=[{1}]",

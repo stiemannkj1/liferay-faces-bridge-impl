@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import com.liferay.faces.bridge.util.internal.TCCLUtil;
 import com.liferay.faces.util.application.ResourceValidator;
 import com.liferay.faces.util.application.ResourceValidatorWrapper;
 import com.liferay.faces.util.config.ApplicationConfig;
@@ -113,16 +114,19 @@ public class ResourceValidatorBridgeImpl extends ResourceValidatorWrapper implem
 		String invokerServletFQCN = "org.apache.pluto.container.driver.PortletServlet";
 
 		if (invokerServletFQCN.equals(servletClassFQCN)) {
-
 			invokerServletClass = true;
 		}
 		else {
 
+			Class<? extends ResourceValidatorBridgeImpl> clazz = getClass();
+
 			try {
-				Class<?> invokerServletClazz = Class.forName(invokerServletFQCN);
+
+				Class<?> invokerServletClazz = TCCLUtil.classForName(invokerServletFQCN, clazz);
 
 				try {
-					Class<?> servletClazz = Class.forName(servletClassFQCN);
+
+					Class<?> servletClazz = TCCLUtil.classForName(servletClassFQCN, clazz);
 					invokerServletClass = invokerServletClazz.isAssignableFrom(servletClazz);
 				}
 				catch (Throwable t) {
