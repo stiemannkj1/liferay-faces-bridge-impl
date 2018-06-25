@@ -32,9 +32,11 @@ import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.component.inputfile.InputFile;
 import com.liferay.faces.bridge.context.map.internal.ContextMapFactory;
 import com.liferay.faces.bridge.model.UploadedFile;
+import com.liferay.faces.bridge.util.internal.TCCLUtil;
 import com.liferay.faces.util.lang.ThreadSafeAccessor;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import com.liferay.faces.util.osgi.OSGiClassLoaderUtil;
 import com.liferay.faces.util.product.Product;
 import com.liferay.faces.util.product.ProductFactory;
 import com.liferay.faces.util.render.DelegatingRendererBase;
@@ -135,9 +137,13 @@ public class HtmlInputFileRenderer extends DelegatingRendererBase {
 				delegateRendererFQCN = "org.apache.myfaces.renderkit.html.HtmlInputFileRenderer";
 			}
 
+			Class<?> clazz = getClass();
+			ClassLoader classLoader = TCCLUtil.getThreadContextClassLoaderOrDefault(clazz);
+
 			try {
 
-				Class<?> delegateRendererClass = Class.forName(delegateRendererFQCN);
+				Class<?> delegateRendererClass = OSGiClassLoaderUtil.classForName(delegateRendererFQCN, true,
+						facesContext, classLoader);
 				delegateRenderer = (Renderer) delegateRendererClass.newInstance();
 			}
 			catch (Exception e) {

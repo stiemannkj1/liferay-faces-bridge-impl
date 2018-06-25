@@ -42,6 +42,11 @@
 				<configuration>
 					<bnd>
 						<![CDATA[
+							# Avoid "service not found" errors on redeploys of this bundle by ensuring that this bundle
+							# is activated as soon as the service classes are loaded. For more details, see
+							# https://issues.apache.org/jira/browse/ARIES-957
+							Bundle-ActivationPolicy: \
+								lazy;includes="com.liferay.faces.bridge.internal,com.liferay.faces.bridge.internal"
 							# javax.el is automatically imported with the following versions:
 							# javax.el;version="[2.2.0,3.0.0)", but versions 3.0.0+ are also valid.
 							Import-Package: \
@@ -49,12 +54,15 @@
 								com.liferay.faces.util.*;version="[1.0.0,2.0.0)",\
 								com.liferay.faces.bridge.*;version="[1.0.0,2.0.0)",\
 								com.liferay.faces.portlet.*;version="[1.0.0,2.0.0)",\
+								com.sun.faces.renderkit.html_basic;resolution:=optional;version="[2.2.0,2.3.0)",\
 								javax.portlet.faces.*;version="[1.0.0,2.0.0)",\
 								*
 							Require-Capability: osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"
 							Provide-Capability: \
-								osgi.serviceloader;osgi.serviceloader=javax.portlet.faces.Bridge,\
-								osgi.serviceloader;osgi.serviceloader=com.liferay.faces.bridge.BridgeFactoryFinder,\
+								osgi.serviceloader;osgi.serviceloader=javax.portlet.faces.Bridge;\
+								uses:="javax.portlet.faces",\
+								osgi.serviceloader;osgi.serviceloader=com.liferay.faces.bridge.BridgeFactoryFinder;\
+								uses:="com.liferay.faces.bridge",\
 								osgi.extender;osgi.extender="jsp.taglib";uri="http://liferay.com/faces/bridge";\
 								version:Version="1.0.0"
 						]]>

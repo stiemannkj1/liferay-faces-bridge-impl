@@ -34,8 +34,10 @@ import org.apache.commons.fileupload.FileItem;
 import com.liferay.faces.bridge.BridgeFactoryFinder;
 import com.liferay.faces.bridge.context.map.internal.ContextMapFactory;
 import com.liferay.faces.bridge.model.UploadedFile;
+import com.liferay.faces.bridge.util.internal.TCCLUtil;
 import com.liferay.faces.util.logging.Logger;
 import com.liferay.faces.util.logging.LoggerFactory;
+import com.liferay.faces.util.osgi.OSGiClassLoaderUtil;
 import com.liferay.faces.util.product.Product;
 import com.liferay.faces.util.product.ProductFactory;
 
@@ -122,30 +124,51 @@ public class FileUploadRendererPrimeFacesImpl extends RendererWrapper {
 
 					if (uploadedFiles != null) {
 
+						Class<?> clazz = getClass();
+						ClassLoader classLoader = TCCLUtil.getThreadContextClassLoaderOrDefault(clazz);
+						Boolean primefaces_6_2_OrGreater = null;
+						Constructor<?> defaultUploadedFileConstructor = null;
+						Constructor<?> fileUploadEventConstructor = null;
+
 						for (UploadedFile uploadedFile : uploadedFiles) {
+
+							Object defaultUploadedFile;
 
 							// Convert the UploadedFile to a Commons-FileUpload FileItem.
 							FileItem fileItem = new PrimeFacesFileItem(clientId, uploadedFile);
 
 							// Reflectively create an instance of the PrimeFaces DefaultUploadedFile class.
-							final Product PRIMEFACES = ProductFactory.getProductInstance(externalContext,
-									Product.Name.PRIMEFACES);
-							Object defaultUploadedFile;
-							Class<?> defaultUploadedFileClass = Class.forName(FQCN_DEFAULT_UPLOADED_FILE);
+							if (primefaces_6_2_OrGreater == null) {
 
-							if ((PRIMEFACES.getMajorVersion() > 6) ||
-									((PRIMEFACES.getMajorVersion() == 6) && (PRIMEFACES.getMinorVersion() >= 2))) {
+								final Product PRIMEFACES = ProductFactory.getProductInstance(externalContext,
+										Product.Name.PRIMEFACES);
+								primefaces_6_2_OrGreater = (PRIMEFACES.getMajorVersion() > 6) ||
+									((PRIMEFACES.getMajorVersion() == 6) && (PRIMEFACES.getMinorVersion() >= 2));
+							}
 
-								Class<?> fileUploadClass = Class.forName(FQCN_FILE_UPLOAD);
-								Constructor<?> constructor = defaultUploadedFileClass.getDeclaredConstructor(
-										FileItem.class, fileUploadClass);
-								defaultUploadedFile = constructor.newInstance(fileItem, uiComponent);
+							if (defaultUploadedFileConstructor == null) {
+
+								Class<?> defaultUploadedFileClass = OSGiClassLoaderUtil.classForName(
+										FQCN_DEFAULT_UPLOADED_FILE, true, facesContext, classLoader);
+
+								if (primefaces_6_2_OrGreater) {
+
+									Class<?> fileUploadClass = OSGiClassLoaderUtil.classForName(FQCN_FILE_UPLOAD, true,
+											facesContext, classLoader);
+									defaultUploadedFileConstructor = defaultUploadedFileClass.getDeclaredConstructor(
+											FileItem.class, fileUploadClass);
+								}
+								else {
+									defaultUploadedFileConstructor = defaultUploadedFileClass.getDeclaredConstructor(
+											FileItem.class);
+								}
+							}
+
+							if (primefaces_6_2_OrGreater) {
+								defaultUploadedFile = defaultUploadedFileConstructor.newInstance(fileItem, uiComponent);
 							}
 							else {
-
-								Constructor<?> constructor = defaultUploadedFileClass.getDeclaredConstructor(
-										FileItem.class);
-								defaultUploadedFile = constructor.newInstance(fileItem);
+								defaultUploadedFile = defaultUploadedFileConstructor.newInstance(fileItem);
 							}
 
 							// If the PrimeFaces FileUpload component is in "simple" mode, then simply set the submitted
@@ -162,13 +185,19 @@ public class FileUploadRendererPrimeFacesImpl extends RendererWrapper {
 							else {
 								logger.debug("Queuing FileUploadEvent for submittedValue=[{0}]", submittedValue);
 
-								// Reflectively create an instance of the PrimeFaces FileUploadEvent class.
-								Class<?> uploadedFileClass = Class.forName(FQCN_UPLOADED_FILE);
-								Class<?> fileUploadEventClass = Class.forName(FQCN_FILE_UPLOAD_EVENT);
-								Constructor<?> constructor = fileUploadEventClass.getConstructor(UIComponent.class,
-										uploadedFileClass);
-								FacesEvent fileUploadEvent = (FacesEvent) constructor.newInstance(uiComponent,
-										defaultUploadedFile);
+								if (fileUploadEventConstructor == null) {
+
+									// Reflectively create an instance of the PrimeFaces FileUploadEvent class.
+									Class<?> uploadedFileClass = OSGiClassLoaderUtil.classForName(FQCN_UPLOADED_FILE,
+											true, facesContext, classLoader);
+									Class<?> fileUploadEventClass = OSGiClassLoaderUtil.classForName(
+											FQCN_FILE_UPLOAD_EVENT, true, facesContext, classLoader);
+									fileUploadEventConstructor = fileUploadEventClass.getConstructor(UIComponent.class,
+											uploadedFileClass);
+								}
+
+								FacesEvent fileUploadEvent = (FacesEvent) fileUploadEventConstructor.newInstance(
+										uiComponent, defaultUploadedFile);
 
 								// Queue the event.
 								uiComponent.queueEvent(fileUploadEvent);
