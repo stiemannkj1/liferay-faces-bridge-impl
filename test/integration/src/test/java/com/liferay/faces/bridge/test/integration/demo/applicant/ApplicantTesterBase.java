@@ -42,6 +42,9 @@ import com.liferay.faces.test.selenium.browser.BrowserDriver;
 import com.liferay.faces.test.selenium.browser.FileUploadTesterBase;
 import com.liferay.faces.test.selenium.browser.TestUtil;
 import com.liferay.faces.test.selenium.browser.WaitingAsserter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -72,22 +75,22 @@ public abstract class ApplicantTesterBase extends FileUploadTesterBase {
 		assertFileUploadChooserDisplayed(browserDriver, waitingAsserter);
 
 		String facesImplName = System.getProperty("faces.impl.name");
-		assertLibraryElementDisplayed(waitingAsserter, facesImplName, browserDriver);
+		assertLibraryElementDisplayed(waitingAsserter, browserDriver, facesImplName);
 
 		if (isLiferayFacesAlloyIncluded()) {
-			assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Alloy", browserDriver);
+			assertLibraryElementDisplayed(waitingAsserter, browserDriver, "Liferay Faces Alloy");
 		}
 
-		assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Bridge Impl", browserDriver);
+		assertLibraryElementDisplayed(waitingAsserter, browserDriver, "Liferay Faces Bridge Impl");
 
 		if (TestUtil.getContainer().contains("liferay")) {
-			assertLibraryElementDisplayed(waitingAsserter, "Liferay Faces Bridge Ext", browserDriver);
+			assertLibraryElementDisplayed(waitingAsserter, browserDriver, "Liferay Faces Bridge Ext");
 		}
 
-		String extraLibraryName = getExtraLibraryName();
+		List<String> extraLibraryNames = getExtraLibraryNames();
 
-		if (extraLibraryName != null) {
-			assertLibraryElementDisplayed(waitingAsserter, extraLibraryName, browserDriver);
+		if (!extraLibraryNames.isEmpty()) {
+			assertLibraryElementDisplayed(waitingAsserter, browserDriver, extraLibraryNames);
 		}
 	}
 
@@ -333,10 +336,30 @@ public abstract class ApplicantTesterBase extends FileUploadTesterBase {
 		waitingAsserter.assertElementDisplayed(getFileUploadChooserXpath());
 	}
 
-	protected void assertLibraryElementDisplayed(WaitingAsserter waitingAsserter, String libraryName,
-		BrowserDriver browserDriver) {
+	protected void assertLibraryElementDisplayed(WaitingAsserter waitingAsserter, BrowserDriver browserDriver,
+		String libraryName) {
+		assertLibraryElementDisplayed(waitingAsserter, browserDriver, unmodifiableList(libraryName));
+	}
 
-		String libraryVersionXpath = "//li[contains(.,'" + libraryName + "')]";
+	protected void assertLibraryElementDisplayed(WaitingAsserter waitingAsserter, BrowserDriver browserDriver,
+		List<String> libraryNames) {
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("//li[");
+
+		for (int i = 0; i < libraryNames.size(); i++) {
+
+			if (i > 0) {
+				stringBuilder.append(" or ");
+			}
+
+			stringBuilder.append("contains(.,'");
+			stringBuilder.append(libraryNames.get(i));
+			stringBuilder.append("')");
+		}
+
+		stringBuilder.append("]");
+		String libraryVersionXpath = stringBuilder.toString();
 		waitingAsserter.assertElementDisplayed(libraryVersionXpath);
 
 		if (logger.isInfoEnabled()) {
@@ -397,8 +420,8 @@ public abstract class ApplicantTesterBase extends FileUploadTesterBase {
 		return "//input[contains(@id,':emailAddress')]";
 	}
 
-	protected String getExtraLibraryName() {
-		return null;
+	protected List<String> getExtraLibraryNames() {
+		return Collections.emptyList();
 	}
 
 	protected String getFieldErrorXpath(String fieldXpath) {
@@ -506,5 +529,9 @@ public abstract class ApplicantTesterBase extends FileUploadTesterBase {
 
 		browserDriver.clickElement(getSubmitFileButtonXpath());
 		browserDriver.waitForElementDisplayed(getUploadedFileXpath());
+	}
+
+	protected static <T> List<T> unmodifiableList(T... ts) {
+		return Collections.unmodifiableList(Arrays.asList(ts));
 	}
 }

@@ -19,6 +19,7 @@ import org.openqa.selenium.WebElement;
 
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
 import com.liferay.faces.test.selenium.browser.WaitingAsserter;
+import java.util.List;
 
 
 /**
@@ -51,8 +52,8 @@ public class PrimeFacesApplicantPortletTester extends ApplicantTesterBase {
 	}
 
 	@Override
-	protected String getExtraLibraryName() {
-		return "PrimeFaces";
+	protected List<String> getExtraLibraryNames() {
+		return unmodifiableList("PrimeFaces");
 	}
 
 	@Override

@@ -17,6 +17,7 @@ package com.liferay.faces.bridge.test.integration.demo.applicant;
 
 import com.liferay.faces.test.selenium.browser.BrowserDriver;
 import com.liferay.faces.test.selenium.browser.WaitingAsserter;
+import java.util.List;
 
 
 /**
@@ -30,8 +31,8 @@ public class RichFacesApplicantPortletTester extends ApplicantTesterBase {
 	}
 
 	@Override
-	protected String getExtraLibraryName() {
-		return "RichFaces 4.5.17.Final";
+	protected List<String> getExtraLibraryNames() {
+		return unmodifiableList("RichFaces 4.5.17.Final");
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2018 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2019 Liferay, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.liferay.faces.bridge.test.integration.demo.applicant;
+package com.liferay.faces.demos.bean;
 
-import java.util.List;
+import javax.portlet.faces.GenericFacesPortlet;
 
 /**
- * @author  Kyle Stiemann
+ *
+ * @author Kyle Stiemann
  */
-public class JSFSpringApplicantPortletTester extends ApplicantTesterBase {
-
-	@Override
-	protected List<String> getExtraLibraryNames() {
-		return unmodifiableList("Spring");
-	}
-
-	@Override
-	protected String getPortletPageName() {
-		return "jsf-spring-applicant";
-	}
+public class GenericFacesBeanPortlet extends GenericFacesPortlet {
+	
 }

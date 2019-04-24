@@ -15,14 +15,16 @@
  */
 package com.liferay.faces.bridge.test.integration.demo.applicant;
 
+import java.util.List;
+
 /**
  * @author  Kyle Stiemann
  */
 public class JSF_CDIApplicantPortletTester extends ApplicantTesterBase {
 
 	@Override
-	protected String getExtraLibraryName() {
-		return "Weld";
+	protected List<String> getExtraLibraryNames() {
+		return unmodifiableList("Weld", "CDI");
 	}
 
 	@Override
