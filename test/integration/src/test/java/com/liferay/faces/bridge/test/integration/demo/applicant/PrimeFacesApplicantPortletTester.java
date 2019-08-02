@@ -102,6 +102,7 @@ public class PrimeFacesApplicantPortletTester extends ApplicantTesterBase {
 		String dateCellXpath = "//table[contains(@class, 'ui-datepicker-calendar')]//a[contains(text(), '14')]";
 		browserDriver.waitForElementEnabled(dateCellXpath);
 		browserDriver.clickElement(dateCellXpath);
+        browserDriver.waitForElementNotDisplayed(dateCellXpath);
 	}
 
 	@Override
